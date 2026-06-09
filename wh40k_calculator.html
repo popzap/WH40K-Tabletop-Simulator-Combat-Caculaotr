@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WH40K Dice Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0c;--bg2:#111116;--bg3:#16161e;--bg4:#1c1c26;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--gold:#c9a84c;--gold2:#e8c870;--gold-dim:rgba(201,168,76,0.15);--red2:#ff5555;--red-dim:rgba(204,51,51,0.12);--green2:#3dba78;--amber2:#f5a030;--blue2:#4a8ccc;--pink2:#cc5a8c;--text:#e8e0d0;--text2:#a09888;--text3:#605850}
+body[data-theme="light"]{--bg:#eee9df;--bg2:#fbf8f1;--bg3:#e8e1d5;--bg4:#ddd4c6;--border:rgba(39,34,28,0.12);--border2:rgba(39,34,28,0.22);--gold:#8a681d;--gold2:#6f5010;--gold-dim:rgba(138,104,29,0.13);--red2:#b52d2d;--red-dim:rgba(181,45,45,0.1);--green2:#237447;--amber2:#a76410;--blue2:#2c6497;--pink2:#9d4770;--text:#2b2723;--text2:#5e564e;--text3:#81766c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh;overflow-x:hidden}
+.noise{position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.7}
+.wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 14px 48px}
+
+/* HEADER */
+.header{display:flex;align-items:center;gap:14px;padding:24px 0 18px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.header-main{min-width:0}.header-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}.swap-toggle{display:flex;align-items:center;gap:6px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);padding:6px 9px;border-radius:999px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.07em;transition:all .15s;white-space:nowrap}.swap-toggle:hover{border-color:var(--gold);color:var(--gold2)}.swap-toggle[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-dim);color:var(--gold2)}.swap-icon{font-family:'Share Tech Mono',monospace;font-size:14px;line-height:1}.swap-label{min-width:62px;text-align:left}@media(max-width:620px){.swap-label{display:none}.swap-toggle{padding:6px 8px}}.theme-toggle{display:flex;align-items:center;gap:7px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);padding:5px 8px;border-radius:999px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;transition:all .15s}.theme-toggle:hover{border-color:var(--gold);color:var(--gold2)}.theme-track{width:28px;height:15px;border-radius:999px;background:var(--bg4);border:1px solid var(--border2);position:relative;display:inline-block}.theme-knob{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--gold2);top:2px;left:3px;transition:transform .18s ease}.theme-toggle[aria-checked="true"] .theme-knob{transform:translateX(12px)}.theme-icon{font-size:13px;line-height:1}.theme-label{min-width:31px;text-align:left}@media(max-width:520px){.theme-label{display:none}.theme-toggle{padding:5px 7px}.header{gap:9px}h1{font-size:20px}}
+.emblem{width:50px;height:50px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.emblem::before{content:'';position:absolute;inset:5px;border:1px solid rgba(201,168,76,.25);border-radius:50%}
+h1{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;letter-spacing:.1em;color:var(--gold2);text-transform:uppercase;line-height:1}
+.sub{font-size:13px;color:var(--text2);margin-top:3px;letter-spacing:.04em}
+
+/* PANELS */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:600px){.panels{grid-template-columns:1fr}}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;position:relative;overflow:hidden}
+.panel.atk::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#cc3333,transparent)}
+.panel.def::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue2),transparent)}
+.ptitle{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--text2);text-transform:uppercase;margin-bottom:10px}
+
+/* FORM */
+label.lbl{display:block;font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;margin-top:8px;font-family:'Rajdhani',sans-serif}
+label.lbl:first-child{margin-top:0}
+select,input[type=number]{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:13px;padding:5px 8px;height:32px;appearance:none;-webkit-appearance:none;outline:none;transition:border-color .15s}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23605850' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;padding-right:22px}
+select:focus,input[type=number]:focus{border-color:var(--gold)}
+input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* STAT BAR */
+.statbar{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:7px 10px;margin:8px 0;display:flex;flex-wrap:wrap;gap:3px 12px;min-height:40px;align-items:center}
+.si{display:flex;flex-direction:column;align-items:center;min-width:28px}
+.sk{font-size:9px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;font-family:'Rajdhani',sans-serif}
+.sv{font-size:15px;font-weight:700;color:var(--gold2);font-family:'Share Tech Mono',monospace;line-height:1.2}
+.skws{width:100%;font-size:10px;color:var(--text3);margin-top:2px}
+.wbadges{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0 6px}
+.wb{font-family:'Share Tech Mono',monospace;font-size:10px;padding:1px 5px;border-radius:2px;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
+
+.divider{border:none;border-top:1px solid var(--border);margin:10px 0}
+.slbl{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:5px;border-left:2px solid var(--border2);padding-left:5px}
+
+/* TOGGLES */
+.toggles{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.tbtn{padding:3px 8px;border-radius:2px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.tbtn:hover{border-color:var(--gold);color:var(--gold)}
+.tbtn.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold2)}
+.rule-tooltip{position:fixed;z-index:500;max-width:min(340px,calc(100vw - 24px));padding:8px 10px;border-radius:4px;border:1px solid var(--border2);background:var(--bg4);color:var(--text);box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:12px;line-height:1.35;letter-spacing:.02em;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s ease,transform .12s ease}.rule-tooltip.show{opacity:1;transform:translateY(0)}.rule-tooltip strong{display:block;color:var(--gold2);font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:.07em;margin-bottom:2px}
+
+/* FLOW */
+.box{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px 14px;margin-bottom:14px}
+.btitle{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:.13em;color:var(--text2);text-transform:uppercase;margin-bottom:9px}
+.flow{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.fstep{flex:1;min-width:80px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:7px 8px;text-align:center}
+.fn{font-size:10px;letter-spacing:.07em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;margin-bottom:1px}
+.fv{font-size:19px;font-weight:700;font-family:'Share Tech Mono',monospace}
+.fp{font-size:11px;margin-top:1px;font-family:'Share Tech Mono',monospace}
+.farr{color:var(--text3);font-size:14px;flex-shrink:0}
+
+/* FLOW INSIDE ATTACK PANEL */
+.panel-flow-box{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:10px 10px;margin:7px 0 10px}
+.panel-flow-box .btitle{margin-bottom:7px}
+.panel-flow-box .flow{gap:4px}
+.panel-flow-box .fstep{min-width:68px;background:var(--bg2);padding:6px 5px}
+.panel-flow-box .farr{font-size:12px}
+@media(max-width:900px){.panel-flow-box .farr{display:none}.panel-flow-box .flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}}
+
+/* RESULTS */
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:9px}
+@media(max-width:480px){.rgrid{grid-template-columns:repeat(2,1fr)}}
+.rc{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:9px;text-align:center;position:relative;overflow:hidden}
+.rc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.rc.cg::after{background:var(--green2)}.rc.ca::after{background:var(--amber2)}.rc.cr::after{background:var(--red2)}.rc.cb::after{background:var(--blue2)}
+.rl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-family:'Rajdhani',sans-serif;margin-bottom:3px}
+.rv{font-size:25px;font-weight:700;font-family:'Share Tech Mono',monospace}
+.rv.cg{color:var(--green2)}.rv.ca{color:var(--amber2)}.rv.cr{color:var(--red2)}.rv.cb{color:var(--blue2)}
+.rs{font-size:10px;color:var(--text3);margin-top:2px;font-family:'Share Tech Mono',monospace}
+
+/* EDIT MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:20px;width:min(460px,94vw);max-height:90vh;overflow-y:auto;position:relative}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.08em;color:var(--gold2);text-transform:uppercase;margin-bottom:14px}
+.modal-close{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--text2);font-size:18px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--text)}
+.weapon-editor{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:10px;margin-bottom:8px}
+.weapon-editor .wname{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:var(--gold);margin-bottom:6px}
+.mbtn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:2px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.mbtn:hover{border-color:var(--gold);color:var(--gold)}
+.mbtn.primary{background:var(--gold-dim);border-color:var(--gold);color:var(--gold2)}
+.mbtn.danger{border-color:#cc3333;color:#ff5555}
+.mbtn.danger:hover{background:rgba(204,51,51,.15)}
+.mrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+.hint{font-size:11px;color:var(--text3);margin-top:5px;letter-spacing:.03em}
+.import-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.import-status{font-size:10px;color:var(--text3);margin-top:5px;font-family:'Share Tech Mono',monospace;word-break:break-all}.import-status.ok{color:var(--green2)}.import-status.err{color:var(--red2)}
+.footer{text-align:center;padding-top:18px;font-size:11px;color:var(--text3);letter-spacing:.05em;border-top:1px solid var(--border);margin-top:20px}
+
+/* SPINNER */
+.spin-wrap{display:none;position:absolute;inset:0;background:rgba(10,10,12,.85);z-index:10;align-items:center;justify-content:center;flex-direction:column;gap:8px;border-radius:4px}
+.spin-wrap.on{display:flex}
+.spinner{width:26px;height:26px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-txt{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2)}
+
+/* READABILITY & BALANCED PANEL LAYOUT */
+.wrap{max-width:1080px}
+body{font-size:16px}
+.panel{padding:16px 18px;display:flex;flex-direction:column}
+h1{font-size:27px}
+.sub{font-size:14px}
+.ptitle{font-size:14px;margin-bottom:11px}
+label.lbl{font-size:12px;margin-bottom:4px;margin-top:9px}
+select,input[type=number]{font-size:15px;height:36px;padding:6px 9px}
+.statbar{padding:9px 11px;min-height:46px;gap:4px 14px;margin:9px 0}
+.si{min-width:31px}
+.sk{font-size:10px}
+.sv{font-size:17px}
+.skws{font-size:11px}
+.wbadges{min-height:18px;gap:4px;margin:4px 0 7px}
+.wb{font-size:11px;padding:2px 6px}
+.divider{margin:11px 0}
+.slbl{font-size:13px;margin-bottom:6px}
+.toggles{gap:5px;margin-top:6px}
+.tbtn{font-size:12px;padding:4px 9px}
+.rule-tooltip{font-size:13px;line-height:1.45;padding:9px 11px}
+.rule-tooltip strong{font-size:13px}
+.btitle{font-size:13px}
+.fn{font-size:11px}.fv{font-size:21px}.fp{font-size:12px}.farr{font-size:16px}
+.rl{font-size:11px}.rv{font-size:28px}.rs{font-size:11px}
+.modal-title{font-size:18px}.weapon-editor .wname{font-size:14px}
+.mbtn{font-size:13px;padding:6px 12px}
+.import-row{margin-top:auto;padding-top:8px;gap:7px}
+.import-row .mbtn{font-size:12px!important}
+.import-status{font-size:11px;margin-top:6px;min-height:14px}
+.hint{font-size:12px}.footer{font-size:12px}.spin-txt{font-size:12px}
+.def-profile-box{height:36px;display:flex;align-items:center;padding:6px 9px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;color:var(--text2);font-size:13px;letter-spacing:.02em}
+.def-profile-note{min-height:18px;display:flex;align-items:center;margin:4px 0 7px;color:var(--blue2);font-size:11px;letter-spacing:.02em}
+.def-rules{display:flex;flex-wrap:wrap;gap:5px;min-height:36px;padding:7px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;align-content:flex-start}
+.def-rule-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:2px;border:1px solid rgba(74,140,204,.38);background:rgba(74,140,204,.10);color:var(--blue2);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:.035em;cursor:help;transition:all .15s;text-align:left}
+.def-rule-btn:hover,.def-rule-btn:focus{border-color:var(--blue2);background:rgba(74,140,204,.18);outline:none}
+.def-rule-auto{padding:1px 4px;border-radius:8px;background:rgba(61,186,120,.14);border:1px solid rgba(61,186,120,.3);color:var(--green2);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0}
+.def-rules-empty{color:var(--text3);font-size:12px;align-self:center}
+.def-rule-note{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.35}
+@media(max-width:520px){h1{font-size:22px}.panel{padding:14px 15px}.wrap{padding-left:10px;padding-right:10px}}
+
+
+/* PROFILE → FLOW → MANUAL ADJUSTMENT LAYOUT */
+.comparison-top{margin-bottom:14px}
+.comparison-top .panel{min-height:0}
+.flow-wide-box{margin-bottom:14px}
+.adjust-panels{align-items:stretch}
+.atk-adjust,.def-adjust{min-height:100%}
+@media(max-width:600px){.comparison-top,.adjust-panels{grid-template-columns:1fr}.flow-wide-box .farr{display:none}.flow-wide-box .flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}}
+
+/* DETECTED WEAPON RULES BANNER */
+.detected-rules{display:flex;flex-wrap:wrap;gap:5px;min-height:34px;padding:7px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;align-content:flex-start;margin-bottom:7px}
+.detected-empty{color:var(--text3);font-size:12px;align-self:center}
+.det-rule{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:2px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:.035em;transition:all .15s}
+/* auto-applied (always-on) rules: lit gold, non-interactive */
+.det-rule.auto{border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold2);cursor:help}
+/* conditional rules: tappable, must be confirmed by the user */
+.det-rule.cond{border:1px dashed var(--amber2);background:transparent;color:var(--amber2);cursor:pointer}
+.det-rule.cond:hover{background:rgba(245,160,48,.12)}
+.det-rule.cond.on{border-style:solid;background:rgba(245,160,48,.18);color:var(--amber2)}
+.det-rule.cond .det-q{font-family:'Share Tech Mono',monospace;font-size:10px;opacity:.85}
+.det-rule.cond.on .det-q::before{content:'✓ '}
+/* informational only (no math impact) */
+.det-rule.info{border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:help}
+.det-badge{font-family:'Share Tech Mono',monospace;font-size:9px;padding:1px 4px;border-radius:8px;background:rgba(61,186,120,.14);border:1px solid rgba(61,186,120,.3);color:var(--green2);letter-spacing:0}
+.det-note{font-size:11px;color:var(--text3);margin:5px 0 0;line-height:1.35}
+/* 전투 상황 버튼 / 요약 */
+.situation-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.sit-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:3px;border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold2);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.sit-btn:hover{background:rgba(201,168,76,.28)}
+.sit-active{display:flex;flex-wrap:wrap;gap:5px;flex:1;min-width:0}
+.sit-active .sa-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:2px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:.03em;border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold2)}
+.sit-active .sa-chip.def{border-color:var(--blue2);background:rgba(74,140,204,.13);color:var(--blue2)}
+.sit-active .sa-empty{font-size:12px;color:var(--text3);font-family:'Barlow Condensed',sans-serif}
+/* 상황 모달 */
+.sit-section{margin-bottom:16px}
+.sit-section-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.sit-section-title.atk{color:var(--gold2)}.sit-section-title.def{color:var(--blue2)}.sit-section-title.abil{color:var(--text2)}
+.sit-card{display:block;width:100%;text-align:left;border:1px solid var(--border2);background:var(--bg3);border-radius:3px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:all .12s;color:var(--text);font-family:'Barlow Condensed',sans-serif}
+.sit-card:hover{border-color:var(--gold)}
+.sit-card.on{border-color:var(--gold);background:var(--gold-dim)}
+.sit-card.def-card.on{border-color:var(--blue2);background:rgba(74,140,204,.13)}
+.sit-card .sc-head{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
+.sit-card .sc-check{width:17px;height:17px;border-radius:3px;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent}
+.sit-card.on .sc-check{background:var(--gold);border-color:var(--gold);color:var(--bg);font-weight:800}
+.sit-card.def-card.on .sc-check{background:var(--blue2);border-color:var(--blue2)}
+.sit-card .sc-eff{font-size:12.5px;color:var(--text2);margin-top:3px;margin-left:25px;line-height:1.35}
+.sit-card .sc-eff.muted{color:var(--text3)}
+.sit-card .sc-eff em{color:var(--gold2);font-style:normal;font-weight:600}
+.sit-card.def-card .sc-eff em{color:var(--blue2)}
+.sit-card .sc-sug{display:inline-block;margin-left:25px;margin-top:4px;font-family:'Share Tech Mono',monospace;font-size:9.5px;padding:1px 6px;border-radius:8px;background:rgba(245,160,48,.16);border:1px solid var(--amber2);color:var(--amber2)}
+.sit-seg{display:inline-flex;gap:0;margin-left:25px;margin-top:6px;border:1px solid var(--border2);border-radius:3px;overflow:hidden}
+.sit-seg button{padding:4px 11px;background:transparent;border:none;border-right:1px solid var(--border2);color:var(--text3);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s}
+.sit-seg button:last-child{border-right:none}
+.sit-seg button.on{background:var(--gold-dim);color:var(--gold2)}
+.abil-ref{border:1px solid var(--border);background:var(--bg3);border-radius:3px;padding:8px 10px;margin-bottom:6px}
+.abil-ref .ar-name{font-size:13.5px;font-weight:700;color:var(--gold2);margin-bottom:2px;font-family:'Rajdhani',sans-serif}
+.abil-ref.def-ref .ar-name{color:var(--blue2)}
+.abil-ref .ar-desc{font-size:12.5px;color:var(--text2);line-height:1.4}
+.abil-ref .ar-flag{display:inline-block;margin-top:5px;font-family:'Share Tech Mono',monospace;font-size:9.5px;padding:1px 6px;border-radius:8px;background:rgba(245,160,48,.16);border:1px solid var(--amber2);color:var(--amber2)}
+.ar-ask{font-size:11.5px;color:var(--text3);margin:4px 0 5px}
+.eff-chips{display:flex;flex-wrap:wrap;gap:4px}
+.eff-chip{padding:3px 9px;border-radius:2px;border:1px dashed var(--border2);background:transparent;color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s}
+.eff-chip:hover{border-color:var(--gold);color:var(--gold2)}
+.eff-chip.on{border-style:solid;border-color:var(--gold);background:var(--gold-dim);color:var(--gold2)}
+.abil-ref.def-ref .eff-chip.on{border-color:var(--blue2);background:rgba(74,140,204,.13);color:var(--blue2)}
+.lead-fx{font-size:11.5px;line-height:1.5;margin-bottom:4px;min-height:0}
+.lead-fx .lfx-on{display:inline-block;margin:2px 4px 0 0;padding:2px 8px;border-radius:2px;background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold2);font-family:'Rajdhani',sans-serif;font-weight:600}
+.lead-fx .lfx-none{color:var(--text3)}
+.sit-auto{display:flex;align-items:center;gap:9px;border:1px solid var(--border2);background:var(--bg3);border-radius:3px;padding:8px 11px;margin-bottom:6px;opacity:.6}
+.sit-auto.on{opacity:1;border-color:var(--gold);background:var(--gold-dim)}
+.sit-auto .sa-state{font-family:'Share Tech Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:8px;border:1px solid var(--border2);color:var(--text3);flex-shrink:0}
+.sit-auto.on .sa-state{border-color:var(--green2);background:rgba(61,186,120,.14);color:var(--green2)}
+.sit-auto .sa-label{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;color:var(--text)}
+.sit-auto.on .sa-label{color:var(--gold2)}
+.sit-auto .sa-desc{font-size:11.5px;color:var(--text3);margin-left:auto;text-align:right}
+.sit-apply-row{display:flex;gap:8px;position:sticky;bottom:-20px;background:var(--bg2);padding:12px 0 2px;margin-top:6px;border-top:1px solid var(--border)}
+.sit-empty{font-size:12.5px;color:var(--text3);padding:4px 0}
+
+</style>
+</head>
+<body data-theme="light">
+<div class="noise"></div>
+<div class="rule-tooltip" id="rule-tooltip" aria-hidden="true"></div>
+<div class="wrap">
+  <div class="header">
+    <div class="emblem">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <polygon points="13,2 24,7.5 24,18.5 13,24 2,18.5 2,7.5" stroke="#c9a84c" stroke-width="1.5" fill="none"/>
+        <polygon points="13,6 20,9.5 20,16.5 13,20 6,16.5 6,9.5" stroke="#c9a84c" stroke-width=".5" fill="none" opacity=".35"/>
+        <circle cx="13" cy="13" r="3" stroke="#c9a84c" stroke-width="1" fill="rgba(201,168,76,.15)"/>
+        <line x1="13" y1="2" x2="13" y2="24" stroke="#c9a84c" stroke-width=".4" opacity=".25"/>
+        <line x1="2" y1="7.5" x2="24" y2="18.5" stroke="#c9a84c" stroke-width=".4" opacity=".25"/>
+        <line x1="24" y1="7.5" x2="2" y2="18.5" stroke="#c9a84c" stroke-width=".4" opacity=".25"/>
+      </svg>
+    </div>
+    <div class="header-main">
+      <h1>WH40K Dice Calculator</h1>
+      <p class="sub">10th Edition · 44 Factions · TTS Companion</p>
+    </div>
+    <div class="header-actions">
+      <button class="swap-toggle" id="spectator-swap" type="button" aria-pressed="false" onclick="swapSpectatorSides()" title="관전자용: 공격측과 방어측 군대를 서로 교환합니다.">
+        <span class="swap-icon">⇄</span>
+        <span class="swap-label" id="swap-label">SWAP SIDES</span>
+      </button>
+      <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" onclick="toggleTheme()" title="라이트 / 다크 모드 전환">
+        <span class="theme-icon" id="theme-icon">☾</span>
+        <span class="theme-label" id="theme-label">DARK</span>
+        <span class="theme-track"><span class="theme-knob"></span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panels comparison-top">
+    <!-- ATTACK PROFILE -->
+    <div class="panel atk" style="position:relative">
+      <div class="spin-wrap" id="atk-spin"><div class="spinner"></div><div class="spin-txt">Loading...</div></div>
+      <div class="ptitle">⚔ 공격 유닛</div>
+      <label class="lbl">팩션</label>
+      <select id="atk-f" onchange="onAtkFaction()"></select>
+      <label class="lbl">유닛</label>
+      <select id="atk-u" onchange="onAtkUnit()"></select>
+      <label class="lbl">무기</label>
+      <select id="atk-w" onchange="onAtkWeapon()"></select>
+      <label class="lbl">분대장 합류 (복수 선택 가능) — 능력 버프가 부대에 적용됨</label>
+      <div class="eff-chips" id="atk-lead" style="margin-bottom:4px"></div>
+      <div id="atk-lead-fx" class="lead-fx"></div>
+      <div class="statbar" id="atk-bar"><span style="font-size:12px;color:var(--text3)">유닛을 선택하세요</span></div>
+      <div class="wbadges" id="atk-kw"></div>
+    </div>
+
+    <!-- DEFENSE PROFILE -->
+    <div class="panel def" style="position:relative">
+      <div class="ptitle">🛡 방어 유닛</div>
+      <label class="lbl">팩션</label>
+      <select id="def-f" onchange="onDefFaction()"></select>
+      <label class="lbl">유닛</label>
+      <select id="def-u" onchange="onDefUnit()"></select>
+      <label class="lbl">분대장 합류 (복수 선택 가능) — 보디가드가 먼저 희생됨</label>
+      <div class="eff-chips" id="def-lead" style="margin-bottom:4px"></div>
+      <div id="def-lead-fx" class="lead-fx"></div>
+      <label class="lbl">방어 프로필</label>
+      <div class="def-profile-box">선택한 유닛의 방어 능력치를 자동으로 적용합니다.</div>
+      <div class="statbar" id="def-bar"><span style="font-size:12px;color:var(--text3)">유닛을 선택하세요</span></div>
+      <div class="def-profile-note">방어 측은 무기 선택 없이 방어 수치만 사용합니다.</div>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="box flow-wide-box">
+    <div class="btitle">▸ 단계별 필요 주사위</div>
+    <div class="flow" id="flow"><span style="font-size:12px;color:var(--text3);font-family:'Share Tech Mono',monospace">유닛 선택 후 계산됩니다</span></div>
+  </div>
+
+  <div class="panels adjust-panels">
+    <!-- ATTACK ADJUSTMENTS -->
+    <div class="panel atk-adjust">
+      <div class="ptitle">⚔ 공격 수동 조정</div>
+      <div class="slbl">수동 조정</div>
+      <div class="r2">
+        <div><label class="lbl">공격 횟수 (A)</label><input type="number" id="A" value="2" min="1" max="50" oninput="calc()"></div>
+        <div><label class="lbl">명중 스킬</label><select id="SK" onchange="calc()">
+          <option value="2">2+</option><option value="3" selected>3+</option>
+          <option value="4">4+</option><option value="5">5+</option><option value="6">6+</option>
+        </select></div>
+      </div>
+      <div class="r3">
+        <div><label class="lbl">공격력 (S)</label><input type="number" id="S" value="4" min="1" max="24" oninput="calc()"></div>
+        <div><label class="lbl">관통 (AP)</label><select id="AP" onchange="calc()">
+          <option value="0" selected>0</option><option value="1">-1</option>
+          <option value="2">-2</option><option value="3">-3</option>
+          <option value="4">-4</option><option value="5">-5</option><option value="6">-6</option>
+        </select></div>
+        <div><label class="lbl">피해 (D)</label><input type="number" id="D" value="1" min="1" max="20" oninput="calc()"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="slbl">감지된 무기 규칙</div>
+      <div class="detected-rules" id="atk-detected"><span class="detected-empty">무기를 선택하면 감지된 특수 규칙이 여기에 표시됩니다.</span></div>
+      <p class="det-note">* 금색 = 항상 적용됨 · 주황 점선 = 조건부(탭하여 적용). 조건부 규칙은 탭해서 켜야 계산에 반영됩니다.</p>
+      <div class="divider"></div>
+      <div class="slbl">수동 특수 규칙</div>
+      <div class="toggles">
+        <button class="tbtn" id="btn-rh" data-tip-title="명중 재굴림" data-tip="탭할 때마다 없음 → 전체(실패 전체 재굴림) → 1만(주사위 눈 1만 재굴림) 순으로 바뀝니다." onclick="tog('rh')">명중 재굴림</button>
+        <button class="tbtn" id="btn-rw" data-tip-title="부상 재굴림" data-tip="탭할 때마다 없음 → 전체(실패 전체 재굴림) → 1만(주사위 눈 1만 재굴림) 순으로 바뀝니다." onclick="tog('rw')">부상 재굴림</button>
+        <button class="tbtn" id="btn-lh" data-tip-title="Lethal Hits" data-tip="치명적 명중: 수정되지 않은 명중 굴림 6은 자동으로 부상에 성공합니다. 해당 공격에는 부상 굴림을 하지 않습니다." onclick="tog('lh')">Lethal Hits</button>
+        <button class="tbtn" id="btn-dw" data-tip-title="Devastating Wounds" data-tip="파괴적 부상: 수정되지 않은 부상 굴림 6으로 발생한 부상은 일반 방어 굴림을 허용하지 않습니다. FNP는 적용됩니다." onclick="tog('dw')">Dev. Wounds</button>
+        <button class="tbtn" id="btn-tor" data-tip-title="Torrent" data-tip="분사 무기: 명중 굴림 없이 자동으로 명중합니다. 명중 재굴림은 적용되지 않습니다." onclick="tog('tor')">Torrent</button>
+        <button class="tbtn" id="btn-sh" data-tip-title="Sustained Hits" data-tip="지속 명중: 수정되지 않은 명중 굴림 6마다 추가 명중이 발생합니다. 현재 계산기는 Sustained Hits 1 기준으로 계산합니다." onclick="tog('sh')">Sustained Hits</button>
+        <button class="tbtn" id="btn-twin" data-tip-title="Twin-linked" data-tip="연결 무기: 부상 굴림을 다시 굴릴 수 있습니다. 계산에서는 실패한 부상 굴림 전체를 1회 재굴림으로 처리합니다." onclick="tog('twin')">Twin-linked</button>
+      </div>
+      <div class="divider"></div>
+      <input type="file" id="atk-json" accept=".json,application/json" style="display:none" onchange="importArmy('atk',this.files[0]);this.value=''">
+      <div class="import-row">
+        <button class="mbtn primary" onclick="document.getElementById('atk-json').click()" style="font-size:11px">⬆ 내 군대 JSON</button>
+        <button class="mbtn" onclick="downloadArmy('atk')" style="font-size:11px">⬇ JSON 저장</button>
+        <button class="mbtn" onclick="openEdit('atk')" style="font-size:11px">✎ 유닛 추가 / 수정</button>
+      </div>
+      <div class="import-status" id="atk-json-status">기본 DB 또는 내 군대 JSON을 불러오세요.</div>
+    </div>
+
+    <!-- DEFENSE ADJUSTMENTS -->
+    <div class="panel def-adjust">
+      <div class="ptitle">🛡 방어 수동 조정</div>
+      <div class="slbl">수동 조정</div>
+      <div class="r2">
+        <div><label class="lbl">강인함 (T)</label><input type="number" id="T" value="4" min="1" max="16" oninput="calc()"></div>
+        <div><label class="lbl">방어도 (Sv)</label><select id="SV" onchange="calc()">
+          <option value="2">2+</option><option value="3">3+</option>
+          <option value="4" selected>4+</option><option value="5">5+</option>
+          <option value="6">6+</option><option value="7">없음</option>
+        </select></div>
+      </div>
+      <div class="r3">
+        <div><label class="lbl">무적 (Inv)</label><select id="INV" onchange="calc()">
+          <option value="0" selected>없음</option><option value="3">3++</option>
+          <option value="4">4++</option><option value="5">5++</option><option value="6">6++</option>
+        </select></div>
+        <div><label class="lbl">FNP</label><select id="FNP" onchange="calc()">
+          <option value="0" selected>없음</option><option value="4">4+++</option>
+          <option value="5">5+++</option><option value="6">6+++</option>
+        </select></div>
+        <div><label class="lbl">체력 (W)</label><input type="number" id="W" value="2" min="1" max="30" oninput="calc()"></div>
+      </div>
+      <div><label class="lbl">모델 수</label><input type="number" id="MDL" value="5" min="1" max="30" oninput="calc()"></div>
+      <p class="hint" style="margin-top:6px">* AP 초과 시 무적 방어도만 적용</p>
+      <div class="divider"></div>
+      <div class="slbl">방어 특수 규칙</div>
+      <div class="def-rules" id="def-rules"><span class="def-rules-empty">선택한 유닛의 방어 관련 능력이 여기에 표시됩니다.</span></div>
+      <p class="def-rule-note">* 조건부 능력은 자동 계산되지 않습니다. 능력 설명을 확인한 뒤 수동 조정 값을 적용하세요.</p>
+      <div class="divider"></div>
+      <input type="file" id="def-json" accept=".json,application/json" style="display:none" onchange="importArmy('def',this.files[0]);this.value=''">
+      <div class="import-row">
+        <button class="mbtn primary" onclick="document.getElementById('def-json').click()" style="font-size:11px">⬆ 상대 JSON</button>
+        <button class="mbtn" onclick="downloadArmy('def')" style="font-size:11px">⬇ JSON 저장</button>
+        <button class="mbtn" onclick="openEdit('def')" style="font-size:11px">✎ 유닛 추가 / 수정</button>
+      </div>
+      <div class="import-status" id="def-json-status">기본 DB 또는 상대 군대 JSON을 불러오세요.</div>
+    </div>
+  </div>
+
+  <!-- COMBAT SITUATION -->
+  <div class="situation-bar">
+    <button class="sit-btn" onclick="openSituation()">📋 상황 확인 후 계산</button>
+    <div class="sit-active" id="sit-active"><span class="sa-empty">적용된 전투 상황이 없습니다 — 버튼을 눌러 현재 상황을 선택하세요.</span></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="box">
+    <div class="btitle">▸ 기대 결과 (평균)</div>
+    <div class="rgrid" id="res">
+      <div class="rc cg"><div class="rl">평균 명중</div><div class="rv cg">—</div></div>
+      <div class="rc ca"><div class="rl">평균 부상</div><div class="rv ca">—</div></div>
+      <div class="rc cr"><div class="rl">평균 피해</div><div class="rv cr">—</div></div>
+      <div class="rc cb"><div class="rl">기대 제거</div><div class="rv cb">—</div></div>
+    </div>
+  </div>
+
+  <!-- SACRIFICE (combined defender with attached leader) -->
+  <div class="box" id="sac-box" style="display:none">
+    <div class="btitle">▸ 🩸 희생 분석 (분대장 합류 — 보디가드 먼저 제거, 시뮬레이션)</div>
+    <div class="rgrid" id="sac"></div>
+    <div class="det-note" id="sac-note" style="margin-top:8px"></div>
+  </div>
+
+  <div class="footer">WARHAMMER 40,000 10th Ed · 팬 제작 도구 · Not affiliated with Games Workshop</div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">유닛 편집</div>
+    <button class="modal-close" onclick="closeEdit()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- SITUATION MODAL -->
+<div class="overlay" id="sit-modal">
+  <div class="modal">
+    <div class="modal-title">📋 현재 전투 상황</div>
+    <button class="modal-close" onclick="closeSituation()">✕</button>
+    <p class="det-note" style="margin:0 0 12px">해당되는 상황을 탭하세요. 선택한 두 유닛의 능력을 자동으로 살펴 관련 상황을 <span style="color:var(--amber2)">추천</span>으로 표시합니다. 룰을 몰라도 질문에 답하듯 고르면 됩니다.</p>
+    <div id="sit-modal-body"></div>
+  </div>
+</div>
+
+<script>
+let DB = {};
+const sideDB = { atk: {}, def: {} };
+const sideData = { atk: {}, def: {} };
+
+const rules={
+  rhMode:'none',rwMode:'none',  // 명중/부상 재굴림 모드: 'none' | 'ones'(1만) | 'full'(실패 전체)
+  lh:false,dw:false,            // Lethal Hits / Devastating Wounds
+  tor:false,                    // Torrent (자동 명중)
+  sh:0,                         // Sustained Hits N (0 = 없음)
+  twin:false,                   // Twin-linked (부상 재굴림)
+  // 무기에서 감지되는 수치형 규칙(값) — 발동 여부는 상황(charged/halfRange 등)에서 결정
+  anti:0,antiActive:false,      // Anti-X N+ (대상이 해당 키워드일 때)
+  rapid:0,                      // Rapid Fire N (절반 사거리 → halfRange로 발동)
+  melta:0,                      // Melta N (절반 사거리 → halfRange로 발동)
+  lance:false,                  // Lance (돌격 시 +1 부상 → charged로 발동)
+  blast:false,                  // Blast (대상 5모델당 +1 공격, 자동)
+  ignoresCover:false,pistol:false,heavy:false, // 정보용 / heavy는 stationary와 함께 발동
+  // ── 전투 상황(사용자가 모달에서 선택) ──
+  charged:false,                // 이번 턴 돌격 성공
+  halfRange:false,              // 절반 사거리 이내
+  stationary:false,             // 사격 전 이동 안 함(고정)
+  hitBuff:false,hitDebuff:false,    // 명중 굴림 +1 / -1
+  woundBuff:false,woundDebuff:false,// 부상 굴림 +1 / -1
+  cover:false,                  // 대상이 엄폐 중
+  // ── 유닛 데이터에서 감지한 "스마트 상황"(능력 기반) ──
+  // 각 항목: { label, side:'atk'|'def', hit, wound, tough, ap, saveWorse, rrHit, rrWound, note }
+  smart:{}
+};
+let editTarget=null; // 'atk' | 'def'
+
+function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+function getSideData(side){ return sideData[side]; }
+function setStatus(side,msg,type=''){
+  const el=document.getElementById(side+'-json-status');
+  if(!el)return;
+  el.textContent=msg;
+  el.className='import-status'+(type?' '+type:'');
+}
+
+function starterDB(){
+  return {'JSON 업로드 필요':{'샘플 유닛':{T:4,Sv:4,W:2,Inv:0,FNP:0,models:5,weapons:[{name:'샘플 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]}]}}};
+}
+
+async function loadData() {
+  try{
+    const res = await fetch('wh40k_data.json');
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    DB = await res.json();
+    sideDB.atk=clone(DB); sideDB.def=clone(DB);
+    sideData.atk=clone(DB); sideData.def=clone(DB);
+    initSelects();
+    setStatus('atk','기본 wh40k_data.json 로드 완료','ok');
+    setStatus('def','기본 wh40k_data.json 로드 완료','ok');
+  }catch(err){
+    DB=starterDB();
+    sideDB.atk=clone(DB); sideDB.def=clone(DB);
+    sideData.atk=clone(DB); sideData.def=clone(DB);
+    initSelects();
+    setStatus('atk','기본 DB 없음: 내 군대 JSON을 업로드하세요.','err');
+    setStatus('def','기본 DB 없음: 상대 JSON을 업로드하세요.','err');
+  }
+}
+
+function toNumber(v, fallback=0){
+  if(typeof v==='string') v=v.replace(/[^0-9.-]/g,'');
+  const n=Number(v);
+  return Number.isFinite(n)?n:fallback;
+}
+function diceAverage(v, fallback=0){
+  if(typeof v==='number') return Number.isFinite(v)?v:fallback;
+  if(v==null) return fallback;
+  const s=String(v).trim().toUpperCase().replace(/\s+/g,'');
+  if(/^[-+]?\d+(?:\.\d+)?$/.test(s)) return Number(s);
+  const m=s.match(/^(\d*)D(\d+)([+-]\d+(?:\.\d+)?)?$/);
+  if(!m) return toNumber(s,fallback);
+  const count=m[1]?Number(m[1]):1;
+  const sides=Number(m[2]);
+  const mod=m[3]?Number(m[3]):0;
+  return count*((sides+1)/2)+mod;
+}
+function normalizeWeapon(w, index=0){
+  const rawA=w.A??w.attacks??w.Attacks;
+  const rawD=w.D??w.damage??w.Damage;
+  return {
+    name:String(w.name??w.Name??w.weapon??('무기 '+(index+1))),
+    A:Math.max(1,diceAverage(rawA,1)),
+    skill:Math.max(2,Math.min(6,toNumber(w.skill??w.BS??w.WS??w.bs??w.ws??w.bsws,3))),
+    S:Math.max(1,toNumber(w.S??w.strength??w.Strength,4)),
+    AP:Math.max(0,Math.abs(toNumber(w.AP??w.ap,0))),
+    D:Math.max(1,diceAverage(rawD,1)),
+    rawA:String(rawA??'1'),
+    rawD:String(rawD??'1'),
+    range:String(w.range??w.Range??''),
+    melee: w.melee===true || /melee/i.test(String(w.range??w.Range??'')) || (Array.isArray(w.keywords)&&w.keywords.some(k=>/melee/i.test(String(k)))),
+    keywords:Array.isArray(w.keywords)?w.keywords.map(String):(typeof w.keywords==='string'?w.keywords.split(',').map(s=>s.trim()).filter(Boolean):[])
+  };
+}
+function normalizeAbilities(source){
+  if(!source) return [];
+  const list=Array.isArray(source)?source:Object.entries(source).map(([name,value])=>
+    typeof value==='string'?{name,desc:value}:{...(value||{}),name:value?.name??name}
+  );
+  const seen=new Set();
+  return list.map(item=>{
+    if(typeof item==='string') return {name:item,desc:''};
+    return {name:String(item?.name??item?.Name??'특수 능력'),desc:String(item?.desc??item?.description??item?.Description??'')};
+  }).filter(item=>{
+    const key=item.name.trim().toLowerCase();
+    if(!key||seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+}
+function normalizeKeywords(v){
+  const arr=Array.isArray(v)?v:(typeof v==='string'?v.split(','):[]);
+  return [...new Set(arr.map(s=>String(s).trim().toUpperCase()).filter(Boolean))];
+}
+// 유닛 이름 + 스탯으로 전장 키워드(보병/차량/괴수) 추론. 데이터에 키워드가 없을 때의 기본값(수정 가능).
+function inferUnitKeywords(name,T,W,models){
+  name=String(name||'').toLowerCase();
+  const kw=new Set();
+  const VEH=/crawler|dunecrawler|\btank\b|predator|rhino|razorback|land ?raider|repulsor|impulsor|dreadnought|redemptor|\bwalker\b|knight|kastelan|\brobot\b|ballistari|dragoon|onager|skorpius|disintegrator|spyder|battlewagon|trukk|defiler|maulerfiend|forgefiend|vindicator|whirlwind|hauler|plagueburst|chimera|leman ?russ|hammerhead|devilfish|riptide|ghostkeel|stormsurge|wave ?serpent|falcon|fire ?prism|barge|doomsday|monolith|ironstrider|sydonian|gunwagon|buggy|bike|outrider|land ?speeder|stalker|hunter|crusader|gladiator/;
+  const MON=/carnifex|tyrant|trygon|tyrannofex|haruspex|maleceptor|mawloc|exocrine|tervigon|daemon ?prince|greater ?daemon|bloodthirster|keeper of secrets|lord of change|great ?unclean|c'?tan|wraithknight|wraithlord|magmadroth|gargant|squiggoth|avatar|talos|cryptek?$|venomthrope|zoanthrope|screamer/;
+  const INF=/terminator|marine|guardsman|trooper|warrior|cultist|ranger|skitarii|kataphron|breacher|destroyer|\bguard\b|squad|\bboy[sz]?\b|gaunt|scout|aggressor|intercessor|custodian|wraithguard|immortal|necron warrior|poxwalker|nob|loota|grot|fire ?warrior|kabalite|wych|guardian|skyweaver|sister|crusader squad|deathshroud|plague ?marine|blightlord|champion|alpha|raider/;
+  if(VEH.test(name)) kw.add('VEHICLE');
+  if(MON.test(name)) kw.add('MONSTER');
+  if(INF.test(name)) kw.add('INFANTRY');
+  if(!kw.size){ if(W>=8&&T>=8) kw.add('VEHICLE'); else kw.add('INFANTRY'); }
+  return [...kw];
+}
+function normalizeUnit(u, fallbackName='유닛'){
+  if(!u || typeof u!=='object') throw new Error(fallbackName+' 유닛 형식이 올바르지 않습니다.');
+  const weaponSource=u.weapons??u.Weapons??[];
+  const weapons=Array.isArray(weaponSource)?weaponSource.map(normalizeWeapon):Object.entries(weaponSource).map(([name,w],i)=>normalizeWeapon({...w,name:w.name??name},i));
+  const T=Math.max(1,toNumber(u.T??u.toughness??u.Toughness,4));
+  const W=Math.max(1,toNumber(u.W??u.wounds??u.Wounds,1));
+  const models=Math.max(1,toNumber(u.models??u.modelCount??u.count,1));
+  let keywords=normalizeKeywords(u.keywords??u.Keywords??u.unitKeywords);
+  if(!keywords.length) keywords=inferUnitKeywords(u.name??u.Name??fallbackName,T,W,models);
+  return {
+    T,
+    Sv:Math.max(2,Math.min(7,toNumber(u.Sv??u.save??u.Save,4))),
+    W,
+    Inv:Math.max(0,toNumber(u.Inv??u.invulnerable??u.Invulnerable,0)),
+    FNP:Math.max(0,toNumber(u.FNP??u.fnp,0)),
+    models,
+    weapons,
+    keywords,
+    abilities:normalizeAbilities(u.abilities??u.Abilities??[]),
+    ttsUuid:String(u.ttsUuid??'')
+  };
+}
+function looksLikeUnit(v){
+  return v&&typeof v==='object'&&('T' in v||'toughness' in v||'Toughness' in v||'weapons' in v||'Weapons' in v);
+}
+
+function stripTtsTags(text){
+  return String(text??'').replace(/\[[0-9a-fA-F]{6}\]/g,'').replace(/\[-\]/g,'');
+}
+function ttsUuid(state){
+  return (state.Tags||[]).find(t=>String(t).startsWith('uuid:'))?.slice(5) || '';
+}
+function ttsLuaValue(script,key){
+  const m=String(script??'').match(new RegExp('(?:^|\\n)\\s*'+key+'\\s*=\\s*"([^"]*)"', 'm'));
+  return m?m[1]:'';
+}
+function cleanTtsNickname(name){
+  return stripTtsTags(name).replace(/^\s*\d+\s*\/\s*\d+\s*/,'').trim() || 'TTS 유닛';
+}
+function parseTtsDescription(description){
+  const lines=stripTtsTags(description).split(/\r?\n/).map(s=>s.trim());
+  let T=4,Sv=4,W=1;
+  for(let i=0;i<lines.length-1;i++){
+    if(/\bT\b/.test(lines[i])&&/\bSv\b/i.test(lines[i])&&/\bW\b/.test(lines[i])){
+      const tokens=lines.slice(i+1).find(Boolean)?.split(/\s+/) || [];
+      // Standard 10e Description: M, T, Sv, W, Ld, OC
+      if(tokens.length>=4){
+        T=toNumber(tokens[1],4);
+        Sv=toNumber(tokens[2],4);
+        W=toNumber(tokens[3],1);
+      }
+      break;
+    }
+  }
+  const weapons=[];
+  const abilities=[];
+  let section='';
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i];
+    if(/^Ranged weapons$/i.test(line)||/^Melee weapons$/i.test(line)){ section='weapon'; continue; }
+    if(/^Abilities$/i.test(line)){ section='ability'; continue; }
+    if(!line) continue;
+    if(section==='weapon'){
+      const next=lines.slice(i+1).find(Boolean) || '';
+      if(/\bA\s*:/.test(next)&&/\b(?:BS|WS)\s*:/.test(next)&&/\bS\s*:/.test(next)&&/\bAP\s*:/.test(next)&&/\bD\s*:/.test(next)){
+        const statLine=next;
+        const get=(label)=>statLine.match(new RegExp('(?:^|\\s)'+label+'\\s*:\\s*([^\\s\\[]+)','i'))?.[1];
+        const keywordMatch=statLine.match(/\[([^\]]+)\]\s*$/);
+        weapons.push(normalizeWeapon({
+          name:line,
+          A:get('A'),
+          bsws:get('(?:BS|WS)'),
+          S:get('S'),
+          AP:get('AP'),
+          D:get('D'),
+          melee:/\bWS\s*:/.test(statLine),
+          keywords:keywordMatch?keywordMatch[1].split(',').map(s=>s.trim()).filter(Boolean):[]
+        },weapons.length));
+        i=lines.indexOf(next,i+1);
+      }
+    }else if(section==='ability'){
+      abilities.push(line);
+    }
+  }
+  return {T,Sv,W,weapons,abilities};
+}
+function parseTtsLuaAbilities(script){
+  const text=String(script??'');
+  const section=text.match(/(?:^|\n)\s*abilities\s*=\s*\{([\s\S]*?)\n\s*\},?\s*\n\s*models\s*=/m)?.[1] || '';
+  if(!section) return [];
+  const abilities=[];
+  const entry=/\{\s*name\s*=\s*(?:\[\[([\s\S]*?)\]\]|"([^"]*)")\s*,\s*desc\s*=\s*(?:\[=\[([\s\S]*?)\]=\]|\[\[([\s\S]*?)\]\]|"([^"]*)")\s*\}/gm;
+  let match;
+  while((match=entry.exec(section))!==null){
+    abilities.push({name:(match[1]??match[2]??'').trim(),desc:(match[3]??match[4]??match[5]??'').trim()});
+  }
+  return normalizeAbilities(abilities);
+}
+function normalizeTtsSave(raw){
+  if(!Array.isArray(raw?.ObjectStates)) return null;
+  const groups={};
+  raw.ObjectStates.forEach(state=>{
+    const uuid=ttsUuid(state);
+    if(!uuid) return;
+    (groups[uuid]??=[]).push(state);
+  });
+  const factions={};
+  const seen={};
+  Object.entries(groups).forEach(([uuid,states])=>{
+    const leader=states.find(s=>(s.Tags||[]).includes('leaderModel')) ||
+      [...states].sort((a,b)=>String(b.LuaScript||'').length-String(a.LuaScript||'').length)[0];
+    const parsed=parseTtsDescription(leader.Description||'');
+    const script=leader.LuaScript||'';
+    const faction=ttsLuaValue(script,'factionKeywords') || 'TTS IMPORT';
+    let unitName=ttsLuaValue(script,'unitName') || cleanTtsNickname(leader.Nickname);
+    const baseKey=faction+'::'+unitName;
+    seen[baseKey]=(seen[baseKey]||0)+1;
+    if(seen[baseKey]>1) unitName+=' #'+seen[baseKey];
+    const invMatch=script.match(/This model has a\s+(\d)\+\s+invulnerable save/i);
+    const fnpMatch=script.match(/This model has\s+Feel No Pain\s+(\d)\+/i);
+    const luaAbilities=parseTtsLuaAbilities(script);
+    let kw=normalizeKeywords(ttsLuaValue(script,'keywords')||ttsLuaValue(script,'unitKeywords')||'');
+    if(!kw.length) kw=inferUnitKeywords(unitName,parsed.T,parsed.W,states.length);
+    (factions[faction]??={})[unitName]={
+      T:parsed.T, Sv:parsed.Sv, W:parsed.W,
+      Inv:invMatch?Number(invMatch[1]):0,
+      FNP:fnpMatch?Number(fnpMatch[1]):0,
+      models:states.length,
+      weapons:parsed.weapons,
+      keywords:kw,
+      abilities:luaAbilities.length?luaAbilities:normalizeAbilities(parsed.abilities),
+      ttsUuid:uuid
+    };
+  });
+  if(!Object.keys(factions).length) throw new Error('TTS 저장 파일에서 uuid 태그가 있는 유닛을 찾지 못했습니다.');
+  return factions;
+}
+
+function normalizeArmyJson(raw){
+  if(!raw||typeof raw!=='object') throw new Error('JSON 최상위 구조가 객체가 아닙니다.');
+  const ttsArmy=normalizeTtsSave(raw);
+  if(ttsArmy) return ttsArmy;
+  if(raw.factions&&typeof raw.factions==='object') raw=raw.factions;
+  if(raw.army&&typeof raw.army==='object') raw=raw.army;
+  if(Array.isArray(raw.units)){
+    const faction=String(raw.faction??raw.armyName??raw.name??'IMPORTED ARMY');
+    const units={};
+    raw.units.forEach((u,i)=>{ const name=String(u.name??u.Nickname??('유닛 '+(i+1))); units[name]=normalizeUnit(u,name); });
+    return {[faction]:units};
+  }
+  if(raw.units&&typeof raw.units==='object'&&!Array.isArray(raw.units)){
+    const faction=String(raw.faction??raw.armyName??raw.name??'IMPORTED ARMY');
+    const units={};
+    Object.entries(raw.units).forEach(([name,u])=>units[name]=normalizeUnit(u,name));
+    return {[faction]:units};
+  }
+  if(Object.values(raw).every(looksLikeUnit)){
+    const units={};
+    Object.entries(raw).forEach(([name,u])=>units[name]=normalizeUnit(u,name));
+    return {'IMPORTED ARMY':units};
+  }
+  const factions={};
+  for(const [faction,unitsRaw] of Object.entries(raw)){
+    if(!unitsRaw||typeof unitsRaw!=='object'||Array.isArray(unitsRaw)) continue;
+    const units={};
+    for(const [name,u] of Object.entries(unitsRaw)) if(looksLikeUnit(u)) units[name]=normalizeUnit(u,name);
+    if(Object.keys(units).length) factions[faction]=units;
+  }
+  if(Object.keys(factions).length) return factions;
+  throw new Error('계산기용 군대 JSON 구조를 찾지 못했습니다. TTS 원본 저장 파일이면 Description 변환 규칙이 추가로 필요합니다.');
+}
+async function importArmy(side,file){
+  if(!file)return;
+  try{
+    const raw=JSON.parse(await file.text());
+    const normalized=normalizeArmyJson(raw);
+    sideDB[side]=clone(normalized);
+    sideData[side]=clone(normalized);
+    refreshSide(side);
+    const factionCount=Object.keys(normalized).length;
+    const unitCount=Object.values(normalized).reduce((n,units)=>n+Object.keys(units).length,0);
+    setStatus(side,`${file.name} · ${factionCount}개 팩션 · ${unitCount}개 유닛 로드 완료`,'ok');
+  }catch(err){
+    console.error(err);
+    setStatus(side,`${file.name} 로드 실패: ${err.message}`,'err');
+    alert('JSON을 불러오지 못했습니다.\n'+err.message);
+  }
+}
+function downloadArmy(side){
+  const payload={format:'WH40K_CALCULATOR_ARMY_V1',side,factions:clone(sideData[side])};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=(side==='atk'?'my_army':'opponent_army')+'.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── INIT ──
+function initSelects(){ refreshSide('atk'); refreshSide('def'); }
+function refreshSide(side){
+  const sel=document.getElementById(side+'-f');
+  const factions=Object.keys(getSideData(side));
+  sel.innerHTML='';
+  factions.forEach((f,i)=>sel.innerHTML+=`<option value="${i}">${f}</option>`);
+  sel.value='0';
+  if(side==='atk') onAtkFaction(); else onDefFaction();
+}
+
+loadData();
+
+// ── SELECTORS ──
+function getFaction(side){
+  const id=side==='atk'?'atk-f':'def-f';
+  return Object.keys(getSideData(side))[+document.getElementById(id).value];
+}
+function getUnit(side){
+  const id=side==='atk'?'atk-u':'def-u';
+  const f=getFaction(side);
+  return Object.keys(getSideData(side)[f]||{})[+document.getElementById(id).value];
+}
+
+function onAtkFaction(){
+  const f=getFaction('atk');
+  const sel=document.getElementById('atk-u');
+  sel.innerHTML='';
+  Object.keys(sideData.atk[f]||{}).forEach((u,i)=>sel.innerHTML+=`<option value="${i}">${u}</option>`);
+  onAtkUnit();
+}
+function onAtkUnit(){
+  if(rules&&rules.smart) rules.smart={};
+  const f=getFaction('atk'),u=getUnit('atk');
+  const unit=sideData.atk[f]?.[u];
+  refreshLeaderOptions('atk');
+  const sel=document.getElementById('atk-w');
+  sel.innerHTML='';
+  if(!unit)return;
+  if(!unit.weapons.length) unit.weapons.push({name:'무기 정보 없음',A:1,skill:3,S:4,AP:0,D:1,keywords:[]});
+  const entries=atkWeaponEntries();
+  window.__atkWeapons=entries;
+  entries.forEach((e,i)=>sel.innerHTML+=`<option value="${i}">${e.label}</option>`);
+  onAtkWeapon();
+}
+// 부대 무기 + (합류 시) 분대장 무기
+function atkWeaponEntries(){
+  const f=getFaction('atk'),u=getUnit('atk');
+  const unit=sideData.atk[f]?.[u];
+  const out=[];
+  (unit?.weapons||[]).forEach(w=>out.push({w,label:w.name}));
+  attachedUnitObjs('atk').forEach((ld,li)=>{
+    const nm=attached.atk[li]?attached.atk[li].u:'분대장';
+    (ld.weapons||[]).forEach(w=>out.push({w,label:'[분대장:'+nm+'] '+w.name}));
+  });
+  return out;
+}
+function onAtkWeapon(){
+  const entries=window.__atkWeapons||atkWeaponEntries();
+  const wi=+document.getElementById('atk-w').value||0;
+  const w=(entries[wi]||entries[0])?.w;
+  if(!w)return;
+  document.getElementById('A').value=w.A;
+  document.getElementById('SK').value=Math.max(2,Math.min(6,w.skill));
+  document.getElementById('S').value=w.S;
+  document.getElementById('AP').value=Math.max(0,Math.min(6,w.AP||0));
+  document.getElementById('D').value=w.D;
+  const kws=(w.keywords||[]).map(k=>String(k).toLowerCase());
+  // 무기를 바꿀 때 무기에서 감지되는 규칙만 초기화. 전투 상황(charged/halfRange 등)은 유지.
+  rules.lh=rules.dw=rules.tor=rules.twin=false;
+  rules.sh=0;
+  rules.anti=0; rules.antiKw=''; rules.antiActive=false;
+  rules.rapid=0; rules.melta=0; rules.lance=false;
+  rules.blast=rules.ignoresCover=rules.pistol=rules.heavy=false;
+  kws.forEach(k=>{
+    if(/lethal/.test(k)) rules.lh=true;
+    if(/devastating/.test(k)) rules.dw=true;
+    if(/torrent/.test(k)) rules.tor=true;
+    if(/twin[-\s]?linked/.test(k)) rules.twin=true;
+    let m;
+    if((m=k.match(/sustained hits\s*(\d+)?/))) rules.sh=m[1]?+m[1]:1;
+    if((m=k.match(/anti-([a-z]+)\s*(\d)\+/))){ rules.antiKw=m[1].toUpperCase(); rules.anti=+m[2]; }
+    if((m=k.match(/rapid fire\s*(\d+)?/))) rules.rapid=m[1]?+m[1]:1;
+    if((m=k.match(/melta\s*(\d+)?/))) rules.melta=m[1]?+m[1]:2;
+    if(/\blance\b/.test(k)) rules.lance=true;
+    if(/\bblast\b/.test(k)) rules.blast=true;
+    if(/ignores cover/.test(k)) rules.ignoresCover=true;
+    if(/\bpistol\b/.test(k)) rules.pistol=true;
+    if(/\bheavy\b/.test(k)) rules.heavy=true;
+  });
+  renderDetectedRules(w);
+  updateToggleBtns();
+  document.getElementById('atk-bar').innerHTML=`
+    <div class="si"><span class="sk">A</span><span class="sv">${w.A}</span></div>
+    <div class="si"><span class="sk">BS/WS</span><span class="sv">${w.skill}+</span></div>
+    <div class="si"><span class="sk">S</span><span class="sv">${w.S}</span></div>
+    <div class="si"><span class="sk">AP</span><span class="sv">${w.AP?'-'+w.AP:'0'}</span></div>
+    <div class="si"><span class="sk">D</span><span class="sv">${w.D}</span></div>`;
+  document.getElementById('atk-kw').innerHTML=(w.keywords||[]).map(k=>`<span class="wb">${k}</span>`).join('');
+  calc();
+}
+function isDefensiveAbility(ability){
+  const text=((ability?.name||'')+' '+(ability?.desc||'')).toLowerCase();
+  const patterns=[
+    /invulnerable save/, /feel no pain/, /reanimation/, /regain(?:s|ed)? .*wound/,
+    /wounds? (?:are )?regenerated/, /returned? to (?:this|that|the) unit/,
+    /attack is allocated to (?:this model|a model in this unit)/,
+    /attacks? (?:is|are) allocated to (?:this model|a model in this unit)/,
+    /subtract 1 from (?:that|the) attack[’']?s damage characteristic/,
+    /halve (?:that|the|an?) attack[’']?s damage characteristic/,
+    /reduce (?:that|the|an?) attack[’']?s damage characteristic/,
+    /subtract 1 from the hit roll.*targets? this unit/,
+    /subtract 1 from the wound roll.*targets? this unit/,
+    /stealth/, /mortal wounds?/, /save roll/
+  ];
+  return patterns.some(pattern=>pattern.test(text));
+}
+function defenseAutoLabel(ability,unit){
+  const text=((ability?.name||'')+' '+(ability?.desc||'')).toLowerCase();
+  if(unit.Inv>0&&/this model has a?\s*\d\+\s+invulnerable save/.test(text)) return `Inv ${unit.Inv}++ 반영`;
+  if(unit.FNP>0&&/this model has\s+feel no pain\s+\d\+/.test(text)) return `FNP ${unit.FNP}+++ 반영`;
+  return '';
+}
+
+// 방어 규칙 한글 번역 사전: 검증된 규칙은 한글로 표시하고, 미등록 규칙은 영어 원문을 유지합니다.
+const DEFENSE_RULE_KO={
+  'reanimation protocols':{
+    title:'재생 프로토콜',
+    desc:'군대 진영이 네크론이라면 지휘 단계 종료 시, 전장에 있는 이 능력 보유 유닛은 재생 프로토콜을 활성화하여 D3만큼 상처를 회복합니다. 상처가 감소한 모델이 있으면 해당 모델의 잃은 상처를 회복합니다. 모든 생존 모델이 최대 상처이지만 유닛이 시작 전력보다 적다면, 파괴된 모델 하나를 상처 1 상태로 복귀시킵니다.'
+  },
+  'their number is legion':{
+    title:'그 수는 군단이다',
+    desc:'이 유닛의 재생 프로토콜이 활성화될 때마다 회복되는 상처 수를 결정하는 주사위를 다시 굴릴 수 있습니다.'
+  },
+  'implacable resilience':{
+    title:'불굴의 회복력',
+    desc:'공격이 이 모델에 배정될 때마다 해당 공격의 피해 특성에서 1을 뺍니다.'
+  },
+  'invulnerable save':{
+    title:'무적 방어',
+    desc:'이 모델은 무적 방어를 보유합니다. 계산기에는 해당 Inv 수치가 자동으로 반영됩니다.'
+  },
+  'rites of reanimation':{
+    title:'재생 의식',
+    desc:'이 모델이 유닛을 지휘하는 동안, 해당 유닛의 모델은 고통 무시 5+ 능력을 보유합니다. 지휘 대상 유닛에 적용할 때 방어 측 FNP를 5+++로 조정하세요.'
+  },
+  'technomancer':{
+    title:'테크노맨서',
+    desc:'이동 단계 종료 시, 장착자 6인치 이내의 아군 네크론 모델 하나를 선택합니다. 해당 모델은 잃은 상처를 최대 D3만큼 회복합니다. 각 모델은 턴마다 이 능력의 대상으로 한 번만 선택될 수 있습니다.'
+  },
+  'feel no pain':{
+    title:'고통 무시',
+    desc:'피해를 입을 때 지정된 수치 이상이 나오면 해당 피해를 무시합니다.'
+  },
+  'stealth':{
+    title:'은폐',
+    desc:'원거리 공격이 이 유닛을 대상으로 할 때 명중 굴림에 불리한 보정이 적용됩니다. 상황에 따라 공격 측 수치를 수동으로 조정하세요.'
+  }
+};
+function translateDefenseAbility(ability){
+  const originalName=String(ability?.name||'특수 능력').trim();
+  const originalDesc=String(ability?.desc||'').trim();
+  const key=originalName.toLowerCase();
+  const exact=DEFENSE_RULE_KO[key];
+  if(exact){
+    return {
+      title:`${exact.title} (${originalName})`,
+      desc:exact.desc,
+      translated:true
+    };
+  }
+  const joined=(originalName+' '+originalDesc).toLowerCase();
+  const inv=joined.match(/(?:has|with) a?\s*(\d)\+\s+invulnerable save/);
+  if(inv){
+    return {title:`무적 방어 ${inv[1]}++ (${originalName})`,desc:`이 모델은 ${inv[1]}+ 무적 방어를 보유합니다. 계산기에는 Inv ${inv[1]}++가 자동으로 반영됩니다.`,translated:true};
+  }
+  const fnp=joined.match(/feel no pain\s*(\d)\+/);
+  if(fnp){
+    return {title:`고통 무시 ${fnp[1]}+++ (${originalName})`,desc:`이 능력의 적용 대상은 고통 무시 ${fnp[1]}+를 보유합니다. 피해를 입을 때 ${fnp[1]} 이상이 나오면 해당 피해를 무시합니다. 조건부 효과라면 FNP를 수동으로 조정하세요.`,translated:true};
+  }
+  return {
+    title:originalName,
+    desc:originalDesc||'상세 설명이 저장 파일에 포함되어 있지 않습니다.',
+    translated:false
+  };
+}
+function renderDefensiveRules(unit){
+  const box=document.getElementById('def-rules');
+  if(!box)return;
+  box.innerHTML='';
+  const abilities=normalizeAbilities(unit?.abilities??[]).filter(isDefensiveAbility);
+  if(!abilities.length){
+    const empty=document.createElement('span');
+    empty.className='def-rules-empty';
+    empty.textContent='표시할 방어 관련 특수 능력이 없습니다.';
+    box.appendChild(empty);
+    return;
+  }
+  abilities.forEach(ability=>{
+    const btn=document.createElement('button');
+    const translated=translateDefenseAbility(ability);
+    btn.type='button';
+    btn.className='def-rule-btn';
+    btn.dataset.tipTitle=translated.title;
+    btn.dataset.tip=translated.desc;
+    btn.append(document.createTextNode(translated.title));
+    const auto=defenseAutoLabel(ability,unit);
+    if(auto){
+      const badge=document.createElement('span');
+      badge.className='def-rule-auto';
+      badge.textContent=auto;
+      btn.appendChild(badge);
+    }
+    box.appendChild(btn);
+  });
+  bindRuleTooltips(box.querySelectorAll('[data-tip]'));
+}
+function onDefFaction(){
+  const f=getFaction('def');
+  const sel=document.getElementById('def-u');
+  sel.innerHTML='';
+  Object.keys(sideData.def[f]||{}).forEach((u,i)=>sel.innerHTML+=`<option value="${i}">${u}</option>`);
+  onDefUnit();
+}
+function onDefUnit(){
+  if(rules&&rules.smart) rules.smart={};
+  const f=getFaction('def'),u=getUnit('def');
+  const unit=sideData.def[f]?.[u];
+  refreshLeaderOptions('def');
+  if(!unit)return;
+  document.getElementById('T').value=unit.T;
+  document.getElementById('SV').value=unit.Sv;
+  document.getElementById('INV').value=unit.Inv;
+  document.getElementById('FNP').value=unit.FNP;
+  document.getElementById('W').value=unit.W;
+  document.getElementById('MDL').value=unit.models;
+  document.getElementById('def-bar').innerHTML=`
+    <div class="si"><span class="sk">T</span><span class="sv">${unit.T}</span></div>
+    <div class="si"><span class="sk">Sv</span><span class="sv">${unit.Sv===7?'—':unit.Sv+'+'}</span></div>
+    <div class="si"><span class="sk">Inv</span><span class="sv">${unit.Inv?unit.Inv+'++':'—'}</span></div>
+    <div class="si"><span class="sk">FNP</span><span class="sv">${unit.FNP?unit.FNP+'+++':'—'}</span></div>
+    <div class="si"><span class="sk">W</span><span class="sv">${unit.W}</span></div>
+    <div class="si"><span class="sk">모델</span><span class="sv">${unit.models}</span></div>`;
+  renderDefensiveRules(unit);
+  calc();
+}
+
+// ── TOGGLES ──
+function tog(k){
+  // 재굴림은 3단계 순환: 없음 → 1만 → 전체 → 없음
+  if(k==='rh'){ rules.rhMode = rules.rhMode==='none'?'full':(rules.rhMode==='full'?'ones':'none'); }
+  else if(k==='rw'){ rules.rwMode = rules.rwMode==='none'?'full':(rules.rwMode==='full'?'ones':'none'); }
+  else if(k==='sh'){ rules.sh=rules.sh>0?0:1; }   // 수동 토글은 Sustained Hits 1 기준
+  else rules[k]=!rules[k];
+  updateToggleBtns(); calc(); renderActiveSituations();
+}
+function updateToggleBtns(){
+  const rhb=document.getElementById('btn-rh');
+  if(rhb){ rhb.className='tbtn'+(rules.rhMode!=='none'?' on':''); rhb.textContent='명중 재굴림'+(rules.rhMode==='ones'?' (1만)':rules.rhMode==='full'?' (전체)':''); }
+  const rwb=document.getElementById('btn-rw');
+  if(rwb){ rwb.className='tbtn'+(rules.rwMode!=='none'?' on':''); rwb.textContent='부상 재굴림'+(rules.rwMode==='ones'?' (1만)':rules.rwMode==='full'?' (전체)':''); }
+  ['lh','dw','tor','twin'].forEach(r=>{ const b=document.getElementById('btn-'+r); if(b)b.className='tbtn'+(rules[r]?' on':''); });
+  const sb=document.getElementById('btn-sh'); if(sb)sb.className='tbtn'+(rules.sh>0?' on':'');
+}
+
+// ── 조건부 규칙 토글(감지 배너에서) — 전투 상황 플래그와 연동 ──
+function toggleCond(key){
+  if(key==='lance') rules.charged=!rules.charged;
+  else if(key==='rapid'||key==='melta') rules.halfRange=!rules.halfRange;
+  else if(key==='anti') rules.antiActive=!rules.antiActive;
+  renderDetectedRules(window.__lastWeapon||{});
+  calc(); renderActiveSituations();
+}
+
+// ── 감지된 무기 규칙 배너 ──
+function renderDetectedRules(w){
+  window.__lastWeapon=w;
+  const box=document.getElementById('atk-detected');
+  if(!box)return;
+  box.innerHTML='';
+  const chips=[];
+  // 항상 적용되는 규칙(auto)
+  if(rules.lh) chips.push({cls:'auto',label:'Lethal Hits',tipTitle:'Lethal Hits',tip:'수정되지 않은 명중 6은 자동으로 부상에 성공합니다(방어 굴림은 정상 적용). 계산에 반영됨.'});
+  if(rules.dw) chips.push({cls:'auto',label:'Devastating Wounds',tipTitle:'Devastating Wounds',tip:'수정되지 않은 부상 6(또는 Anti 임계값)은 필멸 피해로 방어 굴림을 무시합니다(FNP는 적용). 계산에 반영됨.'});
+  if(rules.tor) chips.push({cls:'auto',label:'Torrent',tipTitle:'Torrent',tip:'명중 굴림 없이 자동 명중. 계산에 반영됨.'});
+  if(rules.sh>0) chips.push({cls:'auto',label:'Sustained Hits '+rules.sh,tipTitle:'Sustained Hits '+rules.sh,tip:'수정되지 않은 명중 6마다 추가 명중 '+rules.sh+'회. 계산에 반영됨.'});
+  if(rules.twin) chips.push({cls:'auto',label:'Twin-linked',tipTitle:'Twin-linked',tip:'부상 굴림을 재굴림합니다(명중이 아님). 계산에 반영됨.'});
+  if(rules.blast){ const ex=Math.floor((+document.getElementById('MDL').value||0)/5); chips.push({cls:'auto',label:'Blast (+'+ex+' A)',tipTitle:'Blast',tip:'대상 유닛 5모델당 공격 +1. 현재 대상 모델 수 기준으로 자동 반영됨.'}); }
+  // 조건부 규칙(cond) — 사용자가 탭하여 확인(전투 상황과 연동)
+  if(rules.anti>0){ const on=targetHasKw(rules.antiKw); chips.push({cls:'auto',label:'Anti-'+rules.antiKw+' '+rules.anti+'+'+(on?'':' (미적용)'),tipTitle:'Anti-'+rules.antiKw+' '+rules.anti+'+',tip:on?('대상이 '+rules.antiKw+' 키워드라 부상 '+rules.anti+'+로 성공하며 치명 부상으로 처리됩니다. 대상 종류로 자동 적용됨.'):('대상이 '+rules.antiKw+'가 아니라 적용되지 않습니다. 대상 종류는 상황 창에서 수정할 수 있습니다.')}); }
+  if(rules.rapid>0) chips.push({cls:'cond',key:'rapid',on:rules.halfRange,label:'Rapid Fire '+rules.rapid,q:'절반 사거리?',tipTitle:'Rapid Fire '+rules.rapid,tip:'절반 사거리 이내에서 공격 횟수 +'+rules.rapid+'. 탭하여 적용하세요.'});
+  if(rules.melta>0) chips.push({cls:'cond',key:'melta',on:rules.halfRange,label:'Melta '+rules.melta,q:'절반 사거리?',tipTitle:'Melta '+rules.melta,tip:'절반 사거리 이내에서 피해 +'+rules.melta+'. 탭하여 적용하세요.'});
+  if(rules.lance) chips.push({cls:'cond',key:'lance',on:rules.charged,label:'Lance',q:'돌격함?',tipTitle:'Lance',tip:'돌격한 턴에 부상 굴림 +1. 탭하여 적용하세요.'});
+  // 정보용(계산 영향 없음)
+  if(rules.ignoresCover) chips.push({cls:'info',label:'Ignores Cover',tipTitle:'Ignores Cover',tip:'대상이 엄폐 혜택을 받지 못합니다. 방어 측 방어도를 수동으로 조정하세요(계산 자동 반영 없음).'});
+  if(rules.pistol) chips.push({cls:'info',label:'Pistol',tipTitle:'Pistol',tip:'교전 중에도 사격 가능. 계산에는 영향 없음.'});
+  if(rules.heavy) chips.push({cls:'info',label:'Heavy',tipTitle:'Heavy',tip:'사격 전 이동하지 않았다면 명중 +1. 해당되면 명중 스킬을 수동으로 한 단계 좋게 조정하세요.'});
+
+  if(!chips.length){
+    const empty=document.createElement('span');
+    empty.className='detected-empty';
+    empty.textContent='이 무기에서 감지된 특수 규칙이 없습니다.';
+    box.appendChild(empty);
+    return;
+  }
+  chips.forEach(c=>{
+    const el=document.createElement(c.cls==='cond'?'button':'span');
+    el.className='det-rule '+c.cls+((c.cls==='cond'&&c.on)?' on':'');
+    if(c.tip){ el.dataset.tipTitle=c.tipTitle||c.label; el.dataset.tip=c.tip; }
+    el.append(document.createTextNode(c.label));
+    if(c.cls==='auto'){ const b=document.createElement('span'); b.className='det-badge'; b.textContent='적용중'; el.appendChild(b); }
+    if(c.cls==='cond'){
+      const q=document.createElement('span'); q.className='det-q'; q.textContent=c.q; el.appendChild(q);
+      el.type='button';
+      el.addEventListener('click',()=>toggleCond(c.key));
+    }
+    box.appendChild(el);
+  });
+  bindRuleTooltips(box.querySelectorAll('[data-tip]'));
+}
+
+// ── MATH ──
+function p6(n){if(n<=1)return 1;if(n>6)return 0;return(7-n)/6;}
+function wn(s,t){if(s>=t*2)return 2;if(s>t)return 3;if(s===t)return 4;if(s*2<=t)return 6;return 5;}
+// 주사위 한 개의 성공 확률과 "미수정 치명값(critN 이상)" 확률을 계산. mode: 'none'|'ones'(1만 재굴림)|'full'(실패 전체 재굴림)
+function rollStats(need, mode, critN){
+  need=Math.max(2,Math.min(6,need));
+  critN=Math.max(2,Math.min(7,critN));
+  const pPass0=(7-need)/6;          // 성공 확률(미수정)
+  const pFail=(need-1)/6;           // 실패 확률(need 미만)
+  const pCrit0=critN>6?0:(7-critN)/6; // 치명값 이상 확률
+  let pPass=pPass0, pCrit=pCrit0;
+  if(mode==='full'){ pPass=pPass0+pFail*pPass0; pCrit=pCrit0+pFail*pCrit0; }
+  else if(mode==='ones'){ pPass=pPass0+(1/6)*pPass0; pCrit=pCrit0+(1/6)*pCrit0; }
+  return {pPass, pCrit};
+}
+function calc(){
+  let A=Math.max(1,+document.getElementById('A').value||1);
+  const sk=Math.max(2,Math.min(6,+document.getElementById('SK').value||3));
+  const S=Math.max(1,+document.getElementById('S').value||4);
+  const AP=+document.getElementById('AP').value||0;
+  const D=Math.max(1,+document.getElementById('D').value||1);
+  const T=Math.max(1,+document.getElementById('T').value||4);
+  const svR=+document.getElementById('SV').value||4;
+  const inv=+document.getElementById('INV').value||0;
+  const fnp=+document.getElementById('FNP').value||0;
+  const W=Math.max(1,+document.getElementById('W').value||1);
+  const mdl=Math.max(1,+document.getElementById('MDL').value||1);
+
+  // ── 전투 상황에서 파생되는 발동 플래그 ──
+  const lanceOn = rules.lance && rules.charged;          // Lance: 돌격 시 +1 부상
+  const rapidOn = rules.rapid>0 && rules.halfRange;      // Rapid Fire: 절반 사거리
+  const meltaOn = rules.melta>0 && rules.halfRange;      // Melta: 절반 사거리
+  const heavyOn = rules.heavy && rules.stationary;       // Heavy: 미이동 시 +1 명중
+
+  // ── 스마트 상황(능력 기반) 합산: 사용자 선택형 + 자동 판정형(대상 키워드) + 분대장 버프 ──
+  const auto=gatherAutoEffects();
+  const ldA=gatherLeaderBuffs('atk'), ldD=gatherLeaderBuffs('def');   // 합류 분대장 자동 버프(공격/방어)
+  renderLeaderFx('atk',ldA); renderLeaderFx('def',ldD);
+  let sHit=auto.hit+ldA.hit+ldD.hit, sWound=auto.wound+ldA.wound+ldD.wound, sTough=auto.tough+ldA.tough, sAP=auto.ap+ldA.ap, sSaveWorse=auto.saveWorse+ldA.saveWorse, sRrHit=auto.rrHit||ldA.rrHit, sRrWound=auto.rrWound||ldA.rrWound;
+  let sInv=ldD.inv||0, sSvBonus=ldD.svBonus||0, sFnp=ldD.fnp||0;   // 방어 버프(오라/분대장): 무적, 방어+1, FNP
+  for(const k in rules.smart){ const e=rules.smart[k]; if(!e)continue;
+    sHit+=e.hit||0; sWound+=e.wound||0; sTough+=e.tough||0; sAP+=e.ap||0; sSaveWorse+=e.saveWorse||0;
+    if(e.rrHit)sRrHit=true; if(e.rrWound)sRrWound=true;
+    if(e.inv) sInv=sInv?Math.min(sInv,e.inv):e.inv;
+    if(e.svBonus) sSvBonus+=e.svBonus;
+    if(e.fnp) sFnp=sFnp?Math.min(sFnp,e.fnp):e.fnp; }
+  const antiOn = auto.antiOn;   // Anti-X: 대상 키워드로 자동 판정
+  const lethalOn = rules.lh || ldA.forceLethal;            // 분대장: Lethal Hits 부여
+  const critHitN = Math.min(6, ldA.critHit||6);            // 분대장: 치명 명중 임계값(예: Biologus 5+)
+  const shN = Math.max(rules.sh, ldA.sustained||0);        // 분대장: Sustained Hits 부여
+
+  // ── 공격 횟수 보정: Rapid Fire(절반 사거리), Blast(대상 5모델당 +1) ──
+  if(rapidOn) A+=rules.rapid;
+  if(rules.blast) A+=Math.floor(mdl/5);
+
+  // ── 보정치(10판: 명중/부상 굴림 수정치는 합산 후 ±1로 제한) ──
+  const hitMod = Math.max(-1,Math.min(1,(rules.hitBuff?1:0)-(rules.hitDebuff?1:0)+(heavyOn?1:0)+sHit));
+  const woundMod = Math.max(-1,Math.min(1,(rules.woundBuff?1:0)-(rules.woundDebuff?1:0)+(lanceOn?1:0)+sWound));
+  // 재굴림 모드: 수동 설정과 스마트 상황 중 더 강한 쪽 적용(none < ones < full)
+  const rank={none:0,ones:1,full:2}, unrank=['none','ones','full'];
+  const effRhMode=unrank[Math.max(rank[rules.rhMode]||0, sRrHit?2:0)];
+  const effRwMode=unrank[Math.max(rank[(rules.rwMode==='full'||rules.twin)?'full':rules.rwMode]||0, sRrWound?2:0)];
+
+  // ── 명중 단계 ──
+  const torrent=rules.tor;
+  const effSk = Math.max(2,Math.min(6, sk - hitMod));    // 명중 +1 → 필요값 1 감소(2~6로 제한, 1은 항상 실패/6은 항상 성공 반영)
+  const hs = torrent ? {pPass:1,pCrit:0} : rollStats(effSk, effRhMode, critHitN);
+  const pHit = hs.pPass;
+  const p6Hit = hs.pCrit;                                // 치명 명중(critHitN+) 확률 — 재굴림 반영
+
+  const successHits=A*pHit;                              // 일반 성공 명중
+  const lethalHits=lethalOn?A*p6Hit:0;                   // 치명 명중 → 자동 부상(부상 굴림 생략)
+  const sustainedExtra=shN>0?A*p6Hit*shN:0;              // 치명 명중마다 추가 명중(추가분은 일반 부상)
+  const totalHits=successHits+sustainedExtra;
+
+  // ── 부상 단계 ──
+  const Teff=Math.max(1,T-sTough);                       // 스마트 상황: 대상 강인도 감소(예: Nurgle's Gift)
+  let baseWn=wn(S,Teff);
+  let woundNeed = Math.max(2,Math.min(6, baseWn - woundMod));
+  let critWoundN=6;                                       // 치명 부상 임계값(기본 6, 미수정)
+  if(antiOn){ woundNeed=Math.min(woundNeed,rules.anti); critWoundN=Math.min(critWoundN,rules.anti); }
+  const ws = rollStats(woundNeed, effRwMode, critWoundN);
+  const pW = ws.pPass;
+  const p6W = ws.pCrit;                                   // 치명 부상 확률
+
+  const hitsRollingWound=Math.max(0,totalHits-lethalHits);   // 치명 명중은 부상 굴림을 생략
+  const woundRollSuccess=hitsRollingWound*pW;
+  const critWoundSuccess=Math.min(woundRollSuccess,hitsRollingWound*p6W);
+  // Devastating Wounds: 치명 부상 → 필멸 피해(방어 무시). 그 외 성공 부상은 일반.
+  const devMortal=rules.dw?critWoundSuccess:0;
+  const normalRollWounds=rules.dw?Math.max(0,woundRollSuccess-critWoundSuccess):woundRollSuccess;
+  const normalWounds=lethalHits+normalRollWounds;            // 방어 굴림 허용 부상
+  const mortalWounds=devMortal;                              // 방어 무시 부상
+  const avgW=normalWounds+mortalWounds;                      // 방어 전 총 부상(표시용)
+
+  // ── 방어 단계 ──
+  const APe=AP+sAP;                                          // 스마트 상황: AP 추가(예: Conqueror Imperative)
+  const svWorse=svR===7?7:Math.min(7,svR+sSaveWorse);       // 스마트 상황: 대상 방어도 악화(예: Rattlejoint)
+  let svBonus=sSvBonus;                                      // 오라/분대장: 방어 +N
+  if(rules.cover&&!rules.ignoresCover){
+    // 10판 규칙: 방어도 3+ 이상(좋음)은 AP가 적용된 공격에만 엄폐 혜택
+    if(svWorse<=3){ if(APe>0) svBonus+=1; } else { svBonus+=1; }
+  }
+  const baseSave = svWorse===7?7:Math.max(2,svWorse-svBonus);
+  const svAdj=Math.min(7,baseSave+APe);
+  let effSv=svWorse===7&&svBonus===0?7:svAdj;
+  const invEff = (inv>0&&sInv>0)?Math.min(inv,sInv):(inv>0?inv:sInv);  // 오라/분대장: 무적 부여(최선값)
+  if(invEff>0&&invEff<effSv)effSv=invEff;
+  const pFail=effSv>6?1:(1-p6(effSv));
+  const woundsPastSave=normalWounds*pFail+mortalWounds;      // 필멸 피해는 방어 무시
+
+  const fnpEff=(fnp>0&&sFnp>0)?Math.min(fnp,sFnp):(fnp>0?fnp:sFnp);  // 오라/분대장: FNP 부여(최선값)
+
+  // ── 피해 & FNP ──
+  let dmgPer=D;
+  if(meltaOn) dmgPer=D+rules.melta;                          // Melta: 절반 사거리 시 피해 +N
+  const pFNP=fnpEff>0?p6(fnpEff):0;
+  const avgDmg=woundsPastSave*dmgPer*(1-pFNP);
+  const killed=Math.min(mdl,avgDmg/W);
+
+  // ── 흐름 표시 ──
+  const svD=effSv>6?'없음':effSv+'+';
+  const rhTag=effRhMode==='full'?' ↺':effRhMode==='ones'?' ↺¹':'';
+  const rwTag=effRwMode==='full'?' ↺':effRwMode==='ones'?' ↺¹':'';
+  const hitTags=rhTag+(hitMod>0?' +1':hitMod<0?' -1':'')+(shN>0?' ★S'+shN:'')+(lethalOn?' ★L':'')+(critHitN<6?' ⑥'+critHitN+'+':'');
+  const woundTags=rwTag+(woundMod>0?' +1':woundMod<0?' -1':'')+(sTough>0?' T-'+sTough:'')+(rules.dw?' ★D':'')+(antiOn?' A'+rules.anti:'');
+  const svTag=(svBonus>0?' ⛰':'')+(sSaveWorse>0?' Sv-'+sSaveWorse:'')+(sAP>0?' AP+'+sAP:'');
+  const steps=[];
+  if(torrent)steps.push({name:'명중',need:'자동'+hitTags,prob:'100%',col:'var(--green2)'});
+  else steps.push({name:'명중',need:effSk+'+'+hitTags,prob:(pHit*100).toFixed(0)+'%',col:'var(--green2)'});
+  steps.push({name:'부상',need:woundNeed+'+'+woundTags,prob:(pW*100).toFixed(0)+'%',col:'var(--amber2)'});
+  steps.push({name:'방어실패',need:svD+svTag,prob:(pFail*100).toFixed(0)+'%',col:'var(--red2)'});
+  if(fnp>0)steps.push({name:'FNP실패',need:fnp+'+++',prob:((1-pFNP)*100).toFixed(0)+'%',col:'var(--pink2)'});
+  document.getElementById('flow').innerHTML=steps.map((s,i)=>(i?'<div class="farr">▶</div>':'')+`<div class="fstep"><div class="fn" style="color:${s.col}">${s.name}</div><div class="fv" style="color:${s.col}">${s.need}</div><div class="fp" style="color:${s.col}">${s.prob}</div></div>`).join('');
+
+  const woundSub=mortalWounds>0?`방어 전 (필멸 ${mortalWounds.toFixed(2)})`:'방어 전';
+  document.getElementById('res').innerHTML=`
+    <div class="rc cg"><div class="rl">평균 명중</div><div class="rv cg">${totalHits.toFixed(1)}</div><div class="rs">${A}회 공격</div></div>
+    <div class="rc ca"><div class="rl">평균 부상</div><div class="rv ca">${avgW.toFixed(2)}</div><div class="rs">${woundSub}</div></div>
+    <div class="rc cr"><div class="rl">평균 피해</div><div class="rv cr">${avgDmg.toFixed(2)}</div><div class="rs">총 HP ${W*mdl}</div></div>
+    <div class="rc cb"><div class="rl">기대 제거</div><div class="rv cb">${killed.toFixed(2)}</div><div class="rs">/ ${mdl} 모델</div></div>`;
+  // 분대장 합류 시: 희생 시뮬레이션 (복수 분대장 + 방어 버프 반영)
+  renderSacrifice({A, effSk, effRhMode, woundNeed, critWoundN, effRwMode, dmgPer,
+    APe, saveWorse:sSaveWorse, cover:rules.cover, ic:rules.ignoresCover,
+    auraInv:sInv, auraFnp:sFnp, auraSvBonus:sSvBonus,
+    lh:lethalOn, sh:shN, critHitN, dw:rules.dw, tor:torrent,
+    bg:{n:mdl,w:W,sv:svR,inv,fnp}});
+  renderActiveSituations();
+}
+
+// ── 희생 시뮬레이션(분대장 합류 방어) ──
+function simD6(){return 1+(Math.random()*6|0);}
+function simEffSave(sv,ownInv,P){
+  let svW=Math.min(7,sv+P.saveWorse), svBonus=P.auraSvBonus||0;
+  if(P.cover&&!P.ic){ if(svW<=3){ if(P.APe>0)svBonus+=1; } else svBonus+=1; }
+  let need=Math.min(7,Math.max(2,svW-svBonus)+P.APe);
+  const inv=(ownInv>0&&P.auraInv>0)?Math.min(ownInv,P.auraInv):(ownInv>0?ownInv:(P.auraInv||0));
+  if(inv>0&&inv<need)need=inv;
+  return need;
+}
+function simRR(r,need,mode){ if(mode==='full'&&r!==6&&r<need)return simD6(); if(mode==='ones'&&r===1)return simD6(); return r; }
+// groups: [{n,w,sv,inv,fnp,isLeader,name}, ...]  (첫 번째=보디가드, 이후=분대장들)
+function simulateSacrifice(P, groups, iters=20000){
+  const ngroup=groups.length;
+  let killed=groups.map(()=>0), wlost=groups.map(()=>0), allDead=0;
+  let grpDead=groups.map(()=>0);
+  for(let it=0;it<iters;it++){
+    const rem=groups.map(g=>g.n), curW=groups.map(g=>g.w);
+    const inst=[]; let mortal=0;
+    for(let i=0;i<P.A;i++){
+      let crit=false,hit;
+      if(P.tor){hit=true;} else { let r=simRR(simD6(),P.effSk,P.effRhMode); crit=(r>=(P.critHitN||6)); hit=r===1?false:(r===6?true:(r>=P.effSk)); }
+      if(!hit) continue;
+      let auto=false,extra=0;
+      if(!P.tor){ if(P.lh&&crit)auto=true; if(P.sh>0&&crit)extra=P.sh; }
+      let rolls=extra+(auto?0:1);
+      for(let w=0;w<rolls;w++){ let r=simRR(simD6(),P.woundNeed,P.effRwMode); const ok=r===1?false:(r===6?true:(r>=P.woundNeed)); if(!ok)continue; const wc=r>=P.critWoundN; if(P.dw&&wc)mortal+=P.dmgPer; else inst.push(P.dmgPer); }
+      if(auto) inst.push(P.dmgPer);
+    }
+    // 할당: 앞 그룹부터(보디가드 → 분대장들). 분대장은 보디가드가 다 죽은 뒤에만 할당됨.
+    const front=()=>{ for(let g=0;g<ngroup;g++) if(rem[g]>0) return g; return -1; };
+    for(const dm of inst){ const g=front(); if(g<0)break;
+      const need=simEffSave(groups[g].sv, groups[g].inv, P);
+      const s=simD6(); if(need<=6&&s!==1&&s>=need)continue;  // 방어 성공
+      let dealt=dm; const fnpOwn=groups[g].fnp; const fnp=(fnpOwn>0&&P.auraFnp>0)?Math.min(fnpOwn,P.auraFnp):(fnpOwn>0?fnpOwn:(P.auraFnp||0));
+      if(fnp>0){let d=0;for(let k=0;k<dealt;k++)if(simD6()<fnp)d++;dealt=d;}
+      curW[g]-=dealt; if(curW[g]<=0){ killed[g]++; rem[g]--; curW[g]=groups[g].w; }
+    }
+    // 필멸 피해: 점 단위로 앞 그룹부터 넘침
+    while(mortal>0){ const g=front(); if(g<0)break; const fnpOwn=groups[g].fnp; const fnp=(fnpOwn>0&&P.auraFnp>0)?Math.min(fnpOwn,P.auraFnp):(fnpOwn>0?fnpOwn:(P.auraFnp||0)); mortal--; if(fnp>0&&simD6()>=fnp)continue; curW[g]-=1; if(curW[g]<=0){killed[g]++;rem[g]--;curW[g]=groups[g].w;} }
+    let anyAlive=false, leadersAllDead=true;
+    for(let g=0;g<ngroup;g++){ const remW=rem[g]>0?((rem[g]-1)*groups[g].w+curW[g]):0; wlost[g]+=groups[g].n*groups[g].w-remW; if(rem[g]>0)anyAlive=true; else grpDead[g]++; if(groups[g].isLeader&&rem[g]>0)leadersAllDead=false; }
+    if(!anyAlive) allDead++;
+  }
+  return { killed:killed.map(x=>x/iters), wlost:wlost.map(x=>x/iters), grpDeadP:grpDead.map(x=>x/iters), pWiped:allDead/iters, iters };
+}
+function renderSacrifice(P){
+  const box=document.getElementById('sac-box'); if(!box)return;
+  const leaders=attachedUnitObjs('def');
+  if(!leaders.length){ box.style.display='none'; return; }
+  const groups=[{n:P.bg.n,w:P.bg.w,sv:P.bg.sv,inv:P.bg.inv,fnp:P.bg.fnp,isLeader:false,name:'보디가드'}];
+  leaders.forEach((ld,i)=>groups.push({n:Math.max(1,ld.models||1),w:Math.max(1,ld.W||1),sv:ld.Sv||4,inv:ld.Inv||0,fnp:ld.FNP||0,isLeader:true,name:attached.def[i]?attached.def[i].u:'분대장'}));
+  const r=simulateSacrifice(P, groups, 20000);
+  box.style.display='';
+  // 카드: 보디가드 제거 + 분대장별 피해/사망확률 + 전멸
+  let cards=`<div class="rc cb"><div class="rl">보디가드 제거</div><div class="rv cb">${r.killed[0].toFixed(2)}</div><div class="rs">/ ${groups[0].n} 모델</div></div>`;
+  for(let g=1;g<groups.length;g++){
+    cards+=`<div class="rc ${g%2?'ca':'cr'}"><div class="rl">${groups[g].name}</div><div class="rv ${g%2?'ca':'cr'}">${(r.grpDeadP[g]*100).toFixed(0)}%</div><div class="rs">사망 · 피해 ${r.wlost[g].toFixed(1)}/${groups[g].n*groups[g].w}</div></div>`;
+  }
+  cards+=`<div class="rc cg"><div class="rl">부대 전멸</div><div class="rv cg">${(r.pWiped*100).toFixed(0)}%</div><div class="rs">전원 제거</div></div>`;
+  document.getElementById('sac').innerHTML=cards;
+  const lnames=groups.slice(1).map(g=>g.name).join(', ');
+  document.getElementById('sac-note').innerHTML=
+    `보디가드(${groups[0].n}×체력${groups[0].w}, ${groups[0].sv}+)가 먼저 피해를 받고, 전멸한 뒤에야 분대장(${lnames})에게 순서대로 넘어갑니다. 방어 오라·분대장 버프(무적/FNP/방어)도 반영됨. (${r.iters/1000}천 회 시뮬레이션)`;
+}
+
+// ── 전투 상황(SITUATION) ──
+function getUnitObj(side){ const f=getFaction(side),u=getUnit(side); return getSideData(side)?.[f]?.[u]||null; }
+function abilNames(unit){ return (unit&&Array.isArray(unit.abilities))?unit.abilities.map(a=>String(a.name||'').trim()).filter(Boolean):[]; }
+function armyAbilNames(side){ const f=getFaction(side), units=getSideData(side)?.[f]||{}; const s=new Set(); Object.values(units).forEach(u=>abilNames(u).forEach(n=>s.add(n))); return s; }
+// 방어 진영의 (Aura) 능력 중, 선택 유닛/합류 분대장이 아닌 다른 유닛이 제공하는 것 (듄크롤러식 방어 오라)
+function defenderArmyAuras(){
+  const f=getFaction('def'), units=getSideData('def')?.[f]||{};
+  const exclude=new Set([getUnit('def'), ...attachedNames('def')]);
+  const seen=new Set(), out=[];
+  Object.entries(units).forEach(([uname,u])=>{
+    if(exclude.has(uname)) return;
+    abilNames(u).forEach(n=>{
+      if(/nurgle.?s gift/i.test(n)) return;   // 공격 디버프 오라 — 방어 버프 아님
+      if(/\(aura\)|오라/i.test(n) && !seen.has(n)){ seen.add(n); out.push({name:n, label:n.replace(/\s*\(aura\)/i,''), from:uname}); }
+    });
+  });
+  return out;
+}
+
+// ── 분대장(Leader) 합류 — 복수 가능 ──
+const attached={atk:[],def:[]};   // 각 항목 {f,u}
+function hasLeaderAbility(unit){ return abilNames(unit).some(n=>/^leader$|리더|분대장/i.test(n)); }
+function leaderUnits(side){
+  const f=getFaction(side), units=getSideData(side)?.[f]||{}, cur=getUnit(side);
+  return Object.keys(units).filter(u=>u!==cur && hasLeaderAbility(units[u]));
+}
+function isAttached(side,u){ return attached[side].some(a=>a.f===getFaction(side)&&a.u===u); }
+function refreshLeaderOptions(side){
+  const box=document.getElementById(side+'-lead'); if(!box)return;
+  const f=getFaction(side);
+  // 현재 팩션에 없는 합류는 제거
+  attached[side]=attached[side].filter(a=>a.f===f && getSideData(side)?.[f]?.[a.u] && a.u!==getUnit(side));
+  const list=leaderUnits(side);
+  if(!list.length){ box.innerHTML='<span class="sa-empty" style="font-size:11px">합류 가능한 분대장(Leader 능력 보유)이 없습니다.</span>'; return; }
+  box.innerHTML=list.map(u=>`<button class="eff-chip${isAttached(side,u)?' on':''}" onclick="toggleLeader('${side}',${JSON.stringify(u).replace(/"/g,'&quot;')})">${u}</button>`).join('');
+}
+function toggleLeader(side,u){
+  const f=getFaction(side);
+  const i=attached[side].findIndex(a=>a.f===f&&a.u===u);
+  if(i>=0) attached[side].splice(i,1); else attached[side].push({f,u});
+  refreshLeaderOptions(side);
+  if(side==='atk'){
+    const cur=+document.getElementById('atk-w').value||0;
+    const entries=atkWeaponEntries(); window.__atkWeapons=entries;
+    const wsel=document.getElementById('atk-w'); wsel.innerHTML=entries.map((e,i)=>`<option value="${i}">${e.label}</option>`).join('');
+    wsel.value=Math.min(cur,entries.length-1); onAtkWeapon();
+  }
+  calc(); renderSituationModal();
+}
+function attachedUnitObjs(side){ const f=getSideData(side); return attached[side].map(a=>f?.[a.f]?.[a.u]).filter(Boolean); }
+function attachedNames(side){ return attached[side].map(a=>a.u); }
+// 선택 유닛 + 합류 분대장들의 능력명(공격 버프/스마트 감지에 사용)
+function unitAndLeaderAbil(side){ const s=new Set(abilNames(getUnitObj(side))); attachedUnitObjs(side).forEach(ld=>abilNames(ld).forEach(n=>s.add(n))); return s; }
+
+// ── 능력 → 효과 지식 베이스 ──
+// scope: 'unit'(선택한 유닛이 보유) | 'army'(진영 어디든 보유 시 등장 — 군대규칙/지휘관오라)
+const ABILITY_KB=[
+  { match:/nurgle.?s gift/i, scope:'army', make:()=>[
+      {key:'sm_nurgle', side:'atk', q:'대상이 오염(Contagion) 범위 안에 있나요?',
+       why:"데스가드 군대 규칙 «Nurgle's Gift». 범위(1턴 3″·2턴 6″·3턴~ 9″) 안의 적은 강인도(T)가 1 낮아져 부상시키기 쉬워집니다.",
+       eff:{label:'오염 T-1', tough:1}},
+      {key:'sm_rattlejoint', side:'atk', q:"고른 역병이 «Rattlejoint Ague»(적 방어도 -1) 인가요?",
+       why:"Nurgle's Gift는 게임 시작 때 역병 하나를 함께 고릅니다. Rattlejoint Ague를 골랐다면 오염된 적의 방어도(Sv)가 1 나빠집니다.",
+       eff:{label:'Rattlejoint Sv-1', saveWorse:1}} ] },
+  { match:/doctrina imperatives/i, scope:'army', make:()=>[
+      {key:'sm_protector', side:'atk', q:'이번 라운드 «Protector Imperative»를 골랐나요? (사격만)',
+       why:'애드메크 군대 규칙 «Doctrina Imperatives». 라운드 시작 때 Protector를 고르면 사격 무기 명중(BS)이 +1 좋아지고 HEAVY가 붙습니다.',
+       eff:{label:'Protector 명중+1', hit:1}},
+      {key:'sm_conqueror', side:'atk', q:'이번 라운드 «Conqueror Imperative»를 골랐나요? (사격만)',
+       why:'Conqueror를 고르면 사격 무기에 ASSAULT가 붙고, 이 유닛이 전열(Battleline)이거나 전열 6″ 이내일 때 사격 AP가 +1 좋아집니다.',
+       eff:{label:'Conqueror AP+1', ap:1}} ] },
+  { match:/tank hunters/i, scope:'unit', make:()=>[
+      {key:'sm_tankhunter', side:'atk', auto:true, needKw:'VEHICLE', q:'대상이 차량(VEHICLE)',
+       why:'이 유닛의 «Tank Hunters». 차량을 사격할 때 부상 굴림이 +1. 대상 키워드로 자동 판정합니다.',
+       eff:{label:'Tank Hunters 부상+1', wound:1}} ] },
+  { match:/virulent aura/i, scope:'army', make:()=>[
+      {key:'sm_virulent', side:'atk', q:'Lord of Virulence가 이 부대를 지휘(Leader) 중인가요? (사격만)',
+       why:'«Virulent Aura». Lord of Virulence가 합류해 지휘하는 부대는 사격 부상 굴림을 다시 굴릴 수 있습니다.',
+       eff:{label:'Virulent 부상 재굴림', rrWound:true}} ] },
+  { match:/oath of moment/i, scope:'army', make:()=>[
+      {key:'sm_oath_h', side:'atk', q:'대상이 «Oath of Moment» 표적인가요? (명중 재굴림)',
+       why:'스페이스 마린 군대 규칙. 지정한 표적을 공격할 때 명중 굴림을 다시 굴릴 수 있습니다.',
+       eff:{label:'Oath 명중 재굴림', rrHit:true}},
+      {key:'sm_oath_w', side:'atk', q:'코덱스 스페이스 마린 디태치먼트(분파 챕터 유닛 없음)인가요?',
+       why:'2024년 업데이트: 위 조건이면 Oath 표적에 대한 부상 굴림도 +1을 받습니다. (블랙 템플러/블러드 엔젤/다크 엔젤/데스워치/스페이스 울프 유닛이 군대에 있으면 적용 안 됨)',
+       eff:{label:'Oath 부상+1', wound:1}} ] },
+  { match:/(^|\s)stealth(\s|$)|은신/i, scope:'unit', make:()=>[
+      {key:'sm_stealth', side:'def', q:'이 방어 유닛이 은신(Stealth)을 가졌나요? (사격 방어)',
+       why:'«Stealth». 이 유닛을 사격할 때 공격자의 명중 굴림이 -1 나빠집니다. (사격에만)',
+       eff:{label:'적 은신 명중-1', hit:-1}} ] }
+];
+
+function collectSmart(){
+  const atkSelf=unitAndLeaderAbil('atk'), defSelf=unitAndLeaderAbil('def');
+  const atkArmy=armyAbilNames('atk'), defArmy=armyAbilNames('def');
+  const list=[];
+  ABILITY_KB.forEach(entry=>{
+    const opts=entry.make();
+    const side=(opts[0]&&opts[0].side)||'atk';   // 공격 버프는 공격 진영, 방어 능력은 방어 유닛에서만 인식
+    const names = entry.scope==='army' ? (side==='def'?defArmy:atkArmy) : (side==='def'?defSelf:atkSelf);
+    if([...names].some(n=>entry.match.test(n))) opts.forEach(s=>list.push(s));
+  });
+  const seen=new Set(); return list.filter(s=>seen.has(s.key)?false:(seen.add(s.key),true));
+}
+// 사용자가 고르는 상황(위치/선택형)
+function collectChoiceSmart(){ return collectSmart().filter(s=>!s.auto); }
+// 데이터로 자동 판정되는 상황(대상 키워드 등)
+function collectAutoSmart(){ return collectSmart().filter(s=>s.auto); }
+// 대상(방어) 유닛의 전장 키워드
+function targetKeywords(){ const u=getUnitObj('def'); return (u&&Array.isArray(u.keywords))?u.keywords:[]; }
+function targetHasKw(kw){ return !!kw && targetKeywords().includes(String(kw).toUpperCase()); }
+// 자동 효과 합산: Anti-X(무기) + 키워드 조건 능력(Tank Hunters 등)
+function gatherAutoEffects(){
+  const tkw=targetKeywords();
+  const out={hit:0,wound:0,tough:0,ap:0,saveWorse:0,rrHit:false,rrWound:false,active:[]};
+  // 무기 Anti-X
+  const antiOn = rules.anti>0 && tkw.includes(rules.antiKw);
+  // KB 자동 능력
+  collectAutoSmart().forEach(s=>{
+    if(tkw.includes(s.needKw)){ const e=s.eff;
+      out.hit+=e.hit||0; out.wound+=e.wound||0; out.tough+=e.tough||0; out.ap+=e.ap||0; out.saveWorse+=e.saveWorse||0;
+      if(e.rrHit)out.rrHit=true; if(e.rrWound)out.rrWound=true; out.active.push(e.label); }
+  });
+  out.antiOn=antiOn;
+  return out;
+}
+function isKnownAbility(name){ return ABILITY_KB.some(e=>e.match.test(name)); }
+
+// ── 분대장 버프 지식 베이스 — 합류 시 자동 적용 ("While this model is leading a unit...") ──
+// scope: 'any'|'melee'|'ranged' (선택한 무기 종류에 따라 적용)
+const LEADER_KB=[
+  // Death Guard
+  { match:/foul infusion/i, side:'atk', scope:'any', eff:{label:'Biologus: Lethal Hits·치명5+', forceLethal:true, critHit:5} },
+  { match:/the destroyer hive|destroyer hive/i, side:'def', scope:'melee', eff:{label:'Typhus: 근접 적 명중 -1', hit:-1} },
+  { match:/litany of hate/i, side:'atk', scope:'melee', eff:{label:'근접 부상 +1', wound:1} },
+  { match:/recitation of faith/i, side:'def', scope:'any', eff:{label:'FNP 4+(필멸)', fnp:4} },
+  { match:/supreme grand master/i, side:'atk', scope:'any', eff:{label:'Sustained Hits 1', sustained:1} },
+  { match:/senior officer/i, side:'atk', scope:'ranged', eff:{label:'사격 Sustained Hits 1', sustained:1} },
+  { match:/the lion helm|models in the bearer'?s unit have a [0-9]\+ invulnerable/i, side:'def', scope:'any', eff:{label:'부대 무적 4+', inv:4} }
+];
+function currentWeaponIsMelee(){ const w=window.__lastWeapon; return !!(w&&w.melee); }
+function gatherLeaderBuffs(side){
+  const melee=currentWeaponIsMelee();
+  const out={hit:0,wound:0,tough:0,ap:0,saveWorse:0,inv:0,svBonus:0,fnp:0,rrHit:false,rrWound:false,forceLethal:false,critHit:6,sustained:0,active:[]};
+  attachedUnitObjs(side).forEach((ld,li)=>{
+    const lname=attached[side][li]?attached[side][li].u:'분대장';
+    abilNames(ld).forEach(n=>{
+      LEADER_KB.forEach(k=>{
+        if(k.side!==side||!k.match.test(n))return;
+        if(k.scope==='melee'&&!melee)return;
+        if(k.scope==='ranged'&&melee)return;
+        const e=k.eff;
+        out.hit+=e.hit||0; out.wound+=e.wound||0; out.tough+=e.tough||0; out.ap+=e.ap||0; out.saveWorse+=e.saveWorse||0;
+        if(e.rrHit)out.rrHit=true; if(e.rrWound)out.rrWound=true;
+        if(e.forceLethal)out.forceLethal=true;
+        if(e.critHit)out.critHit=Math.min(out.critHit,e.critHit);
+        if(e.sustained)out.sustained=Math.max(out.sustained,e.sustained);
+        if(e.inv)out.inv=out.inv?Math.min(out.inv,e.inv):e.inv;
+        if(e.svBonus)out.svBonus+=e.svBonus;
+        if(e.fnp)out.fnp=out.fnp?Math.min(out.fnp,e.fnp):e.fnp;
+        out.active.push(e.label+' · '+lname);
+      });
+    });
+  });
+  return out;
+}
+// 합류한 분대장 중 KB에 효과가 없는(굴림 보정 없는) 분대장 이름 목록 — 사용자 안내용
+function leadersWithoutKnownBuff(side){
+  const melee=currentWeaponIsMelee();
+  return attachedUnitObjs(side).map((ld,li)=>{
+    const has=abilNames(ld).some(n=>LEADER_KB.some(k=>k.side===side&&k.match.test(n)&&!(k.scope==='melee'&&!melee)&&!(k.scope==='ranged'&&melee)));
+    return has?null:(attached[side][li]?attached[side][li].u:'분대장');
+  }).filter(Boolean);
+}
+function renderLeaderFx(side,buffs){
+  const el=document.getElementById(side+'-lead-fx'); if(!el)return;
+  if(!attached[side].length){ el.innerHTML=''; return; }
+  const none=leadersWithoutKnownBuff(side);
+  let h=buffs.active.map(l=>`<span class="lfx-on">✓ ${l}</span>`).join('');
+  if(none.length) h+=`<span class="lfx-none">${none.join(', ')}: 굴림 보정 버프 없음(무기/유틸리티) — 능력이 있으면 상황 창에서 직접 지정</span>`;
+  if(!h) h='<span class="lfx-none">적용된 분대장 굴림 버프 없음</span>';
+  el.innerHTML=h;
+}
+// 흔한 "공격 계산에 영향 없는" 능력 — 매퍼를 띄우지 않고 안내만 (방어 능력치는 방어 패널에서 입력)
+const INFO_ABILITIES=/invulnerable save|feel no pain|deep strike|deadly demise|scout|infiltrat|lone operative|^leader$|warlord|damaged|scuttling|fights first|fights last|firing deck|objective|transport|grenade|^psychic$|deny|battle ?shock|silent bodyguard|enginseer|emanatus|reanimation/i;
+function isInfoAbility(name){ return INFO_ABILITIES.test(name); }
+
+function openSituation(){ renderSituationModal(); document.getElementById('sit-modal').classList.add('open'); }
+function closeSituation(){ document.getElementById('sit-modal').classList.remove('open'); }
+document.getElementById('sit-modal').addEventListener('click',function(e){ if(e.target===this) closeSituation(); });
+
+function applyRuleChange(){
+  renderDetectedRules(window.__lastWeapon||{});
+  updateToggleBtns(); calc(); renderSituationModal();
+}
+function toggleSit(key){ rules[key]=!rules[key]; applyRuleChange(); }
+function toggleAnti(){ rules.antiActive=!rules.antiActive; applyRuleChange(); }
+function setReroll(which, mode){ if(which==='hit') rules.rhMode=mode; else rules.rwMode=mode; applyRuleChange(); }
+function toggleSmart(key){
+  if(rules.smart[key]){ delete rules.smart[key]; }
+  else { const def=collectSmart().find(s=>s.key===key); if(def) rules.smart[key]={...def.eff, side:def.side}; }
+  applyRuleChange();
+}
+// 모르는 능력에 사용자가 직접 효과를 지정 (모든 종족 대응)
+function toggleUserEff(key, label, side, prop, val){
+  let e=rules.smart[key]||{side, label, user:true};
+  if(prop==='rrHit'||prop==='rrWound'){ e[prop]=!e[prop]; }
+  else { e[prop]=(e[prop]===val)?0:val; }   // 같은 값 다시 누르면 해제, 다른 값이면 전환(무적 5+→4+ 등)
+  const live=(e.hit||0)||(e.wound||0)||(e.tough||0)||(e.ap||0)||(e.saveWorse||0)||(e.inv||0)||(e.svBonus||0)||(e.fnp||0)||e.rrHit||e.rrWound;
+  if(live) rules.smart[key]=e; else delete rules.smart[key];
+  applyRuleChange();
+}
+
+function smartCard(s){
+  const on=!!rules.smart[s.key], defc=s.side==='def'?' def-card':'';
+  return `<button class="sit-card${defc}${on?' on':''}" onclick="toggleSmart('${s.key}')">
+    <span class="sc-head"><span class="sc-check">✓</span>${s.q}</span>
+    <span class="sc-eff"><em>${s.eff.label}</em> — ${s.why}</span></button>`;
+}
+function card(opt){
+  const on=opt.on?' on':'', defc=opt.defCard?' def-card':'';
+  return `<button class="sit-card${defc}${on}" onclick="toggleSit('${opt.key}')">
+    <span class="sc-head"><span class="sc-check">✓</span>${opt.title}</span>
+    <span class="sc-eff ${opt.effClass||''}">${opt.eff}</span></button>`;
+}
+function segReroll(which){
+  const mode=which==='hit'?rules.rhMode:rules.rwMode, label=which==='hit'?'명중 재굴림':'부상 재굴림';
+  const b=(m,t)=>`<button class="${mode===m?'on':''}" onclick="setReroll('${which}','${m}')">${t}</button>`;
+  return `<div class="sit-card${mode!=='none'?' on':''}">
+    <span class="sc-head"><span class="sc-check">✓</span>${label} (직접 설정)</span>
+    <span class="sc-eff">아군 능력/스트라타젬으로 재굴림을 받을 때만 켜세요.</span>
+    <div class="sit-seg">${b('none','없음')}${b('ones','1만')}${b('full','전체')}</div></div>`;
+}
+const COMMON_KEYWORDS=['INFANTRY','VEHICLE','MONSTER','CHARACTER','FLY','MOUNTED','PSYKER','BEAST'];
+function targetKeywordChips(){
+  const u=getUnitObj('def');
+  if(!u) return '<div class="sit-empty">방어 유닛이 없습니다.</div>';
+  if(!Array.isArray(u.keywords)) u.keywords=[];
+  const have=new Set(u.keywords.map(k=>String(k).toUpperCase()));
+  const extra=[...have].filter(k=>!COMMON_KEYWORDS.includes(k));
+  const all=[...COMMON_KEYWORDS,...extra];
+  const chips=all.map(k=>`<button class="eff-chip${have.has(k)?' on':''}" onclick="toggleTargetKw('${k}')">${k}</button>`).join('');
+  return `<p class="det-note" style="margin:0 0 6px">데이터에 종류가 없어 이름·스탯으로 추정했습니다. Anti-X / Tank Hunters 같은 효과는 이 종류로 자동 판정됩니다.</p><div class="eff-chips">${chips}</div>`;
+}
+function toggleTargetKw(kw){
+  const u=getUnitObj('def'); if(!u) return;
+  if(!Array.isArray(u.keywords)) u.keywords=[];
+  kw=String(kw).toUpperCase();
+  const i=u.keywords.findIndex(k=>String(k).toUpperCase()===kw);
+  if(i>=0) u.keywords.splice(i,1); else u.keywords.push(kw);
+  applyRuleChange();
+}
+function autoInfoCard(label,on,desc){
+  return `<div class="sit-auto${on?' on':''}"><span class="sa-state">${on?'적용 중':'미적용'}</span><span class="sa-label">${label}</span><span class="sa-desc">${desc}</span></div>`;
+}
+
+function renderSituationModal(){
+  const atk=getUnitObj('atk'), def=getUnitObj('def');
+  const choice=collectChoiceSmart();
+  const tkw=targetKeywords();
+  let html='';
+
+  // 대상 키워드(자동 인식 + 수정)
+  html+='<div class="sit-section"><div class="sit-section-title def">🎯 대상 종류 (자동 인식 · 틀리면 탭해서 수정)</div>';
+  html+=targetKeywordChips();
+  html+='</div>';
+
+  // 자동 판정 효과 (대상 키워드 기반: Anti, Tank Hunters 등) — 물어보지 않고 자동
+  const autoCards=[];
+  if(rules.anti>0){ const on=tkw.includes(rules.antiKw);
+    autoCards.push(autoInfoCard('Anti-'+rules.antiKw+' '+rules.anti+'+', on, on?`대상이 ${rules.antiKw} → 부상 ${rules.anti}+ & 치명 부상 자동 적용`:`대상이 ${rules.antiKw}가 아니라 미적용`)); }
+  collectAutoSmart().forEach(s=>{ const on=tkw.includes(s.needKw);
+    autoCards.push(autoInfoCard(s.eff.label, on, on?`${s.q} → 자동 적용`:`${s.q} 아님 → 미적용`)); });
+  if(autoCards.length) html+='<div class="sit-section"><div class="sit-section-title atk">⚡ 자동 적용 (대상 종류로 판정)</div>'+autoCards.join('')+'</div>';
+
+  // 선택형 상황(위치/턴 선택): 능력 기반
+  html+='<div class="sit-section"><div class="sit-section-title abil">🧠 이 매치업에서 골라야 하는 상황 (아미 데이터 기반)</div>';
+  html+= choice.length ? choice.map(smartCard).join('') : '<div class="sit-empty">선택해야 할 능력 기반 상황이 없습니다.</div>';
+  html+='</div>';
+
+  const wc=[];
+  if(rules.lance) wc.push(card({key:'charged',on:rules.charged,title:'이번 턴 돌격(차지) 성공',eff:'Lance 무기 → 부상 굴림 <em>+1</em>'}));
+  if(rules.rapid>0||rules.melta>0){ const p=[]; if(rules.rapid>0)p.push('Rapid Fire → 공격 <em>+'+rules.rapid+'</em>'); if(rules.melta>0)p.push('Melta → 피해 <em>+'+rules.melta+'</em>'); wc.push(card({key:'halfRange',on:rules.halfRange,title:'사거리 절반 이내에서 사격',eff:p.join(' · ')})); }
+  if(rules.heavy) wc.push(card({key:'stationary',on:rules.stationary,title:'사격 전 이동하지 않음(고정)',eff:'Heavy 무기 → 명중 굴림 <em>+1</em>'}));
+  if(wc.length) html+='<div class="sit-section"><div class="sit-section-title atk">⚔ 이 무기에서 가능한 상황</div>'+wc.join('')+'</div>';
+
+  html+='<div class="sit-section"><div class="sit-section-title def">🛡 방어 · 지형 상황</div>';
+  const coverEff = rules.ignoresCover ? '공격 무기가 Ignores Cover라 효과가 없습니다.' : '방어 굴림 <em>+1</em> (방어도 3+ 이상은 AP가 붙은 공격에만 적용)';
+  html+=card({key:'cover',on:rules.cover&&!rules.ignoresCover,defCard:true,title:'방어 유닛이 엄폐(Cover) 중',eff:coverEff,effClass:rules.ignoresCover?'muted':''});
+  html+='</div>';
+
+  html+='<div class="sit-section"><div class="sit-section-title abil">📖 유닛 능력 — 효과를 직접 지정 (데이터시트 보고 탭)</div>';
+  html+='<p class="det-note" style="margin:0 0 8px">도구가 아는 능력은 위에서 자동으로 물어봤어요. 아래는 효과를 모르는 능력들 — 데이터시트를 보고 해당하는 효과를 탭하면 계산에 들어갑니다.</p>';
+  const offEffs=[['hit',1,'명중 +1'],['wound',1,'부상 +1'],['rrHit',1,'명중 재굴림'],['rrWound',1,'부상 재굴림'],['tough',1,'대상 강인도 -1'],['ap',1,'AP +1 (관통↑)'],['saveWorse',1,'대상 방어도 -1']];
+  const defEffs=[['inv',5,'무적 5+'],['inv',4,'무적 4+'],['svBonus',1,'방어 +1'],['fnp',5,'FNP 5+'],['fnp',6,'FNP 6+'],['hit',-1,'적 명중 -1'],['wound',-1,'적 부상 -1']];
+  const renderAbilList=(names,label,side,prefix)=>{
+    const isDef=side==='def';
+    if(!names.length) return '';
+    let s=`<div class="sit-empty" style="margin-bottom:4px">${label}</div>`;
+    const effs=isDef?defEffs:offEffs;
+    names.forEach((n,i)=>{
+      if(isKnownAbility(n) || LEADER_KB.some(k=>k.match.test(n))){
+        s+=`<div class="abil-ref${isDef?' def-ref':''}"><div class="ar-name">${n}</div><span class="ar-flag">↗ 위 상황/분대장 버프에 자동 반영됨</span></div>`;
+      } else if(isInfoAbility(n)){
+        s+=`<div class="abil-ref${isDef?' def-ref':''}"><div class="ar-name">${n}</div><span class="ar-flag" style="background:rgba(255,255,255,.05);border-color:var(--border2);color:var(--text3)">ℹ 보통 이 계산엔 영향 없음 (방어 능력치는 방어 패널에서 입력)</span></div>`;
+      } else {
+        const key=prefix+i;
+        const e=rules.smart[key]||{};
+        const chips=effs.map(([prop,val,lbl])=>{
+          const on=(prop==='rrHit'||prop==='rrWound')?!!e[prop]:(e[prop]===val);
+          return `<button class="eff-chip${on?' on':''}" onclick="toggleUserEff('${key}',${JSON.stringify(n).replace(/"/g,'&quot;')},'${side}','${prop}',${val})">${lbl}</button>`;
+        }).join('');
+        s+=`<div class="abil-ref${isDef?' def-ref':''}"><div class="ar-name">${n}</div><div class="ar-ask">이 능력이 지금 ${isDef?'방어':'공격'}에 영향을 주나요? 효과를 골라주세요 (해당 없으면 그냥 두기):</div><div class="eff-chips">${chips}</div></div>`;
+      }
+    });
+    return s;
+  };
+  const renderAbil=(unit,label,side)=>{
+    if(!unit) return `<div class="sit-empty">${label}: 유닛 없음</div>`;
+    let out=renderAbilList(abilNames(unit),label,side,'u_'+side+'_');
+    attachedUnitObjs(side).forEach((ld,li)=>{
+      const nm=attached[side][li]?attached[side][li].u:'분대장';
+      out+=renderAbilList(abilNames(ld),'↳ (분대장) '+nm,side,'u_'+side+'_L'+li+'_');
+    });
+    if(!out) out=`<div class="sit-empty">${label}: 등록된 능력 없음</div>`;
+    return out;
+  };
+  html+=renderAbil(atk,'⚔ 공격 유닛',atk?'atk':'')+renderAbil(def,'🛡 방어 유닛',def?'def':'');
+  html+='</div>';
+
+  // 주변 아군 오라(방어 측의 다른 유닛이 제공) — 듄크롤러식 버프
+  const auraList=defenderArmyAuras();
+  if(auraList.length){
+    html+='<div class="sit-section"><div class="sit-section-title def">📡 주변 아군 오라 (방어 측 — 범위 안이면 효과 지정)</div>';
+    html+='<p class="det-note" style="margin:0 0 6px">방어 부대 근처 아군 유닛이 주는 방어 오라입니다. 오라 범위 안에 있다면 효과를 탭해서 적용하세요.</p>';
+    auraList.forEach((a,i)=>{
+      const key='u_defaura_'+i; const e=rules.smart[key]||{};
+      const chips=defEffs.map(([prop,val,lbl])=>{ const on=(prop==='rrHit'||prop==='rrWound')?!!e[prop]:(e[prop]===val);
+        return `<button class="eff-chip${on?' on':''}" onclick="toggleUserEff('${key}',${JSON.stringify(a.label).replace(/"/g,'&quot;')},'def','${prop}',${val})">${lbl}</button>`; }).join('');
+      html+=`<div class="abil-ref def-ref"><div class="ar-name">${a.name} <span style="color:var(--text3);font-weight:400">— ${a.from}</span></div><div class="ar-ask">오라 범위 안인가요? 효과를 골라주세요:</div><div class="eff-chips">${chips}</div></div>`;
+    });
+    html+='</div>';
+  }
+
+  html+='<details class="sit-section" '+(window.__advOpen?'open':'')+' ontoggle="window.__advOpen=this.open"><summary class="sit-section-title" style="cursor:pointer;list-style:revert">⚙ 직접 보정 (고급 · 도구가 못 잡은 버프 수동 입력)</summary><div style="margin-top:8px">';
+  html+=card({key:'hitBuff',on:rules.hitBuff,title:'명중 굴림 +1 (수동)',eff:'명중 <em>+1</em>'});
+  html+=card({key:'woundBuff',on:rules.woundBuff,title:'부상 굴림 +1 (수동)',eff:'부상 <em>+1</em>'});
+  html+=card({key:'hitDebuff',on:rules.hitDebuff,defCard:true,title:'공격자 명중 -1 (수동)',eff:'명중 <em>-1</em>'});
+  html+=card({key:'woundDebuff',on:rules.woundDebuff,defCard:true,title:'공격자 부상 -1 (수동)',eff:'부상 <em>-1</em>'});
+  html+=segReroll('hit')+segReroll('wound');
+  html+='</div></details>';
+
+  html+='<div class="sit-apply-row"><button class="mbtn primary" style="flex:1;justify-content:center;font-size:14px" onclick="closeSituation()">✓ 이 상황으로 계산 완료</button><button class="mbtn" onclick="resetSituation()">상황 초기화</button></div>';
+  document.getElementById('sit-modal-body').innerHTML=html;
+}
+
+function resetSituation(){
+  Object.assign(rules,{charged:false,halfRange:false,stationary:false,hitBuff:false,hitDebuff:false,woundBuff:false,woundDebuff:false,cover:false,antiActive:false,rhMode:'none',rwMode:'none'});
+  rules.smart={}; applyRuleChange();
+}
+
+function renderActiveSituations(){
+  const box=document.getElementById('sit-active'); if(!box) return;
+  const chips=[]; const A=(t)=>chips.push({t,c:''}); const D=(t)=>chips.push({t,c:'def'});
+  // 자동 효과(대상 키워드 기반)
+  const auto=gatherAutoEffects();
+  if(auto.antiOn) A('Anti '+rules.anti+'+ (자동)');
+  auto.active.forEach(l=>A(l+' (자동)'));
+  gatherLeaderBuffs('atk').active.forEach(l=>A('분대장: '+l));
+  gatherLeaderBuffs('def').active.forEach(l=>D('분대장: '+l));
+  // 스마트(선택형)
+  for(const k in rules.smart){ const e=rules.smart[k]; if(e)(e.side==='def'?D:A)(e.label||'상황'); }
+  if(rules.charged&&rules.lance) A('돌격 부상+1');
+  if(rules.halfRange){ const p=[]; if(rules.rapid>0)p.push('공격+'+rules.rapid); if(rules.melta>0)p.push('피해+'+rules.melta); A('절반사거리'+(p.length?' '+p.join('/'):'')); }
+  if(rules.stationary&&rules.heavy) A('고정 명중+1');
+  if(rules.hitBuff) A('명중+1');
+  if(rules.woundBuff) A('부상+1');
+  if(rules.rhMode!=='none') A('명중재굴림'+(rules.rhMode==='ones'?'(1)':''));
+  if(rules.rwMode!=='none') A('부상재굴림'+(rules.rwMode==='ones'?'(1)':''));
+  if(rules.cover&&!rules.ignoresCover) D('엄폐 방어+1');
+  if(rules.hitDebuff) D('적 명중-1');
+  if(rules.woundDebuff) D('적 부상-1');
+  if(!chips.length){ box.innerHTML='<span class="sa-empty">적용된 전투 상황이 없습니다 — 버튼을 눌러 현재 상황을 선택하세요.</span>'; return; }
+  box.innerHTML=chips.map(c=>`<span class="sa-chip ${c.c}">${c.t}</span>`).join('');
+}
+
+// ── EDIT MODAL ──
+function openEdit(side){ editTarget=side; const f=getFaction(side); document.getElementById('modal-title').textContent=(side==='atk'?'⚔ 공격':'🛡 방어')+' 유닛 편집 — '+f; renderModalBody(f,side); document.getElementById('modal').classList.add('open'); }
+function closeEdit(){document.getElementById('modal').classList.remove('open');}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeEdit();});
+function renderModalBody(faction,side){
+  const units=sideData[side][faction]; let html='';
+  Object.entries(units).forEach(([uname,unit])=>{
+    if(side==='atk'){
+      html+=`<div class="weapon-editor"><div class="wname">📋 ${uname}</div>`;
+      unit.weapons.forEach((w,wi)=>{ html+=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:2px;padding:7px 9px;margin-bottom:5px"><div style="font-size:11px;color:var(--gold);margin-bottom:5px">🗡 ${w.name}</div><div class="r3" style="gap:5px;margin-bottom:4px"><div><label class="lbl">A</label><input type="number" value="${w.A}" oninput="editWeapon('${faction}','${uname}',${wi},'A',this.value)"></div><div><label class="lbl">BS/WS</label><select onchange="editWeapon('${faction}','${uname}',${wi},'skill',this.value)">${[2,3,4,5,6].map(v=>`<option value="${v}" ${w.skill==v?'selected':''}>${v}+</option>`).join('')}</select></div><div><label class="lbl">S</label><input type="number" value="${w.S}" oninput="editWeapon('${faction}','${uname}',${wi},'S',this.value)"></div></div><div class="r3" style="gap:5px"><div><label class="lbl">AP</label><select onchange="editWeapon('${faction}','${uname}',${wi},'AP',this.value)">${[0,1,2,3,4,5,6].map(v=>`<option value="${v}" ${w.AP==v?'selected':''}>-${v}</option>`).join('')}</select></div><div><label class="lbl">D</label><input type="number" value="${w.D}" oninput="editWeapon('${faction}','${uname}',${wi},'D',this.value)"></div><div style="display:flex;align-items:flex-end"><button class="mbtn danger" onclick="deleteWeapon('${faction}','${uname}',${wi})">삭제</button></div></div><div style="margin-top:5px"><label class="lbl">Keywords</label><input type="text" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);height:28px" value="${(w.keywords||[]).join(', ')}" oninput="editWeaponKw('${faction}','${uname}',${wi},this.value)"></div></div>`; });
+      html+=`<button class="mbtn" onclick="addWeapon('${faction}','${uname}')">+ 무기 추가</button></div>`;
+    }else{
+      html+=`<div class="weapon-editor"><div class="wname">📋 ${uname}</div><div class="r3" style="gap:5px;margin-bottom:5px"><div><label class="lbl">T</label><input type="number" value="${unit.T}" oninput="editDef('${faction}','${uname}','T',this.value)"></div><div><label class="lbl">Sv</label><select onchange="editDef('${faction}','${uname}','Sv',this.value)">${[2,3,4,5,6,7].map(v=>`<option value="${v}" ${unit.Sv==v?'selected':''}>${v===7?'없음':v+'+'}</option>`).join('')}</select></div><div><label class="lbl">W</label><input type="number" value="${unit.W}" oninput="editDef('${faction}','${uname}','W',this.value)"></div></div><div class="r3" style="gap:5px"><div><label class="lbl">Inv</label><select onchange="editDef('${faction}','${uname}','Inv',this.value)">${[0,3,4,5,6].map(v=>`<option value="${v}" ${unit.Inv==v?'selected':''}>${v?v+'++':'없음'}</option>`).join('')}</select></div><div><label class="lbl">FNP</label><select onchange="editDef('${faction}','${uname}','FNP',this.value)">${[0,4,5,6].map(v=>`<option value="${v}" ${unit.FNP==v?'selected':''}>${v?v+'+++':'없음'}</option>`).join('')}</select></div><div><label class="lbl">모델수</label><input type="number" value="${unit.models}" oninput="editDef('${faction}','${uname}','models',this.value)"></div></div></div>`;
+    }
+  });
+  html+=`<div class="mrow"><button class="mbtn primary" onclick="addUnit('${faction}','${side}')">+ 새 유닛 추가</button><button class="mbtn" onclick="resetFaction('${faction}','${side}')">↺ 초기화</button></div>`;
+  document.getElementById('modal-body').innerHTML=html;
+}
+function editWeapon(f,u,wi,key,val){ sideData.atk[f][u].weapons[wi][key]=isNaN(+val)?val:+val; if(getFaction('atk')===f&&getUnit('atk')===u)onAtkWeapon(); }
+function editWeaponKw(f,u,wi,val){ sideData.atk[f][u].weapons[wi].keywords=val.split(',').map(s=>s.trim()).filter(Boolean); if(getFaction('atk')===f&&getUnit('atk')===u)onAtkWeapon(); }
+function editDef(f,u,key,val){ sideData.def[f][u][key]=+val; if(getFaction('def')===f&&getUnit('def')===u)onDefUnit(); }
+function deleteWeapon(f,u,wi){ if(sideData.atk[f][u].weapons.length<=1){alert('무기는 최소 1개 이상 필요합니다.');return;} sideData.atk[f][u].weapons.splice(wi,1); renderModalBody(f,'atk'); if(getFaction('atk')===f&&getUnit('atk')===u)onAtkUnit(); }
+function addWeapon(f,u){ sideData.atk[f][u].weapons.push({name:'새 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]}); renderModalBody(f,'atk'); }
+function addUnit(f,side){ const name=prompt('새 유닛 이름:'); if(!name||!name.trim())return; const n=name.trim(); if(sideData[side][f][n]){alert('이미 존재하는 이름입니다.');return;} sideData[side][f][n]={T:4,Sv:4,W:2,Inv:0,FNP:0,models:5,weapons:side==='atk'?[{name:'새 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]}]:[]}; renderModalBody(f,side); if(side==='atk')onAtkFaction();else onDefFaction(); }
+function resetFaction(f,side){ if(!confirm(`"${f}" 팩션의 모든 수정을 초기화할까요?`))return; sideData[side][f]=clone(sideDB[side][f]); renderModalBody(f,side); if(side==='atk')onAtkFaction();else onDefFaction(); }
+
+
+// ── SPECTATOR SIDE SWAP ──
+const armySelectionMemory=new WeakMap();
+let spectatorSidesSwapped=false;
+
+function getSelectedOptionText(id){
+  const select=document.getElementById(id);
+  return select?.options?.[select.selectedIndex]?.textContent||'';
+}
+function selectOptionText(id,text){
+  const select=document.getElementById(id);
+  if(!select||!text)return false;
+  const index=[...select.options].findIndex(option=>option.textContent===text);
+  if(index<0)return false;
+  select.selectedIndex=index;
+  return true;
+}
+function rememberArmySelection(side){
+  const army=sideData[side];
+  if(!army||typeof army!=='object')return;
+  const previous=armySelectionMemory.get(army)||{};
+  const next={...previous,faction:getFaction(side)||'',unit:getUnit(side)||''};
+  if(side==='atk'){
+    const weaponSelect=document.getElementById('atk-w');
+    next.weaponIndex=weaponSelect?.selectedIndex??0;
+    next.weapon=getSelectedOptionText('atk-w');
+  }
+  armySelectionMemory.set(army,next);
+}
+function restoreArmySelection(side){
+  const army=sideData[side];
+  const saved=armySelectionMemory.get(army)||{};
+  const factionSelect=document.getElementById(side+'-f');
+  if(saved.faction)selectOptionText(side+'-f',saved.faction);
+  if(side==='atk')onAtkFaction(); else onDefFaction();
+  if(saved.unit)selectOptionText(side+'-u',saved.unit);
+  if(side==='atk'){
+    onAtkUnit();
+    const weaponSelect=document.getElementById('atk-w');
+    if(saved.weapon)selectOptionText('atk-w',saved.weapon);
+    else if(Number.isInteger(saved.weaponIndex)&&weaponSelect?.options?.length) weaponSelect.selectedIndex=Math.min(saved.weaponIndex,weaponSelect.options.length-1);
+    onAtkWeapon();
+  }else onDefUnit();
+}
+function swapStatusBlocks(){
+  const atk=document.getElementById('atk-json-status');
+  const def=document.getElementById('def-json-status');
+  if(!atk||!def)return;
+  const atkState={text:atk.textContent,className:atk.className};
+  atk.textContent=def.textContent; atk.className=def.className;
+  def.textContent=atkState.text; def.className=atkState.className;
+}
+function updateSpectatorSwapButton(){
+  const button=document.getElementById('spectator-swap');
+  const label=document.getElementById('swap-label');
+  if(button)button.setAttribute('aria-pressed',String(spectatorSidesSwapped));
+  if(label)label.textContent=spectatorSidesSwapped?'SIDES SWAPPED':'SWAP SIDES';
+}
+function swapSpectatorSides(){
+  rememberArmySelection('atk');
+  rememberArmySelection('def');
+  [sideData.atk,sideData.def]=[sideData.def,sideData.atk];
+  [sideDB.atk,sideDB.def]=[sideDB.def,sideDB.atk];
+  swapStatusBlocks();
+  refreshSide('atk');
+  refreshSide('def');
+  restoreArmySelection('atk');
+  restoreArmySelection('def');
+  spectatorSidesSwapped=!spectatorSidesSwapped;
+  updateSpectatorSwapButton();
+  calc();
+}
+
+// ── THEME ──
+function applyTheme(theme){
+  const chosen=theme==='light'?'light':'dark';
+  document.body.dataset.theme=chosen;
+  const toggle=document.getElementById('theme-toggle');
+  const isLight=chosen==='light';
+  if(toggle)toggle.setAttribute('aria-checked',String(isLight));
+  const icon=document.getElementById('theme-icon');
+  const label=document.getElementById('theme-label');
+  if(icon)icon.textContent=isLight?'☀':'☾';
+  if(label)label.textContent=isLight?'LIGHT':'DARK';
+  try{localStorage.setItem('wh40k-theme',chosen);}catch(e){}
+}
+function toggleTheme(){ applyTheme(document.body.dataset.theme==='light'?'dark':'light'); }
+function initTheme(){
+  let saved='light';
+  try{saved=localStorage.getItem('wh40k-theme')||'light';}catch(e){}
+  applyTheme(saved);
+}
+
+// ── RULE TOOLTIPS ──
+function bindRuleTooltips(elements=document.querySelectorAll('[data-tip]')){
+  const tooltip=document.getElementById('rule-tooltip');
+  if(!tooltip)return;
+  const move=(event)=>{
+    const gap=14;
+    const rect=tooltip.getBoundingClientRect();
+    let left=event.clientX+gap;
+    let top=event.clientY+gap;
+    if(left+rect.width>window.innerWidth-10)left=event.clientX-rect.width-gap;
+    if(top+rect.height>window.innerHeight-10)top=event.clientY-rect.height-gap;
+    tooltip.style.left=Math.max(10,left)+'px';
+    tooltip.style.top=Math.max(10,top)+'px';
+  };
+  const show=(btn)=>{
+    tooltip.replaceChildren();
+    const strong=document.createElement('strong');
+    strong.textContent=btn.dataset.tipTitle||btn.textContent;
+    tooltip.append(strong,document.createTextNode(btn.dataset.tip||''));
+    tooltip.classList.add('show');
+    tooltip.setAttribute('aria-hidden','false');
+  };
+  const hide=()=>{
+    tooltip.classList.remove('show');
+    tooltip.setAttribute('aria-hidden','true');
+  };
+  elements.forEach(btn=>{
+    if(btn.dataset.tipBound==='1')return;
+    btn.dataset.tipBound='1';
+    btn.addEventListener('mouseenter',event=>{show(btn);move(event);});
+    btn.addEventListener('mousemove',move);
+    btn.addEventListener('mouseleave',hide);
+    btn.addEventListener('focus',()=>{
+      show(btn);
+      const rect=btn.getBoundingClientRect();
+      tooltip.style.left=Math.max(10,Math.min(rect.left,window.innerWidth-tooltip.offsetWidth-10))+'px';
+      tooltip.style.top=Math.max(10,Math.min(rect.bottom+8,window.innerHeight-tooltip.offsetHeight-10))+'px';
+    });
+    btn.addEventListener('blur',hide);
+  });
+}
+function initRuleTooltips(){ bindRuleTooltips(); }
+initTheme();
+initRuleTooltips();
+
+</script>
+</body>
+</html>
