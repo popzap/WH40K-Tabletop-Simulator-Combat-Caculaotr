@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WH40K Game Master</title>
+<title>WH40K Game Master 20260614</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -62,6 +62,19 @@ select:focus,input:focus{border-color:var(--gold)}
 .detach-desc strong{color:var(--gold2);font-family:'Rajdhani',sans-serif}
 .uv{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--red-dim);color:var(--red2);border:1px solid var(--red);margin-left:5px}
 .file-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:3px;border:1px dashed var(--border2);background:var(--bg3);color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:.15s;text-transform:uppercase;width:100%;justify-content:center}
+.paste-toggle{display:block;width:100%;margin-top:6px;padding:7px;background:transparent;border:none;color:var(--gold2);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;letter-spacing:.02em}
+.paste-toggle:hover{color:var(--gold)}
+.paste-wrap{margin-top:8px}
+.paste-area{width:100%;min-height:110px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:9px;resize:vertical;line-height:1.4}
+.paste-area:focus{outline:none;border-color:var(--gold2)}
+.paste-go{width:100%;margin-top:7px;padding:11px;font-size:13px}
+.vh-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0,0,0,0);border:0;padding:0;margin:-1px;white-space:nowrap}
+.lu-abil{margin:10px 0;padding:9px 11px;background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--gold2);border-radius:4px}
+.lu-abil-h{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;color:var(--gold);letter-spacing:.04em;margin-bottom:6px}
+.lu-abil-i{font-size:12px;line-height:1.5;color:var(--text2);margin:4px 0}
+.lu-abil-i b{color:var(--text)}
+.enh-r{font-size:10px;font-weight:700;color:var(--gold2);background:rgba(196,160,80,.14);border:1px solid rgba(196,160,80,.4);border-radius:3px;padding:0 5px;margin-left:3px}
+.enh-auto{margin-top:5px;font-size:11px;font-weight:700;color:var(--green2);background:rgba(61,186,120,.12);border:1px solid rgba(61,186,120,.34);border-radius:3px;padding:3px 7px;display:inline-block}
 .file-btn:hover{border-color:var(--gold);color:var(--gold)}
 input[type=file]{display:none}
 .statusbar{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
@@ -381,6 +394,10 @@ body[data-faction]{background-image:radial-gradient(130% 80% at 50% -12%,var(--g
 .cstrat-buy button:disabled{opacity:.35;cursor:not-allowed}
 .cstrat-d{font-size:11.5px;color:var(--text2);margin-top:3px;line-height:1.45}
 .cstrat-fx{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;color:var(--green2);background:rgba(61,186,120,.14);border:1px solid rgba(61,186,120,.4);border-radius:3px;padding:1px 6px;margin-left:4px;text-transform:uppercase}
+.cstrat-fx.info{color:var(--text3);background:rgba(150,150,150,.12);border-color:rgba(150,150,150,.32)}
+.cstrat-side{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;color:var(--gold2);background:rgba(196,160,80,.14);border:1px solid rgba(196,160,80,.4);border-radius:3px;padding:1px 6px;margin-left:3px}
+.cstrat-box.det{border-color:var(--gold2)}
+.cstrat-h.det{color:var(--gold)}
 .cstrat-fx.gren{color:#e0a85a;background:rgba(224,168,90,.14);border-color:rgba(224,168,90,.4)}
 .astrat-box{background:rgba(61,186,120,.08);border:1px solid rgba(61,186,120,.4);border-radius:6px;padding:10px 12px;margin-top:10px}
 .astrat-box.gren{background:rgba(224,168,90,.08);border-color:rgba(224,168,90,.45)}
@@ -892,8 +909,14 @@ body[data-faction] .emblem{border-radius:var(--panel-radius)}
         <div class="pp-tag">▤ 플레이어 1</div>
         <label class="lbl">이름</label><input type="text" id="p1-name" value="플레이어 1">
         <label class="lbl">군대 JSON (TTS 세이브 또는 계산기 포맷)</label>
-        <label class="file-btn">⬆ JSON 불러오기<input type="file" id="p1-file" accept=".json,application/json,text/plain,.txt" onchange="onLoad(0,this)"></label>
-        <div class="import-status" id="p1-status">파일을 선택하세요.</div>
+        <button type="button" class="file-btn" onclick="pickFile(0)">⬆ JSON 파일 불러오기</button>
+        <input type="file" id="p1-file" class="vh-file" onchange="onLoad(0,this)">
+        <button type="button" class="paste-toggle" onclick="togglePaste(0)">또는 📋 텍스트로 붙여넣기 (모바일 권장)</button>
+        <div class="paste-wrap" id="p1-paste-wrap" style="display:none">
+          <textarea id="p1-paste" class="paste-area" placeholder="JSON 파일 내용 전체를 복사해 여기에 붙여넣으세요"></textarea>
+          <button type="button" class="btn primary paste-go" onclick="onLoadText(0)">붙여넣은 JSON 불러오기</button>
+        </div>
+        <div class="import-status" id="p1-status">파일을 선택하거나 텍스트를 붙여넣으세요.</div>
         <label class="lbl">팩션</label><select id="p1-faction" onchange="onFactionPick(0)"></select>
         <label class="lbl">디테치먼트 <span style="color:var(--text3)">(게임 시작 시 선택)</span></label><select id="p1-detach" onchange="onDetachPick(0)"></select>
         <div id="p1-detach-desc"></div><div id="p1-choice-wrap"></div>
@@ -902,8 +925,14 @@ body[data-faction] .emblem{border-radius:var(--panel-radius)}
         <div class="pp-tag">▤ 플레이어 2</div>
         <label class="lbl">이름</label><input type="text" id="p2-name" value="플레이어 2">
         <label class="lbl">군대 JSON (TTS 세이브 또는 계산기 포맷)</label>
-        <label class="file-btn">⬆ JSON 불러오기<input type="file" id="p2-file" accept=".json,application/json,text/plain,.txt" onchange="onLoad(1,this)"></label>
-        <div class="import-status" id="p2-status">파일을 선택하세요.</div>
+        <button type="button" class="file-btn" onclick="pickFile(1)">⬆ JSON 파일 불러오기</button>
+        <input type="file" id="p2-file" class="vh-file" onchange="onLoad(1,this)">
+        <button type="button" class="paste-toggle" onclick="togglePaste(1)">또는 📋 텍스트로 붙여넣기 (모바일 권장)</button>
+        <div class="paste-wrap" id="p2-paste-wrap" style="display:none">
+          <textarea id="p2-paste" class="paste-area" placeholder="JSON 파일 내용 전체를 복사해 여기에 붙여넣으세요"></textarea>
+          <button type="button" class="btn primary paste-go" onclick="onLoadText(1)">붙여넣은 JSON 불러오기</button>
+        </div>
+        <div class="import-status" id="p2-status">파일을 선택하거나 텍스트를 붙여넣으세요.</div>
         <label class="lbl">팩션</label><select id="p2-faction" onchange="onFactionPick(1)"></select>
         <label class="lbl">디테치먼트 <span style="color:var(--text3)">(게임 시작 시 선택)</span></label><select id="p2-detach" onchange="onDetachPick(1)"></select>
         <div id="p2-detach-desc"></div><div id="p2-choice-wrap"></div>
@@ -1005,7 +1034,10 @@ body[data-faction] .emblem{border-radius:var(--panel-radius)}
         <select id="def-unit" onchange="renderCombatToggles()"></select>
         <div class="def-extra" id="aff-row">
           <label class="ck"><input type="checkbox" id="def-afflicted" onchange="renderCombatToggles()"> 역병 걸림(오염) 자동적용</label>
-          <label class="ck">불굴 보정(Inv) <input type="number" id="inv-override" min="2" max="6" placeholder="-" style="width:54px" onchange="renderCombatToggles()"></label>
+        </div>
+        <div class="def-extra" style="margin-top:6px" id="inv-row">
+          <label class="ck"><input type="checkbox" id="inv-on" onchange="renderCombatToggles()"> 불굴 방어막(Inv) 적용</label>
+          <span id="inv-val-wrap" style="display:none">→ <select id="inv-override" onchange="renderCombatToggles()"><option value="4">4++</option><option value="5" selected>5++</option><option value="6">6++</option><option value="3">3++</option><option value="2">2++</option></select></span>
         </div>
         <div class="def-extra" style="margin-top:6px" id="psy-row">
           <span class="psy-t">✨ 필멸 상처 (사이킥·능력)</span>
@@ -1206,19 +1238,23 @@ const RULES_DB={
     detachments:[
       {name:"Virulent Vectorium",desc:"디테치 룰(인덱스 Plague Company 후신): 내 유닛이 목표를 통제하면 Sticky(점착) — 떠나도 적이 뺏기 전까지 계속 통제, 그 목표에서 오염 오라 방출. 오염된 적 상대 사격은 명중·부상 재굴림(스트라타젬), −1 피해, 자폭 등. 목표: 종합형 보드 장악(입문 추천)."},
       {name:"Champions of Contagion",desc:"디테치 룰: 매 배틀 라운드에 활성 역병(오염)을 바꾸거나 2개를 동시에 적용 가능 + 캐릭터 이동/합류 유연. 목표: 캐릭터·플레이그 마린 블롭 중심 툴박스(숙련도 요구)."},
-      {name:"Death Lord's Chosen",desc:"터미네이터 디테치. 블라이트로드·데스슈라우드와 합류 유닛 강화 + 특히 치명적인 역병 + 순간이동/심층강하 스트라타젬 지원. 목표: 정예 터미네이터를 목표에 떨어뜨려 화력 무시."},
+      {name:"Death Lord's Chosen",desc:"디테치 룰: 적 커맨드 페이즈에, Afflicted(오염)된 적 유닛마다 2D6을 굴려 결과가 6 이하면 그 유닛에 D3 필멸 상처. 오염 디버프를 직접 피해로 전환하는 형. 블라이트로드·데스슈라우드 등 정예와 시너지. 목표: 오염으로 적을 갉아먹는 소모전."},
       {name:"Mortarion's Hammer",desc:"차량·탱크 중심 디테치. 오염 범위 밖 먼 적도 Afflicted(오염)로 만드는 능력 + 화력 지원. 목표: 전차 화력으로 원거리 적까지 약화."},
       {name:"Shamblerot Vectorium",desc:"폭스워커 디테치. 폭스워커가 전열(Battleline)이 되고, 2·3·4 배틀 라운드 시작 시 10인 폭스워커 1부대를 예비대에 무료 추가. 목표: 끝없는 좀비 물량으로 목표 점거."},
       {name:"Tallyband Summoners",desc:"너글 데몬 혼합 디테치. 데스가드 7″ 내 너글 데몬이 Nurgle’s Gift 오라 획득(오염 방출) + 오염 범위 확장, 너글링 투척 등. 목표: 데몬+데스가드 시너지 물량전."},
-      {name:"Flyblown Host",desc:"그롯마스 디테치. 전 유닛 Stealth(이 유닛 대상 사격 시 적 명중 −1) + 전 보병 5″ Scout(스카웃) 선이동. 목표: 은폐+선행 이동으로 빠른 전개·생존."}]},
+      {name:"Flyblown Host",desc:"디테치 룰: FLYBLOWN 키워드 유닛을 강화하고, 교전 중인 적에게 배틀쇼크(전투충격, −1 페널티)를 유발하는 등 적을 방해·교란하는 데 특화. 목표: 적의 행동을 막고 흔들며 주도권 장악."}]},
   "Necrons":{aliases:["necron","네크론"],
     armyRule:{name:"Reanimation Protocols (재조립 프로토콜)",desc:"각 네크론 유닛은 자기 지령 페이즈에 잃은 상처 D3 재생(파괴 모델도 1상처로 복귀, 시작 인원 초과 불가). 캐릭터 인솔/일부 유닛은 더 많이 재생.",choices:null},
     detachments:[
-      {name:"Awakened Dynasty",desc:"디테치 룰 Command Protocols: 캐릭터(리더)가 이끄는 유닛은 명중 굴림 +1. 목표: 리더 중심 종합형(가장 안정적이고 무난)."},
-      {name:"Hypercrypt Legion",desc:"디테치 룰 Hyperphasing: 상대 턴 종료 시 교전 중 아닌 유닛 1/2/3개(전투 규모별)를 전략 예비대로 보냄 → 다음 턴 9″ 밖 심층강하로 재배치(순간이동). 목표: 느린 군대의 기동·기습 해결(모노리스와 시너지)."},
-      {name:"Canoptek Court",desc:"디테치 룰 Power Matrix: 내가 통제한 목표들로 'Power Matrix' 구역을 형성, 그 안의 CANOPTEK 유닛은 명중 굴림 재굴림(카놉텍은 보통 4+ 명중이라 사실상 필수). 적 돌격 선언 시 재조립 발동 등 반응 트릭. 목표: 목표 장악형 카놉텍."},
-      {name:"Obeisance Phalanx",desc:"디테치 룰 Worthy Foes: 내 지령 페이즈에 적 1유닛 지정 → 다음 지령 페이즈까지 내 NOBLE·LYCHGUARD·TRIARCH 유닛이 그 적 대상 부상 굴림 +1. 목표: 귀족·정예로 지정 표적 격파."},
-      {name:"Annihilation Legion",desc:"디테치 룰 Annihilation Protocol: 디스트로이어·근접 중심(근접 살상 보정). 정확 수치는 코덱스 확인 ⚠ — 평가상 가장 약한 디테치. 목표: 스코르페크·플레이드 원 근접 돌격."}]},
+      {name:"Awakened Dynasty",desc:"디테치 룰 — Command Protocols(지령 프로토콜): 네크론 CHARACTER가 이끄는(합류한) 유닛은 공격할 때마다 명중 굴림 +1. 단순하지만 광범위하고 강력한 리더 버프(리치가드가 사실상 2+ 명중). 핵심 인핸스먼트 Veil of Darkness(암흑의 장막): 내 유닛 하나를 순간이동(재배치)시켜 느린 군대의 기동을 보완. 인덱스 시절부터 검증된 가장 무난·안정적인 종합형. 목표: 리더로 보병 블록·정예를 강화하는 정공법."},
+      {name:"Hypercrypt Legion",desc:"디테치 룰 — Hyperphasing(하이퍼페이징): 내 턴 종료 시 교전 중 아닌 유닛을 전략 예비대로 보냈다가 다음 턴 적에게서 멀리(보통 6″ 밖) 다시 배치 = 순간이동. 모노리스·고스트 아크와 시너지. 느리고 둔한 네크론의 약점인 기동·기습을 해결하는 트릭형. 목표: 순간이동으로 목표 장악·측면 기습·근접 유닛 꽂아넣기."},
+      {name:"Canoptek Court",desc:"디테치 룰 — Power Matrix(파워 매트릭스): Power Matrix 구역 내의 CANOPTEK·CRYPTEK 유닛은 명중 굴림 1을 재굴림하고, 구역 안에 완전히(wholly) 들어가 있으면 명중 굴림 전부 재굴림. 카놉텍 군세 중심의 강력한 디테치(경쟁전 최상위권). 스파이더·리애니메이터·스카라브 시너지. 목표: 카놉텍 기계 군단으로 목표 장악."},
+      {name:"Obeisance Phalanx",desc:"디테치 룰 — Worthy Foes(합당한 적): 내 지령 페이즈에 적 유닛 하나를 지정 → 그 적을 상대로 OVERLORD·LYCHGUARD·TRIARCH 유닛이 공격할 때 부상 굴림 +1. 리치가드·프레토리안·오버로드 같은 엘리트로 지정 표적을 집중 격파하는 정예형. 목표: 소수 정예로 핵심 위협을 콕 집어 제거."},
+      {name:"Annihilation Legion",desc:"디테치 룰 — Annihilation Protocol(절멸 프로토콜): DESTROYER 유닛이 반파된(Below Half-strength) 적 유닛에게 돌격에 성공하면, 그 전투 페이즈 동안 그 적 대상 부상 굴림 +1. 스코르페크·로커스트 중심 근접 학살형. 목표: 빠른 디스트로이어로 약화된 적을 마무리·돌파."},
+      {name:"Starshatter Arsenal",desc:"디테치 룰 — Relentless Onslaught(끊임없는 맹공): 적이 목표 점령지 위에 있으면 모든 비(非)괴수 네크론 모델이 그 적 대상 명중 굴림 +1, 그리고 비타이타닉 차량·기마(MOUNTED) 유닛의 사격 무기가 [ASSAULT]를 얻는다. 둠즈데이 아크 등 화력 라인형. 목표: 목표 위 적을 정밀 사격으로 갈아내기."},
+      {name:"Cryptek Conclave",desc:"디테치 룰 — Technosorcerous Augmentations(기술주술 증강): 크립텍 모델의 사격 무기가 [ASSAULT]를 얻고, 매 사격 페이즈마다 그 유닛은 [Anti-Infantry 3+]·[Anti-Mounted 4+]·[Assault]·[Heavy]·[Ignores Cover] 중 하나를 골라 무기에 적용. 크립텍 다수 운용형 버프 스택. 목표: 상황별 무기 특성으로 유연하게 대응."},
+      {name:"Cursed Legion",desc:"디테치 룰 — Cold Fervour(차가운 열정): 모든 DESTROYER CULT 모델의 근접 무기는 (피해치와 무관하게) 힘 +2. 매 턴 처음으로 Destroyer Cult 유닛이 적을 파괴하거나 반파시키면, 그 턴 동안 다른 네크론 모델(괴수·타이타닉·Destroyer Cult 제외)도 힘 +2. 광신적 근접 학살형. 목표: 디스트로이어로 적을 부수며 전군 강화."},
+      {name:"Pantheon of Woe",desc:"디테치 룰 — Cosmic Distortion(우주 왜곡): 몬스터(주로 C'TAN 조각)는 Distortion Fields 오라(6″)를 얻고, 오라 내 적은 Unravelling 상태가 되어 그 적을 공격할 때 AP +1. 몬스터는 각 페이즈 시작 시 필멸 상처 3점을 받아 오라를 9″로 확장 가능. 각 크탄은 Necrodermal Binding(인핸스먼트) 1개 선택. 목표: 크탄 신격 중심 운영."}]},
   "Adeptus Mechanicus":{aliases:["mechanicus","admech","메카니쿠스","ad mech"],
     armyRule:{name:"Doctrina Imperatives (도크트리나 임페라티브)",desc:"라운드마다 둘 중 하나를 골라 ADEPTUS MECHANICUS(도크트리나 키워드) 유닛에 적용. 군대의 약 2/3에만 적용됨에 유의.",
       choices:{label:"임페라티브 (라운드마다)",options:[
@@ -1227,20 +1263,19 @@ const RULES_DB={
     detachments:[
       {name:"Rad-Zone Corps",desc:"디테치 룰 Rad-Bombardment: 1라운드 시작 시 적 배치구역 내 각 적 유닛이 버팀(3+에 D3 필멸) 또는 엄폐(전투충격 + 5+에 D3 필멸) 선택. Fallout: 2~5라운드 내 지령 페이즈마다 적 배치구역 적 유닛에 D6 → 3+면 필멸 1 + 전투충격. 목표: 적 배치구역 거부·소모전(중앙 압박)."},
       {name:"Skitarii Hunter Cohort",desc:"디테치 룰 Stealth Optimisation: 내 SKITARII 보병·기마·IRONSTRIDER BALLISTARII 유닛이 Stealth 획득(이 유닛 대상 사격 시 적 명중 −1). 추가로 SICARIAN 유닛이 사격당할 때 공격자가 12″ 밖이면 Benefit of Cover(엄폐). 효과: 시카리안 = 명중 −1 + 5++ + 5+ FNP + 2상처로 매우 단단. 목표: 값싼 스키타리로 진형 장악·지연."},
-      {name:"Explorator Maniple",desc:"디테치 룰 Acquisition At Any Cost: 내가 통제하는 목표 표식 위/근처의 적 유닛을 공격할 때 부상 굴림 1 재굴림. 시작 시 'Acquisition(획득)' 목표 1개 지정 → 그 목표를 지키거나 탈환할 때 더 강한 재굴림. 목표: 중앙·전방 목표를 끼고 화력 집중."},
+      {name:"Explorator Maniple",desc:"디테치 룰 — Acquisition at Any Cost(어떤 대가든 확보): 매 커맨드 페이즈 시작 시 목표 마커 하나를 'Acquisition 마커'로 지정. 아뎁투스 메카니쿠스 모델이 그 마커에 접해 있거나 그 마커 근처의 적을 공격할 때, 부상 굴림 1회를 재굴림할 수 있다. 목표 확보·통제형. 목표: 마커를 거점 삼아 화력을 집중."},
       {name:"Cohort Cybernetica",desc:"디테치 룰 Cyber-Psalm Programming: LEGIO CYBERNETICA 유닛(카스텔란 로봇 등)에 키워드를 부여해 군대 규칙 도크트리나 임페라티브의 혜택(HEAVY/ASSAULT·AP 등)을 받게 함. 목표: 카스텔란 로봇 블롭 운용 전용(다른 효과는 거의 없음)."},
-      {name:"Data-Psalm Conclave",desc:"디테치 룰 Benedictions of the Omnissiah: 1라운드 시작 시 강복 1개를 골라 모든 CULT MECHANICUS 유닛에 게임 내내 적용. ▸ Panegyric Procession: 무기 사거리 절반 이내 사격 AP +1. ▸ Citation in Savagery: 돌격한 턴 근접 무기 S +1·A +1. 목표: 전기사제·카타프론 등 컬트 메카니쿠스 정예 강화."}]},
+      {name:"Data-Psalm Conclave",desc:"디테치 룰 Benedictions of the Omnissiah: 1라운드 시작 시 강복 1개를 골라 모든 CULT MECHANICUS 유닛에 게임 내내 적용. ▸ Panegyric Procession: 무기 사거리 절반 이내 사격 AP +1. ▸ Citation in Savagery: 돌격한 턴 근접 무기 S +1·A +1. 목표: 전기사제·카타프론 등 컬트 메카니쿠스 정예 강화."},
+      {name:"Haloscreed Battle Clade",desc:"디테치 룰 — Noospheric Transference(누스권 전이): 전투 규모에 따라 일부 아뎁투스 메카니쿠스 유닛에 'Halo Override' 키워드를 부여. 해당 유닛은 다음 커맨드 페이즈까지 ▸이동 +2″ ▸강인도 +1 ▸전진 후 돌격 가능 ▸[Stealth] 중 하나를 골라 적용. 매 턴 능력을 갈아끼우는 종합 유틸형."}]},
   "Black Templars":{aliases:["black templar","블랙템플러","템플러","bt"],
     armyRule:{name:"Templar Vows (템플러 서약) — Oath of Moment(순간의 맹세) 대체",desc:"Oath of Moment(순간의 맹세) 대신 Templar Vows(템플러 서약) 사용. 첫 배틀 라운드 시작 시 서약 1개 선택. (사이커 불가, 일부 차량은 BT 전용판만)",
       choices:{label:"서약 (첫 라운드)",options:[
-        {name:"Accept Any Challenge, No Matter the Odds (어떤 도전도 받아들여라)",desc:"근접 공격 S ≤ 적 T일 때 그 근접 공격 부상 +1. (가장 흔한 선택)"},
-        {name:"Abhor the Witch, Destroy the Witch (마녀를 혐오하고 파괴하라)",desc:"사이커(Psyker) 상대 돌격 재굴림, 근접 무기 Precision(정밀: 사이커 상대)."},
-        {name:"Suffer Not the Unclean to Live (부정한 자를 살려두지 마라)",desc:"근접 무기가 Lethal Hits(치명타) 획득 — 근접 명중 굴림 6은 자동으로 부상 처리. 강인도 높은 적 상대에 좋음."},
-        {name:"Uphold the Honour of the Emperor (황제의 명예를 수호하라) ⚠",desc:"목표 근처 강화형 서약 — 정확 효과는 코덱스 확인 필요(목표 통제·점령 보너스 계열)."}]}},
+        {name:"Accept Any Challenge, No Matter the Odds (어떤 도전도 받아들여라)",desc:"모든 모델의 근접 무기가 Sustained Hits 1(지속명중:1) 획득 — 근접 크리티컬 명중당 +1 명중. (공격적·범용)"},
+        {name:"Suffer Not the Unclean to Live (부정한 자를 살려두지 마라)",desc:"모든 모델의 근접 무기가 Lethal Hits(치명타) 획득 — 근접 크리티컬 명중은 자동 부상. 강인도 높은 적 상대에 강함."},
+        {name:"Uphold the Honour of the Emperor (황제의 명예를 수호하라)",desc:"모든 모델이 6+ Feel No Pain(피해 무시) 획득 + Leadership 5+로 고정. 생존·안정형."},
+        {name:"Abhor the Witch, Destroy the Witch (마녀를 혐오하고 파괴하라)",desc:"사이커(PSYKER) 적 상대 근접 무기 Anti-Psyker 4+ 획득, 적 사이커의 정신 공격에 대해 4+ 불굴 방어(Inv). 대(對)사이커 특화."}]}},
     detachments:[
-      {name:"Companions of Vehemence",desc:"디테치 룰: 전군이 전진(Advance)·돌격(Charge) 굴림을 재굴림. 목표: 광신적 돌격형 — 빠르게 붙어 근접으로 박살(단순·강력)."},
-      {name:"Vindication Task Force",desc:"디테치 룰: 목표 표식 근처의 ANCIENT 유닛은 적 공격(특히 S>T)에 부상 −1로 매우 단단, Crusader Squad의 Righteous Zeal(피격 시 D6+2″ 이동)을 적 대신 목표 쪽으로 사용 가능. 목표 근처 AP 강화·전사한 ANCIENT 부활 스트라타젬 등. 목표: 목표 사수·통제형."},
-      {name:"Righteous Crusaders",desc:"인덱스/기본형 근접 디테치(현 코덱스에선 Templar Vows가 군대 규칙으로 이동). 근접 중심·5+ 크리티컬 접근성. 참고: BT는 1st Company Task Force를 제외한 일반 스페이스 마린 디테치(Gladius 등)도 사용 가능."}]}
+      {name:"Righteous Crusaders",desc:"블랙 템플러 기본 디테치먼트. 군대 규칙 Templar Vows(위 서약 4종 중 첫 라운드에 1개 선택)를 축으로 한 근접 십자군형. 참고: BT는 1st Company Task Force를 제외한 일반 스페이스 마린 디테치(Gladius Task Force 등)도 사용 가능 — 그 경우 위 서약 대신 해당 디테치 규칙 적용."}]}
 };
 const NO_DETACH={name:"(디테치먼트 없음 / 수동)",desc:"이 팩션 룰은 자동 등록돼 있지 않아요. 유닛 능력 텍스트로 직접 적용하세요. 룰 추가는 추후 단계의 편집기에서."};
 function findFactionKey(raw){if(!raw)return null;const n=String(raw).toLowerCase();for(const[k,v]of Object.entries(RULES_DB)){if(k.toLowerCase()===n)return k;if((v.aliases||[]).some(a=>n.includes(a)))return k;}return null;}
@@ -1248,9 +1283,9 @@ function findFactionKey(raw){if(!raw)return null;const n=String(raw).toLowerCase
 /* Korean glosses for English detachment names (display only; reminder keys stay English) */
 const DET_KR={
   "Virulent Vectorium":"역병 매개단","Champions of Contagion":"오염의 챔피언","Death Lord's Chosen":"죽음군주의 선택받은 자들","Mortarion's Hammer":"모타리온의 망치","Shamblerot Vectorium":"비척부패 매개단","Tallyband Summoners":"집계단 소환사","Flyblown Host":"파리 떼 군세",
-  "Awakened Dynasty":"각성한 왕조","Hypercrypt Legion":"초월묘소 군단","Canoptek Court":"카놉텍 궁정","Obeisance Phalanx":"복종의 밀집대","Annihilation Legion":"절멸 군단",
+  "Awakened Dynasty":"각성한 왕조","Hypercrypt Legion":"초월묘소 군단","Canoptek Court":"카놉텍 궁정","Obeisance Phalanx":"복종의 밀집대","Annihilation Legion":"절멸 군단","Starshatter Arsenal":"별파괴 무기고","Cryptek Conclave":"크립텍 결사","Cursed Legion":"저주받은 군단","Pantheon of Woe":"재앙의 판테온",
   "Rad-Zone Corps":"방사능 지대 군단","Skitarii Hunter Cohort":"스키타리 사냥 보병대","Explorator Maniple":"탐험자 부대","Cohort Cybernetica":"사이버네티카 보병대","Data-Psalm Conclave":"데이터 성가 비밀회의",
-  "Companions of Vehemence":"격렬의 동지단","Vindication Task Force":"응징 기동대","Righteous Crusaders":"의로운 십자군"
+  "Righteous Crusaders":"의로운 십자군","Haloscreed Battle Clade":"헤일로스크리드 전투 클레이드"
 };
 function detName(d){const n=String(d.name).replace(/\s*⚠$/,'');return n+(DET_KR[n]?` (${DET_KR[n]})`:'');}
 /* per-round army-rule choice (changes each round, not once at start) */
@@ -1271,6 +1306,10 @@ const DETACH_REMINDERS={
   'Obeisance Phalanx':[{phase:'지령',text:'Worthy Foes: 지령 페이즈에 적 1유닛 지정 → NOBLE/LYCHGUARD/TRIARCH가 그 적 대상 부상 +1.'}],
   'Canoptek Court':[{phase:'any',text:'Power Matrix: 통제 목표로 형성된 구역 내 CANOPTEK 유닛은 명중 재굴림.'}]
 };
+const FACTION_STRATS={"Necrons": {"Awakened Dynasty": [{"n": "Protocol of the Hungry Void", "cp": 1, "ph": ["전투"], "side": "atk", "fx": {"sp": 1, "ap": 1}, "d": "아직 싸우지 않은 유닛 근접 무기 힘 +1, 캐릭터가 이끌면 AP도 1 개선."}, {"n": "Protocol of the Conquering Tyrant", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"wrr": "full"}, "d": "반사거리 내 부상 굴림 재굴림, 캐릭터가 이끌면 전 사거리."}, {"n": "Protocol of the Vengeful Stars", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"ic": true}, "d": "적 사격 후 즉시 사격. 캐릭터 합류 시 [Ignores Cover]."}, {"n": "Protocol of the Eternal Guardian", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": null, "d": "캐릭터 유닛 파괴 시 즉시 부활(이후 전투 불참). [자동계산X]"}, {"n": "Protocol of the Undying Legions", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": null, "d": "피해 후 즉시 Reanimation(캐릭터 합류 시 D3+1 복구). [자동계산X]"}, {"n": "Protocol of the Sudden Storm", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "사격 무기 [Assault] + 캐릭터 리드 시 전진 재굴림. [자동계산X]"}], "Hypercrypt Legion": [{"n": "Quantum Deflection", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": {"dinv": 4}, "d": "차량 유닛이 그 페이즈 4+ 불굴."}, {"n": "Cosmic Precision", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "비몬스터 유닛 Deep Strike/Hyperphase 배치. [자동계산X]"}, {"n": "Dimensional Corridor", "cp": 2, "ph": ["돌격"], "side": "atk", "fx": null, "d": "Eternity Gate 배치 유닛 즉시 돌격. [자동계산X]"}, {"n": "Hyperphasic Recall", "cp": 2, "ph": ["사격", "전투"], "side": "def", "fx": null, "d": "피격 직후 모놀리스 6″로 순간이동. [자동계산X]"}, {"n": "Reanimation Crypts", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "예비군 유닛 Reanimation. [자동계산X]"}, {"n": "Entropic Damping", "cp": 1, "ph": ["사격"], "side": "def", "fx": null, "d": "18″ 타이타닉 대상 적 무기 [Hazardous]. [자동계산X]"}], "Canoptek Court": [{"n": "Curse of the Cryptek", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"hp": 1, "wp": 1}, "d": "크립텍 살해한 적 대상 모든 카놉텍 명중·부상 +1."}, {"n": "Cynosure of Eradication", "cp": 2, "ph": ["사격", "전투"], "side": "atk", "fx": {"dev": true}, "d": "Power Matrix 내 카놉텍/크립텍 [Devastating Wounds]."}, {"n": "Solar Pulse", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"ic": true}, "d": "크립텍 18″ 목표 근처 적 사격 시 [Ignores Cover]."}, {"n": "Reactive Subroutines", "cp": 1, "ph": ["이동"], "side": "def", "fx": null, "d": "적 9″ 이동 후 카놉텍 6″ 이동. [자동계산X]"}, {"n": "Countertemporal Shift", "cp": 1, "ph": ["사격"], "side": "def", "fx": null, "d": "카놉텍 18″ 밖 표적 불가. [자동계산X]"}, {"n": "Suboptimal Facade", "cp": 1, "ph": ["돌격"], "side": "def", "fx": null, "d": "돌격당한 카놉텍 즉시 Reanimation. [자동계산X]"}], "Obeisance Phalanx": [{"n": "Enslaved Artifice", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"crit": 5}, "d": "Lychguard/Triarch 명중 5+가 크리티컬."}, {"n": "Nanoassembly Protocols", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": {"ddmg": 1}, "d": "차량 피해값 −1."}, {"n": "Suffer No Rival", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "Lychguard/Triarch 근접 [Precision]. [자동계산X]"}, {"n": "Sentinels of Eternity", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "4+ 죽음 직후 1회 싸움. [자동계산X]"}, {"n": "Your Time is Nigh!", "cp": 1, "ph": ["지령", "이동", "사격", "돌격", "전투"], "side": "def", "fx": null, "d": "상대 워로드 파괴 후 적 전군 Ld·배틀쇼크 −1. [자동계산X]"}, {"n": "Territorial Obsession", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "Lychguard/Triarch OC +1(차량 +3). [자동계산X]"}], "Annihilation Legion": [{"n": "The Spoor of Frailty", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"hp": 1, "wp": 1}, "d": "Destroyer/Flayed: 병력손실 적 명중+1, 절반 이하면 부상도 +1."}, {"n": "Masks of Death", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": {"dhit": 1}, "d": "Destroyer/Flayed 피격 시 적 명중 −1."}, {"n": "Murderous Reanimation", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "적 파괴/반파 시 즉시 Reanimation. [자동계산X]"}, {"n": "Pitiless Hunters", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "종결 이동 6″. [자동계산X]"}, {"n": "Blood-fuelled Cruelty", "cp": 1, "ph": ["이동"], "side": "def", "fx": null, "d": "후퇴 적에 D6(2–5 D3/6 3)필멸 + 보통 이동. [자동계산X]"}, {"n": "Insanity's Ire", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": null, "d": "모델 사망 직후 가장 가까운 적으로 보통 이동. [자동계산X]"}], "Starshatter Arsenal": [{"n": "Merciless Reclamation", "cp": 2, "ph": ["사격", "전투"], "side": "atk", "fx": {"wp": 1}, "d": "점령지 점유 적 공격 시 부상 +1."}, {"n": "Unyielding Forms", "cp": 2, "ph": ["사격", "전투"], "side": "def", "fx": {"dwound": 1}, "d": "차량·기마 피격, 적 S>T면 부상 −1."}, {"n": "Chronoshift", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "차량·기마 전진 +6″(굴림 없이). [자동계산X]"}, {"n": "Dimensional Tunnel", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "차량·기마 지형/모델 무시 이동. [자동계산X]"}, {"n": "Endless Servitude", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "점령지 비괴수 유닛 즉시 Reanimation. [자동계산X]"}, {"n": "Reactive Reposition", "cp": 1, "ph": ["사격"], "side": "def", "fx": null, "d": "표적 된 비괴수 D6″(차량·기마 6″) 이동. [자동계산X]"}], "Cryptek Conclave": [{"n": "Methodical Murder", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"sus": 1}, "d": "비차량·비괴수 유닛 [Sustained Hits 1]."}, {"n": "Animus Curse", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"hrr": "full"}, "d": "크립텍 파괴한 적 대상 모든 유닛 명중 재굴림(게임 끝까지)."}, {"n": "Molecular Targeting", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": null, "d": "명중·BS/WS 수정 무시(크립텍이면 부상 수정도). [자동계산X]"}, {"n": "Untapped Power", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "크립텍 유닛 Augmentations 2개 동시 적용. [자동계산X]"}, {"n": "Synergistic Empowerment", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "12″ 모델 1에 크립텍 키워드 부여. [자동계산X]"}, {"n": "Microscarab Swarm", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": null, "d": "크립텍 합류 워리어 5++/이모탈 4++ (불굴 체크로 직접 적용)."}], "Cursed Legion": [{"n": "Methodical Murder", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"sus": 1}, "d": "비차량·비괴수 유닛 [Sustained Hits 1]."}, {"n": "Image of Death", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": {"dhit": 1}, "d": "Destroyer Cult 피격 시 적 명중 −1."}, {"n": "Mortis Protocols", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": null, "d": "적 파괴 후 9″ 유닛 Reanimation. [자동계산X]"}, {"n": "Driven to Butchery", "cp": 1, "ph": ["사격", "돌격"], "side": "atk", "fx": null, "d": "Destroyer 전진 후 사격·돌격(턴당 1회). [자동계산X]"}, {"n": "Spreading Madness", "cp": 1, "ph": ["돌격"], "side": "atk", "fx": null, "d": "교전 중 적 포함 돌격 시 돌격 +2. [자동계산X]"}, {"n": "Unnatural Aggression", "cp": 2, "ph": ["돌격"], "side": "atk", "fx": null, "d": "6″ 내 적에 돌격(추가 혜택 없음). [자동계산X]"}], "Pantheon of Woe": [{"n": "Entrophasic Aura Targeting", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"hrr": "ones", "wrr": "ones"}, "d": "Unravelling 적 대상 명중·부상 1 재굴림."}, {"n": "Chronodistortion", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "4+(공격자 Unravelling이면 3+) 죽음 직후 싸움. [자동계산X]"}, {"n": "Disharmonisation Cascade", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": null, "d": "몬스터 파괴 시 Deadly Demise 3+ 발동. [자동계산X]"}, {"n": "Mass Transmogrification", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": null, "d": "몬스터가 적 파괴 후 6″ 유닛 Reanimation. [자동계산X]"}, {"n": "Molecular Erosion", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "오라 내 적 배틀쇼크 + 실패 시 D3+1 필멸. [자동계산X]"}, {"n": "Phase Melding", "cp": 1, "ph": ["이동"], "side": "def", "fx": null, "d": "Unravelling 적 후퇴 시 Desperate Escape 강제. [자동계산X]"}]}, "Adeptus Mechanicus": {"Rad-Zone Corps": [{"n": "Lethal Dosage", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"leth": true}, "d": "유닛 사격 무기 [Lethal Hits]."}, {"n": "Pre-Calibrated Purge Solution", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"hrr": "full"}, "d": "이동 안 한 유닛, 상대 배치구역 적 공격 시 명중 재굴림."}, {"n": "Baleful Halo", "cp": 2, "ph": ["전투"], "side": "def", "fx": {"dwound": 1}, "d": "비차량 유닛 피격 시 부상 −1(Battleline이면 6″ 1유닛 추가)."}, {"n": "Bulwark Imperative", "cp": 2, "ph": ["사격"], "side": "def", "fx": {"dinv": 4}, "d": "Skitarii 유닛 4+ 불굴(Battleline이면 1유닛 추가)."}, {"n": "Extinction Order", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "24″ 마커 접한 적 4+면 1필멸+배틀쇼크. [자동계산X]"}, {"n": "Aggressor Imperative", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "Skitarii 전진 6″ 고정. [자동계산X]"}], "Skitarii Hunter Cohort": [{"n": "Isolate and Destroy", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"wp": 1}, "d": "고립된(6″ 내 다른 적 없음) 적 공격 시 부상 +1."}, {"n": "Binharic Offence", "cp": 2, "ph": ["사격"], "side": "atk", "fx": {"ap": 1}, "d": "두 Skitarii 유닛이 같은 적 사격 시 AP +1."}, {"n": "Bionic Endurance", "cp": 1, "ph": ["사격"], "side": "def", "fx": {"dfnp": 5}, "d": "Sicarian/Pteraxii/Sydonian FNP 5+."}, {"n": "Shroud Protocols", "cp": 1, "ph": ["사격"], "side": "def", "fx": null, "d": "Skitarii 18″ 밖 표적 불가. [자동계산X]"}, {"n": "Expedited Purge Protocols", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "Skitarii 전진 후 돌격 선언. [자동계산X]"}, {"n": "Programmed Withdrawal", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "Sicarian 교전 해제+예비군 이동. [자동계산X]"}], "Explorator Maniple": [{"n": "Auto-Oracular Retrieval", "cp": 2, "ph": ["사격"], "side": "atk", "fx": {"wp": 1}, "d": "하차 유닛, Acquisition 마커 접한 적 공격 시 부상 +1."}, {"n": "Incense Exhausts", "cp": 1, "ph": ["사격"], "side": "def", "fx": {"dcover": true, "dhit": 1}, "d": "SMOKE 차량 6″ 보병 [Stealth]+커버."}, {"n": "Cached Acquisition", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": null, "d": "마커 위 유닛 파괴 후 2+면 마커 유지. [자동계산X]"}, {"n": "Priority Reclamation", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "6″ 집결(마커 쪽으로). [자동계산X]"}, {"n": "Infoslave Skull", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "24″ 마커 추가 Acquisition 지정. [자동계산X]"}, {"n": "Reactive Safeguards", "cp": 1, "ph": ["돌격"], "side": "def", "fx": null, "d": "돌격 후 3″ 운송차량 탑승. [자동계산X]"}], "Cohort Cybernetica": [{"n": "Machine Spirit Resurgent", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"hrr": "full", "wrr": "full"}, "d": "반파 차량 명중 재굴림(절반 이하면 부상도 재굴림)."}, {"n": "Auto-Divinatory Targeting", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"ic": true}, "d": "차량 BS 3+ + 마커 근처 적 [Ignores Cover]."}, {"n": "Benevolence of the Omnissiah", "cp": 1, "ph": ["지령", "이동", "사격", "돌격", "전투"], "side": "def", "fx": {"dfnp": 6}, "d": "차량 FNP 6+(필멸 5+)."}, {"n": "Motiver Imperative", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "차량 이동 +3″·전진/돌격 +1. [자동계산X]"}, {"n": "Machine Superiority", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "차량 후퇴 후 사격·돌격+수정 무시. [자동계산X]"}, {"n": "Transcendent Cogitation", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "차량 두 Imperative 동시. [자동계산X]"}], "Data-Psalm Conclave": [{"n": "Chant of the Remorseless Fist", "cp": 1, "ph": ["전투"], "side": "atk", "fx": {"wp": 1}, "d": "Cult Mechanicus 근접 부상 +1."}, {"n": "Luminescent Blessing", "cp": 1, "ph": ["사격"], "side": "def", "fx": {"dinv": 4}, "d": "Cult Mechanicus 유닛 4+ 불굴."}, {"n": "Incantation of the Iron Soul", "cp": 1, "ph": ["지령", "이동", "사격", "돌격", "전투"], "side": "def", "fx": null, "d": "필멸 상처에 FNP 4+. [자동계산X — 필멸 전용]"}, {"n": "Tribute of Emphatic Veneration", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": null, "d": "18″ 적 배틀쇼크 실패 시 명중 −1. [자동계산X]"}, {"n": "Litany of the Electromancer", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "6″ 적마다 5+(전기사제 4+) D3필멸. [자동계산X]"}, {"n": "Verse of Vengeance", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "모델 파괴 시 4+(전기사제 3+) 제거 전 싸움. [자동계산X]"}], "Haloscreed Battle Clade": [{"n": "Eradication Protocols", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"wrr": "ones", "hrr": "ones"}, "d": "부상 1 재굴림(Halo Override면 명중 1도 재굴림)."}, {"n": "Targeting Override", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"crit": 5}, "d": "모든 무기 명중 5+가 크리티컬."}, {"n": "Neural Overload", "cp": 2, "ph": ["지령"], "side": "atk", "fx": null, "d": "Halo Override 유닛 D3필멸 받고 능력 변경. [자동계산X]"}, {"n": "Aggressive Impulse", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "듀너라이더 하차 유닛 즉시 돌격. [자동계산X]"}, {"n": "Guided Retreat", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "후퇴 후 사격·돌격(Halo면 Desperate 재굴림). [자동계산X]"}, {"n": "Analytical Divination", "cp": 1, "ph": ["이동"], "side": "def", "fx": null, "d": "9″ 보병 D6″(Halo 6″) 이동. [자동계산X]"}]}};
+Object.assign(FACTION_STRATS,{"Death Guard": {"Virulent Vectorium": [{"n": "Ferric Blight", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"ap": 1}, "d": "아직 공격 안 한 DG 유닛 공격 AP 1 개선(감염 목표 내 치명타 시 AP 2)."}, {"n": "Sanguous Flux", "cp": 1, "ph": ["전투"], "side": "atk", "fx": {"sus": 1}, "d": "안 싸운 DG 유닛 [Sustained Hits 1](감염 목표 범위 내 [Sustained Hits 2])."}, {"n": "Boilblight", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"ic": true}, "d": "감염 범위 적 대상 무기 [Heavy]+[Ignores Cover]."}, {"n": "Disgustingly Resilient", "cp": 1, "ph": ["전투"], "side": "def", "fx": {"ddmg": 1}, "d": "피격 DG 유닛 받는 피해값 −1."}, {"n": "Cloud of Flies", "cp": 1, "ph": ["사격"], "side": "def", "fx": {"dhit": 1}, "d": "피격 DG 유닛 [Stealth](적 명중 −1)."}, {"n": "Gifts of Decay", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "DG 모델 D3(감염 범위 내 3) 생명점 회복. [자동계산X]"}], "Champions of Contagion": [{"n": "Blessings of Filth", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"crit": 5}, "d": "캐릭터 합류 유닛 명중 5+가 크리티컬."}, {"n": "Malignance Magnified", "cp": 2, "ph": ["사격", "전투"], "side": "atk", "fx": {"hrr": "full", "wrr": "full"}, "d": "병력 감소 적 대상 명중·부상 전부 재굴림."}, {"n": "Grotesque Fortitude", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": {"dtough": 2}, "d": "피격 시 캐릭터 합류 유닛 강인도 +2."}, {"n": "Rabid Infusion", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "두 캐릭터 합류 유닛 [Fights First]. [자동계산X·선공 순서]"}, {"n": "Death's Heads", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "Biologus 유닛 8″ 비차량 적에 독성 수류탄 → 모든 역병 부여(역병 체크로 적용)."}, {"n": "Mobile Vector", "cp": 1, "ph": ["이동"], "side": "atk", "fx": null, "d": "단독 캐릭터 3″ 유닛 합류. [자동계산X]"}], "Death Lord's Chosen": [{"n": "Grim Reapers", "cp": 1, "ph": ["전투"], "side": "atk", "fx": {"hrr": "full"}, "d": "터미네이터 vs 비몬스터·비차량 명중 재굴림."}, {"n": "Mortarion's Teachings", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "터미네이터 무기 [Assault]+[Heavy]. [자동계산X·이동 관련]"}, {"n": "Sickening Impact", "cp": 1, "ph": ["돌격"], "side": "atk", "fx": null, "d": "터미네이터 돌격 시 접촉 모델당 D6 2+ 1필멸. [자동계산X]"}, {"n": "Blooming Pestilence", "cp": 1, "ph": ["지령", "이동", "사격", "돌격", "전투"], "side": "atk", "fx": null, "d": "터미네이터 Contagion 범위 +3″. [자동계산X]"}, {"n": "Signal Pox", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "Lord of Virulence 30″ 목표 감염. [자동계산X]"}, {"n": "Undying Spite", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "안 싸운 터미네이터 파괴 시 4+ 죽기 전 싸움. [자동계산X]"}], "Mortarion's Hammer": [{"n": "Drawn to Despair", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": {"hrr": "full"}, "d": "적 진영 내 비항공 유닛 공격 시 명중 재굴림."}, {"n": "Font of Filth", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "차량 [Assault](전진 후 사격). [자동계산X]"}, {"n": "Blighted Land", "cp": 2, "ph": ["지령"], "side": "atk", "fx": null, "d": "차량 24″ 지형 감염. [자동계산X]"}, {"n": "Eyestinger Storm", "cp": 1, "ph": ["지령"], "side": "def", "fx": null, "d": "차량 보이는 목표 점령 적 배틀쇼크. [자동계산X]"}, {"n": "Relentless Grind", "cp": 1, "ph": ["이동", "돌격"], "side": "atk", "fx": null, "d": "차량 지형 무시 이동·전진·돌격. [자동계산X]"}, {"n": "Stinking Mire", "cp": 1, "ph": ["돌격"], "side": "def", "fx": null, "d": "차량에 돌격하는 적 돌격 −2″. [자동계산X]"}], "Shamblerot Vectorium": [{"n": "Gnawing Hunger", "cp": 1, "ph": ["전투"], "side": "atk", "fx": {"sp": 1}, "d": "Poxwalker 이동·공격 횟수·힘 +1(힘만 자동반영)."}, {"n": "Grip of the Walking Pox", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "Poxwalker 죽을 때마다 6+ 1필멸 반사. [자동계산X]"}, {"n": "Shambling Wall", "cp": 1, "ph": ["사격"], "side": "def", "fx": null, "d": "3″ Poxwalker가 사격 대신 받음(방패). [자동계산X]"}, {"n": "Shock and Horror", "cp": 1, "ph": ["돌격"], "side": "atk", "fx": null, "d": "돌격 시 대상 −1 배틀쇼크 강제. [자동계산X]"}, {"n": "Smeared With Filth", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "Poxwalker 전멸시킨 적 Affliction. [자동계산X]"}, {"n": "Hidden Amongst the Dead", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "Poxwalker 부대 Deep Strike(캐릭터 없이도). [자동계산X]"}], "Tallyband Summoners": [{"n": "Clutching Corruption", "cp": 1, "ph": ["전투"], "side": "atk", "fx": {"hrr": "full"}, "d": "Plague Legions와 교전 중인 적 공격 시 명중 재굴림."}, {"n": "Avatars of Decay", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "Plague Legions 6″ 적 Affliction. [자동계산X]"}, {"n": "All Is Rot", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "Legions 교전 적 사격 시 5+ 히트마다 Legions 1필멸. [자동계산X]"}, {"n": "Fleshy Avalanche", "cp": 1, "ph": ["이동", "돌격"], "side": "atk", "fx": null, "d": "Plague Legions Monster 지형 무시. [자동계산X]"}, {"n": "Mireslick", "cp": 1, "ph": ["이동"], "side": "def", "fx": null, "d": "Legions 교전 적 후퇴 방해(Ld 실패 시 못 빠짐). [자동계산X]"}, {"n": "Persistent Pests", "cp": 1, "ph": ["사격", "전투"], "side": "atk", "fx": null, "d": "파괴된 Nurglings 부활. [자동계산X]"}], "Flyblown Host": [{"n": "Droning Horror", "cp": 1, "ph": ["사격"], "side": "atk", "fx": {"hrr": "ones"}, "d": "인팬트리 명중 1 재굴림(반사거리 내 전부)."}, {"n": "Myphitic Invigoration", "cp": 1, "ph": ["사격"], "side": "def", "fx": {"dwound": 1}, "d": "Blight-Hauler 6″ 보병, 더 높은 S 공격에 부상 −1."}, {"n": "Vermin Cloud", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "인팬트리 6″ 파일인/종결 이동. [자동계산X]"}, {"n": "Eye of the Swarm", "cp": 1, "ph": ["사격"], "side": "atk", "fx": null, "d": "비Blast 총기 [Pistol] 취급(교전 중 사격). [자동계산X]"}, {"n": "Enervating Onslaught", "cp": 1, "ph": ["돌격"], "side": "atk", "fx": null, "d": "돌격 시 모델당 D6 5+ 필멸. [자동계산X]"}, {"n": "Nauseating Paroxysms", "cp": 1, "ph": ["전투"], "side": "atk", "fx": null, "d": "대상 −1 배틀쇼크 강제. [자동계산X]"}]}, "Black Templars": {"Righteous Crusaders": [{"n": "Crusader's Wrath", "cp": 1, "ph": ["전투"], "side": "atk", "fx": {"ap": 1}, "d": "근접 무기 AP +1(Suffer Not 서약 시 강인도도 +1)."}, {"n": "Armour of Contempt", "cp": 1, "ph": ["사격", "전투"], "side": "def", "fx": {"aoc": 1}, "d": "피격 BT 유닛 대상 적 무기 AP −1."}, {"n": "Fervent Acclamation", "cp": 1, "ph": ["지령"], "side": "atk", "fx": null, "d": "캐릭터 유닛 추가 서약 1개 적용. [자동계산X]"}, {"n": "Devout Push", "cp": 1, "ph": ["사격"], "side": "def", "fx": null, "d": "피해 후 D6″(Accept 시 6″) 이동. [자동계산X]"}, {"n": "No Escape", "cp": 1, "ph": ["이동"], "side": "def", "fx": null, "d": "교전 적 후퇴 시 4+ 막음. [자동계산X]"}, {"n": "Vicious Riposte", "cp": 1, "ph": ["전투"], "side": "def", "fx": null, "d": "제거되는 모델 4+(Uphold 3+) 즉시 1회 싸움. [자동계산X]"}]}});
+const ENH_DB={"Necrons": {"Awakened Dynasty": [{"n": "Veil of Darkness", "pts": 0, "d": "매 턴 1회, 베어러 유닛을 전장 밖으로 빼고 다음 차례 9″ 밖 재배치."}, {"n": "Hypermateria Ablator", "pts": 0, "d": "베어러 유닛 항상 [Stealth], 12″ 초과 거리에서 항상 엄폐."}, {"n": "The Sovereign Coronal", "pts": 0, "d": "6″ 아군 유닛이 Command Protocols(명중+1) 적용받음(오라)."}, {"n": "Sempiternal Weave", "pts": 0, "d": "베어러 FNP 4+."}], "Hypercrypt Legion": [{"n": "Arisen Tyrant", "pts": 25, "d": "베어러 유닛 명중 1 재굴림(이번 턴 배치 시 전부 재굴림).", "buff": {"rrH": "ones"}}, {"n": "Dimensional Overseer", "pts": 25, "d": "Hyperphasing 가능 유닛 수 +1."}, {"n": "Hyperspatial Transfer Node", "pts": 15, "d": "베어러 유닛 항상 6″ 전진(굴림 없이)."}, {"n": "Osteoclave Fulcrum", "pts": 20, "d": "베어러 유닛 [Deep Strike] 획득."}], "Canoptek Court": [{"n": "Autodivinator", "pts": 15, "d": "상대가 능력으로 CP 획득 시 D6 2+면 CP 1 획득.", "r": "Cryptek"}, {"n": "Dimensional Sanctum", "pts": 20, "d": "베어러 유닛 [Infiltrators].", "r": "Cryptek"}, {"n": "Hyperphasic Fulcrim", "pts": 15, "d": "Power Matrix 내에서 베어러 유닛 부상 1 재굴림.", "r": "Cryptek", "buff": {"rrW": "ones"}}, {"n": "Metalodermal Tesla Weave", "pts": 10, "d": "페이즈마다 베어러 유닛 돌격당 시 D6 2–5 D3 / 6 3필멸 반사.", "r": "Cryptek"}], "Obeisance Phalanx": [{"n": "Eternal Conqueror", "pts": 25, "d": "베어러 유닛이 목표 점령 중일 때 명중 재굴림.", "r": "Overlord", "buff": {"rrH": "full"}}, {"n": "Honourable Combatants", "pts": 10, "d": "베어러가 적 캐릭터 처치 시 상대 CP 1 강탈.", "r": "Overlord"}, {"n": "Unflinching Will", "pts": 20, "d": "베어러 근접 무기 [Precision]+[Anti-Infantry 5+].", "r": "Overlord"}, {"n": "Warrior Noble", "pts": 15, "d": "근접 피격 시 베어러 유닛 대상 명중 −1.", "r": "Overlord", "buff": {"defHitMelee": true}}], "Annihilation Legion": [{"n": "Eldritch Nightmare", "pts": 15, "d": "교전 적은 전투 시작 시 배틀쇼크.", "r": "Destroyer Cult"}, {"n": "Eternal Madness", "pts": 25, "d": "베어러 유닛 4+ 죽음 직후 1회 싸움."}, {"n": "Ingrained Superiority", "pts": 10, "d": "치명타로 입힌 공격 AP +1."}, {"n": "Soulless Reaper", "pts": 20, "d": "적 후퇴 시 D6 3+면 못 빠지게 함.", "r": "Destroyer Cult"}], "Starshatter Arsenal": [{"n": "Dread Majesty", "pts": 0, "d": "오라: 6″ 비괴수 유닛, 목표 점령 적 사격 시 명중·부상 1 재굴림."}, {"n": "Miniaturised Nebuloscope", "pts": 0, "d": "베어러 유닛 모든 사격 무기 [Ignores Cover]."}, {"n": "Demanding Leader", "pts": 0, "d": "6″ 차량·기마 1, 다음 커맨드까지 후퇴 후 사격 가능."}, {"n": "Chrono-Impedance Fields", "pts": 0, "d": "6″ 차량·기마 1, 다음 커맨드까지 받는 피해 −1."}], "Cryptek Conclave": [{"n": "Quantum Abacus", "pts": 0, "d": "베어러 유닛 스트라타젬 사용 시 4+(목표 내 3+)로 CP 1 회복."}, {"n": "Atomic Disintegrators", "pts": 0, "d": "베어러 Augmentations에 [Anti-Monster 5+]·[Anti-Vehicle 5+] 추가."}, {"n": "Gauntlet of Compression", "pts": 0, "d": "베어러 유닛 사격 무기 사거리 +6″."}, {"n": "Gravitic Bolas", "pts": 0, "d": "베어러 사격 명중 적 다음 자기 턴까지 이동·돌격 −2″."}], "Cursed Legion": [{"n": "Destroyer Ankh", "pts": 0, "d": "Destroyer Cult 키워드 획득, 베어러 근접 공격 +2, 유닛 이동 +2″.", "r": "Overlord/지휘바지"}, {"n": "Murdermind", "pts": 0, "d": "Destroyer Cult 키워드 + 이동 +3″, 비-Destroyer 유닛에도 합류 가능.", "r": "Cryptek"}, {"n": "Mark of the Nekrosor", "pts": 0, "d": "베어러 유닛 명중 +1 + [Precision].", "r": "Destroyer Cult", "buff": {"hitP": true}}, {"n": "Cursed Circlet", "pts": 0, "d": "적 사격 페이즈 피해 시 D6″ 서지 이동.", "r": "Destroyer Cult"}], "Pantheon of Woe": [{"n": "Quantum Goad", "pts": 0, "d": "전진 후에도 돌격 가능.", "r": "Nightbringer"}, {"n": "Animus Damper", "pts": 0, "d": "적 사격마다 적 차량 1 리더십 테스트(실패 시 명중·부상 −1).", "r": "Void Dragon"}, {"n": "Singularity Matrix", "pts": 0, "d": "12″ 적 스트라타젬 사용 시 추가 1CP 소모.", "r": "Deceiver"}, {"n": "Relativistic Tether", "pts": 0, "d": "강하/워프 후 적 6″ 내 배치 가능(그 턴 돌격 불가).", "r": "Transcendent C'tan"}]}, "Adeptus Mechanicus": {"Rad-Zone Corps": [{"n": "Radial Suffusion", "pts": 0, "d": "2라운드+ 커맨드마다 6″ 적 4+ 1필멸+배틀쇼크."}, {"n": "Malphonic Susurrus", "pts": 0, "d": "베어러 유닛 항상 [Stealth](적 명중 −1)."}, {"n": "Peerless Eradicator", "pts": 0, "d": "베어러 유닛 사격 무기 [Sustained Hits 1].", "buff": {"sustained": 1}}, {"n": "Autoclavic Denunciation", "pts": 0, "d": "베어러 사격 무기 [Anti-Infantry 2+]+[Anti-Monster 4+]."}], "Skitarii Hunter Cohort": [{"n": "Cantic Thrallnet", "pts": 25, "d": "커맨드마다 12″ Skitarii 1이 두 Imperative 모두 적용."}, {"n": "Clandestine Infiltrator", "pts": 20, "d": "베어러 유닛 [Infiltrators]+[Scouts 6″]."}, {"n": "Veiled Hunter", "pts": 10, "d": "전투 시작 전 베어러+최대 2 Skitarii 재배치/예비군."}, {"n": "Battle-Sphere Uplink", "pts": 30, "d": "베어러 유닛 사격 후 교전 안 했으면 6″ 추가 이동."}], "Explorator Maniple": [{"n": "Magos", "pts": 15, "d": "마커 접 시 커맨드마다 D6 4+면 1CP."}, {"n": "Genetor", "pts": 25, "d": "베어러 유닛 Acquisition 마커 접 시 4+ 불굴."}, {"n": "Logis", "pts": 20, "d": "마커 접/근처 적 공격 시 베어러 유닛 명중 +1.", "buff": {"hitP": true}}, {"n": "Artisan", "pts": 15, "d": "마커 접 시 라운드당 1회 명중·부상·세이브 굴림 1개를 6으로 대체."}], "Cohort Cybernetica": [{"n": "Necromechanic", "pts": 25, "d": "라운드당 1회 12″ 사이버네티카/차량 세이브 실패 시 피해 0."}, {"n": "Lord of Machines", "pts": 20, "d": "적 사격 시작 시 12″ 적 차량 1 리더십(성공 시 명중−1/실패 시 사격 불가)."}, {"n": "Emotionless Clarity", "pts": 15, "d": "12″ Deadly Demise 아군 파괴 시 폭발 여부 선택."}, {"n": "Arch-Negator", "pts": 10, "d": "베어러 사격 무기 [Anti-Vehicle 4+]."}], "Data-Psalm Conclave": [{"n": "Mechanicus Locum", "pts": 10, "d": "게임당 1회 12″ Cult Mechanicus 1 배틀쇼크 자동 통과."}, {"n": "Mantle of Gnosticarch", "pts": 15, "d": "베어러 받는 피해 −1."}, {"n": "Data-Blessed Autosermon", "pts": 20, "d": "게임당 1회 추가 Benediction 활성화."}, {"n": "Temporcopia", "pts": 25, "d": "베어러 유닛 항상 [Fights First].", "buff": {"fightsFirst": true}}], "Haloscreed Battle Clade": [{"n": "Transoracular Dyad Wafers", "pts": 0, "d": "Kastelan 전용. 베어러 유닛 항상 Halo Override(지휘 선택 제외)."}, {"n": "Cognitive Reinforcement", "pts": 0, "d": "베어러 유닛 두 Doctrina Imperatives 동시 적용."}, {"n": "Sanctified Ordnance", "pts": 0, "d": "베어러 사격 사거리 +6″, Hazardous 재굴림."}, {"n": "Inloaded Lethality", "pts": 0, "d": "베어러 근접 무기 공격 +3, 피해 +1."}]}};
+Object.assign(ENH_DB,{"Death Guard": {"Virulent Vectorium": [{"n": "Living Plague", "pts": 0, "d": "베어러의 모든 오라 능력(Nurgle's Gift 등) 범위 +3″."}, {"n": "The Droning", "pts": 0, "d": "오라: 적 유닛이 인접 범위에서 배틀쇼크 실패 시 D6 2–5 1 / 6 D3필멸."}, {"n": "Deadly Pathogen", "pts": 0, "d": "베어러 근접 무기 힘·공격 +1(감염 목표 범위 내 +2)."}, {"n": "Shamblerot", "pts": 0, "d": "베어러 유닛에 돌격하는 적 돌격 −2″."}], "Champions of Contagion": [{"n": "Final Ingredient", "pts": 20, "d": "적 캐릭터 처치 후 전투 내내 Affliction 적에 역병 1개 영구 추가.", "r": "Biologus Putrifier"}, {"n": "Cornucophagus", "pts": 35, "d": "전투 시작 전 베어러 유닛 감염 오라에 역병 1개 고정 추가(교체 불가).", "r": "Lord of Poxes"}, {"n": "Needle of Nurgle", "pts": 25, "d": "Narthecium 강화 — 베어러 유닛에서 D3 모델 부활.", "r": "Plague Surgeon"}, {"n": "Visions of Virulence", "pts": 15, "d": "Pestilential Fallout 적중 적이 Affliction 상태가 됨.", "r": "Malignant Plaguecaster"}], "Death Lord's Chosen": [{"n": "Face of Death", "pts": 0, "d": "전투 시작 시 베어러와 교전 적 즉시 배틀쇼크.", "r": "터미네이터"}, {"n": "Helm of the Fly King", "pts": 0, "d": "베어러 유닛 18″ 밖에서 표적 불가.", "r": "터미네이터"}, {"n": "Vile Vigour", "pts": 0, "d": "베어러 유닛 이동 +1″ + 전진 재굴림.", "r": "터미네이터"}, {"n": "Warprot Talisman", "pts": 0, "d": "게임당 1회, 적 전투 종료 시 교전 안 한 터미네이터 유닛 예비군 이동.", "r": "터미네이터"}], "Mortarion's Hammer": [{"n": "Bilemaw Blight", "pts": 0, "d": "Plague Wind 주문 사거리 +12″.", "r": "Malignant Plaguecaster"}, {"n": "Eye of Affliction", "pts": 0, "d": "베어러 유닛 Affliction 적 사격 시 [Ignores Cover]."}, {"n": "Shriekworm Familiar", "pts": 0, "d": "라운드당 1회 Overwatch 스트라타젬 무료."}, {"n": "Tendrilous Emissions", "pts": 0, "d": "오라: 3″ 차량 부상 1 재굴림, 베어러 근접 Lone Operative.", "r": "Lord of Virulence"}], "Shamblerot Vectorium": [{"n": "Lord of the Walking Pox", "pts": 0, "d": "베어러가 이끄는 Poxwalker 예비군 등장 시 3턴으로 취급(빠른 투입)."}, {"n": "Sorrowsyphon", "pts": 0, "d": "Poxwalker 합류 시 Plague Wind 힘 +1(매 차례 D3 Poxwalker 희생).", "r": "Malignant Plaguecaster"}, {"n": "Talisman of Burgeoning", "pts": 0, "d": "Poxwalker 부대 강인도 +1."}, {"n": "Witherbone Pipes", "pts": 0, "d": "합류 Poxwalker OC +1 + 배틀쇼크·리더십 +1.", "r": "Noxious Blightbringer"}], "Tallyband Summoners": [{"n": "Beckoning Blight", "pts": 0, "d": "12″ 내 Deep Strike하는 Plague Legions 적 6″까지 접근 배치 가능."}, {"n": "Fell Harvester", "pts": 0, "d": "베어러 모든 근접 무기 공격 +2."}, {"n": "Entropic Knell", "pts": 0, "d": "6″ 반파 적 커맨드마다 −1 배틀쇼크.", "r": "Great Unclean One"}, {"n": "Tome of Bounteous Blessings", "pts": 0, "d": "12″ Plague Legions 배틀쇼크 +1, 성공 시 D3 회복/부활.", "r": "Malignant Plaguecaster"}], "Flyblown Host": [{"n": "Droning Chorus", "pts": 0, "d": "베어러 유닛 모든 사격 무기 [Assault]."}, {"n": "Insectile Murmurations", "pts": 0, "d": "베어러 유닛 Contagion 범위 적 공격 시 부상 1 재굴림.", "buff": {"rrW": "ones"}}, {"n": "Plagueveil", "pts": 0, "d": "목표 점령 중 베어러 유닛 18″ 밖에서 표적 불가."}, {"n": "Rejuvenating Swarm", "pts": 0, "d": "베어러 매 페이즈 시작 시 모든 잃은 생명점 회복."}]}, "Black Templars": {"Righteous Crusaders": [{"n": "Perdition's Edge", "pts": 0, "d": "베어러 근접 무기 힘·AP +1(Suffer Not 서약 시 베어러 추가 공격 +1)."}, {"n": "Witchseeker Bolts", "pts": 0, "d": "베어러 사격 무기 [Precision]+[Anti-Psyker 4+]+[Devastating Wounds](Abhor 시 사이커 상대 재굴림)."}, {"n": "Sigismund's Seal", "pts": 0, "d": "베어러 공격 +1(Accept 서약 시 베어러 유닛 근접 5+ 크리티컬).", "buff": {"critHit": 5}}, {"n": "Tannhauser's Bones", "pts": 0, "d": "베어러 받는 피해 반감(Uphold 서약+유닛 리드 시 그 유닛 FNP 5+)."}]}});
 const CORE_STRATS=[
   {n:'Command Re-roll (지령 재굴림)',cp:1,phases:['any'],d:'주사위 1개 재굴림(명중·부상·피해·방어·돌격·전진 등).'},
   {n:'Counter-Offensive (반격)',cp:2,phases:['전투'],d:'상대 유닛이 싸운 직후, 내 적격 유닛 1개가 순서를 무시하고 즉시 싸움.'},
@@ -1310,15 +1349,36 @@ function setFaction(f,btn){document.body.dataset.faction=f;const seg=$('fac-seg'
 function setFactionSel(v){setFaction(v);}
 
 /* ===== setup ===== */
+function pickFile(idx){const i=$('p'+(idx+1)+'-file');if(!i)return;try{i.value='';i.click();}catch(e){console.error(e);togglePaste(idx,true);const st=$('p'+(idx+1)+'-status');if(st){st.textContent='✘ 이 환경에서는 파일 선택이 막혀 있어요 — 텍스트 붙여넣기를 쓰세요';st.className='import-status err';}}}
+function readFileText(file){return new Promise((res,rej)=>{
+  try{const r=new FileReader();r.onload=()=>res(String(r.result||''));r.onerror=()=>rej(new Error('파일 읽기 실패 — 텍스트 붙여넣기를 이용하세요'));r.readAsText(file);}catch(e){rej(e);}
+});}
 async function onLoad(idx,input){
-  const file=input.files[0];if(!file)return;const st=$('p'+(idx+1)+'-status');
+  const file=input.files&&input.files[0];if(!file)return;
+  const st=$('p'+(idx+1)+'-status');st.textContent='⏳ 읽는 중…';st.className='import-status';
+  try{const text=await readFileText(file);processArmyText(idx,text,file.name);}
+  catch(e){console.error(e);st.textContent='✘ 파일 읽기 실패: '+e.message+' — 아래 텍스트 붙여넣기를 써보세요';st.className='import-status err';togglePaste(idx,true);}
+}
+function onLoadText(idx){
+  const ta=$('p'+(idx+1)+'-paste');const text=(ta&&ta.value||'').trim();
+  const st=$('p'+(idx+1)+'-status');
+  if(!text){st.textContent='✘ 붙여넣은 내용이 없습니다.';st.className='import-status err';return;}
+  processArmyText(idx,text,'붙여넣은 JSON');
+}
+function togglePaste(idx,force){
+  const w=$('p'+(idx+1)+'-paste-wrap');if(!w)return;
+  const show=(force===true)?true:(w.style.display==='none');
+  w.style.display=show?'':'none';
+}
+function processArmyText(idx,text,srcName){
+  const st=$('p'+(idx+1)+'-status');
   try{
-    const norm=normalizeArmyJson(JSON.parse(await file.text()));
+    const norm=normalizeArmyJson(JSON.parse(text));
     LOADED[idx]=norm;
     const fC=Object.keys(norm).length,uC=Object.values(norm).reduce((n,u)=>n+Object.keys(u).length,0);
-    st.textContent=`✔ ${file.name} · ${fC}개 팩션 · ${uC}개 유닛`;st.className='import-status ok';
+    st.textContent=`✔ ${srcName} · ${fC}개 팩션 · ${uC}개 유닛`;st.className='import-status ok';
     populateFaction(idx,norm);checkReady();
-  }catch(e){console.error(e);st.textContent='✘ 로드 실패: '+e.message;st.className='import-status err';LOADED[idx]=null;checkReady();}
+  }catch(e){console.error(e);st.textContent='✘ 로드 실패: '+e.message+' (올바른 JSON인지 확인)';st.className='import-status err';LOADED[idx]=null;checkReady();}
 }
 function populateFaction(idx,norm){
   const fsel=$('p'+(idx+1)+'-faction');fsel.innerHTML='';
@@ -1394,9 +1454,12 @@ function renderSquadView(){
     if(!chars.length){h+=`<div class="hint">이 군대에 CHARACTER 키워드 유닛이 없습니다.</div>`;}
     else h+=chars.map(c=>{
       const bg=c.leaderOf?findUnit(c.leaderOf):null;
-      const opts=`<option value="">— 단독 (합류 안 함) —</option>`+bodies.map(b=>`<option value="${b.id}" ${c.leaderOf===b.id?'selected':''}>${esc(b.name)}</option>`).join('');
+      const valid=bodies.filter(b=>canLeadTarget(c,b)!==false);
+      const restricted=leaderAllowList(c)!==null;
+      const opts=`<option value="">— 단독 (합류 안 함) —</option>`+valid.map(b=>`<option value="${b.id}" ${c.leaderOf===b.id?'selected':''}>${esc(b.name)}</option>`).join('');
       const buffs=bg?buffSummary(bg.leaderBuffs):'';
-      return `<div class="sq-char"><div class="sq-row"><span class="sq-name">👤 ${esc(c.name)}</span><select onchange="squadAttach('${c.id}',this.value)">${opts}</select></div>${bg?`<div class="sq-buff">→ <b>${esc(bg.name)}</b> 분대에 합류 · 버프: <span class="sq-buffs">${buffs||'없음(능력 자동감지 실패 — ⚙로 직접 설정)'}</span> <button class="mini" onclick="openLeaderUI('${c.id}')">⚙ 버프 편집</button></div>`:''}</div>`;
+      const noTgt=!valid.length?`<div class="sq-buff" style="color:var(--text3)">합류 가능한 분대가 이 군대에 없음${restricted?' (이 리더의 Bodyguard 분대만 합류 가능)':''}</div>`:'';
+      return `<div class="sq-char"><div class="sq-row"><span class="sq-name">👤 ${esc(c.name)}${restricted?' <span class="sq-lock" title="이 리더의 데이터시트에 명시된 Bodyguard 분대에만 합류 가능">🔒</span>':''}</span><select onchange="squadAttach('${c.id}',this.value)">${opts}</select></div>${bg?`<div class="sq-buff">→ <b>${esc(bg.name)}</b> 분대에 합류 · 버프: <span class="sq-buffs">${buffs||'없음(능력 자동감지 실패 — ⚙로 직접 설정)'}</span> <button class="mini" onclick="openLeaderUI('${c.id}')">⚙ 버프 편집</button></div>`:noTgt}</div>`;
     }).join('');
     h+=`</div>`;
     return h;
@@ -1589,7 +1652,7 @@ const RULE_TR=[
   [/re-?roll( the| a| one)?/gi,'재굴림'],
   [/this unit has the \[?fights first\]?( ability)?/gi,'이 유닛은 선공권(Fights First)을 가진다'],
   [/fights first/gi,'선공권(Fights First)'],
-  [/feel no pain (\d)\+/gi,'고통 무시(FNP) $1+'],[/feel no pain/gi,'고통 무시(FNP)'],
+  [/feel no pain (\d)\+/gi,'피해 무시(FNP) $1+'],[/feel no pain/gi,'피해 무시(FNP)'],
   [/(\d)\+ invulnerable save/gi,'$1+ 불굴 방어(방어막)'],[/invulnerable saves?/gi,'불굴 방어(방어막)'],
   [/lethal hits/gi,'치명타(Lethal Hits)'],[/sustained hits (\d)/gi,'지속 명중 $1(Sustained Hits)'],[/sustained hits/gi,'지속 명중(Sustained Hits)'],
   [/devastating wounds/gi,'필멸 상처 무기(Devastating Wounds)'],[/twin-?linked/gi,'트윈링크(재굴림)'],
@@ -1607,7 +1670,7 @@ const RULE_TR=[
   [/roll (one|a|1) ?d6/gi,'D6 하나를 굴림'],[/roll (one|a|1) ?d3/gi,'D3 하나를 굴림'],[/for each (\d)\+/gi,'각 $1+ 마다'],
   [/enemy units?/gi,'적 유닛'],[/friendly/gi,'아군'],[/destroyed/gi,'파괴'],
   [/that can shoot even if it advanced/gi,'전진해도 사격 가능'],[/even if it advanced/gi,'전진했어도'],[/even if it fell back/gi,'후퇴했어도'],
-  [/lone operative/gi,'단독 작전(Lone Op)'],[/deep strike/gi,'순간강하(Deep Strike)'],[/leader\b/gi,'리더(합류)'],[/\bscouts? (\d+)\s*"?/gi,'스카웃 $1″'],[/\binfiltrators?\b/gi,'침투(Infiltrators)'],[/\bstealth\b/gi,'은폐(Stealth)'],
+  [/lone operative/gi,'단독 작전(Lone Op)'],[/deep strike/gi,'강하 타격(Deep Strike)'],[/leader\b/gi,'리더(합류)'],[/\bscouts? (\d+)\s*"?/gi,'스카웃 $1″'],[/\binfiltrators?\b/gi,'침투(Infiltrators)'],[/\bstealth\b/gi,'은폐(Stealth)'],
   [/this model has a /gi,'이 모델은 '],[/this model/gi,'이 모델'],[/that unit/gi,'그 유닛'],[/this unit/gi,'이 유닛'],
   [/toughness characteristic/gi,'강인도(T) 수치'],[/\btoughness\b/gi,'강인도(T)'],[/\bstrength\b/gi,'위력(S)'],[/\bleadership\b/gi,'리더십(Ld)'],
   [/you can /gi,'~할 수 있다: '],[/instead( of (only )?a 6)?/gi,'(대신)'],[/\baura\b/gi,'오라'],[/per battle round/gi,'배틀 라운드당'],[/per battle/gi,'전투당'],[/once per turn/gi,'턴당 1회'],
@@ -1689,19 +1752,131 @@ function attachLeader(leaderId,bgId){const L=findUnit(leaderId),bg=findUnit(bgId
 /* 검증된 리더 능력 매핑(10판 코덱). 이름이 맞으면 텍스트 추정 대신 이 값을 사용 */
 const LEADER_BUFFS_DB={
   // ===== Death Guard =====
-  'foul blightspawn':{fightsFirst:true},          // 합류 분대 선공권(라운드당 1회)
-  'biologus putrifier':{lethal:true,critHit:5},   // Foul Infusion: 치명타 + 크리5+
-  'plague surgeon':{critHit:5},                    // Inflamed Infections: 근접 크리5+
-  'lord of contagion':{rrH:'full'},               // 근접 명중 전부 재굴림
-  'lord of virulence':{rrW:'full'},               // 근접 부상 전부 재굴림
-  'typhus':{defHitMelee:true},                     // 합류 분대 근접 피격 시 명중−1(방어)
-  'tallyman':{},                                   // CP/수정 무시(전투 버프 없음)
+  'foul blightspawn':{fightsFirst:true},
+  'biologus putrifier':{lethal:true,critHit:5},
+  'plague surgeon':{},
+  'lord of contagion':{rrH:'full'},
+  'lord of virulence':{rrW:'full'},
+  'typhus':{defHitMelee:true},
+  'tallyman':{hitP:true},
   'malignant plaguecaster':{},
   'noxious blightbringer':{},
   'lord of poxes':{},
-  'plague marine champion':{}
+  'death guard icon bearer':{},
+  'icon bearer':{},
+  'death guard chaos lord':{rrH:'ones'},
+  'death guard chaos lord in terminator armour':{rrH:'ones'},
+  'death guard sorcerer in terminator armour':{},
+  'chaos lord on palanquin of nurgle':{},
+  'sorcerer on palanquin of nurgle':{},
+  'plague marine champion':{},
+  // ===== Necrons =====
+  'overlord':{},
+  'overlord with translocation shroud':{},
+  'royal warden':{},
+  'technomancer':{},
+  'chronomancer':{defHitMelee:true},
+  'plasmancer':{critHit:5},
+  'psychomancer':{},
+  'geomancer':{},
+  'imotekh the stormlord':{},
+  'orikan the diviner':{},
+  'lokhust lord':{sustained:1,critHit:5},
+  'skorpekh lord':{lethal:true},
+  'nekrosor ammentar':{},
+  'trazyn the infinite':{},
+  // ===== Adeptus Mechanicus =====
+  'techpriest dominus':{},
+  'techpriest enginseer':{},
+  'techpriest manipulus':{lethal:true},
+  'skitarii marshal':{rrH:'full'},
+  'cybernetica datasmith':{},
+  'technoarcheologist':{},
+  // ===== Black Templars =====
+  'high marshal helbrecht':{critHit:5},
+  'the emperors champion':{},
+  'chaplain grimaldus':{},
+  'marshal':{rrH:'full'},
+  'castellan':{lethal:true},
+  'chaplain':{rrH:'full'},
+  'apothecary biologis':{},
+  'judiciar':{fightsFirst:true},
+  'lieutenant':{rrW:'ones'},
+  'ancient':{}
 };
 function normName(s){return String(s||'').toLowerCase().replace(/[^a-z0-9가-힣 ]/g,'').replace(/\s+/g,' ').trim();}
+/* 검증된 10판 Leader 합류 대상(Bodyguard) 표 — 리더는 자기 데이터시트에 명시된 분대에만 합류 가능.
+   값 = 합류 가능한 분대 이름에 포함되는 키워드(부분일치). 이름이 표에 없으면 제한 정보 없음(null) → 비캐릭터면 허용 */
+const LEADER_ATTACH={
+  // ===== Necrons =====
+  'overlord':['lychguard','immortal','warrior'],
+  'overlord with translocation shroud':['lychguard','immortal','warrior'],
+  'royal warden':['lychguard','immortal','warrior'],
+  'technomancer':['lychguard','immortal','warrior','canoptek wraith'],
+  'chronomancer':['lychguard','immortal','warrior'],
+  'plasmancer':['lychguard','immortal','warrior'],
+  'psychomancer':['lychguard','immortal','warrior'],
+  'geomancer':['lychguard','immortal','warrior'],
+  'imotekh the stormlord':['lychguard','immortal','warrior'],
+  'nemesor zahndrekh':['lychguard','immortal','warrior'],
+  'anrakyr the traveller':['lychguard','immortal','warrior'],
+  'orikan the diviner':['lychguard','immortal','warrior'],
+  'trazyn the infinite':['lychguard','immortal','warrior'],
+  'nekrosor ammentar':['lychguard','warrior'],
+  'lokhust lord':['lokhust destroyer','lokhust heavy destroyer'],
+  'skorpekh lord':['skorpekh destroyer'],
+  'vargard obyron':['lychguard'],
+  // ===== Death Guard =====
+  'lord of virulence':['blightlord','deathshroud'],
+  'lord of contagion':['blightlord','deathshroud'],
+  'death guard chaos lord in terminator armour':['blightlord','deathshroud'],
+  'death guard sorcerer in terminator armour':['blightlord','deathshroud'],
+  'typhus':['blightlord','deathshroud','poxwalker'],
+  'biologus putrifier':['plague marine'],
+  'foul blightspawn':['plague marine'],
+  'plague surgeon':['plague marine'],
+  'tallyman':['plague marine'],
+  'death guard chaos lord':['plague marine'],
+  'chaos lord on palanquin of nurgle':['plague marine'],
+  'sorcerer on palanquin of nurgle':['plague marine'],
+  'icon bearer':['plague marine'],
+  'lord of poxes':['poxwalker','plague marine'],
+  'malignant plaguecaster':['plague marine','poxwalker'],
+  'noxious blightbringer':['plague marine','poxwalker'],
+  // ===== Adeptus Mechanicus (키워드는 normName 형태: 하이픈 없음) =====
+  'techpriest dominus':['ranger','vanguard','kataphron','electropriest'],
+  'techpriest enginseer':['ranger','vanguard','kataphron','electropriest'],
+  'techpriest manipulus':['ranger','vanguard','kataphron','electropriest'],
+  'technoarcheologist':['ranger','vanguard','kataphron','electropriest'],
+  'skitarii marshal':['ranger','vanguard'],
+  'cybernetica datasmith':['kastelan'],
+  // ===== Black Templars =====
+  'high marshal helbrecht':['crusader','sword brethren','intercessor'],
+  'the emperors champion':['crusader','sword brethren','intercessor'],
+  'chaplain grimaldus':['crusader','sword brethren','intercessor'],
+  'marshal':['crusader','sword brethren','intercessor'],
+  'castellan':['crusader','sword brethren','intercessor'],
+  'judiciar':['sword brethren','bladeguard','assault intercessor'],
+  'apothecary biologis':['aggressor','eradicator','heavy intercessor'],
+  'lieutenant':['intercessor','sword brethren'],
+  'ancient':['intercessor','sword brethren'],
+  'chaplain':['intercessor','crusader','outrider'],
+};
+function leaderAllowList(leader){
+  const ln=normName(leader.name);
+  if(LEADER_ATTACH[ln])return LEADER_ATTACH[ln];
+  const keys=Object.keys(LEADER_ATTACH).sort((a,b)=>b.length-a.length);
+  for(const k of keys){if(ln.includes(k))return LEADER_ATTACH[k];}
+  return null;
+}
+/* true=합류가능, false=합류불가, null=정보없음(제한 안 함) */
+function canLeadTarget(leader,target){
+  const allowed=leaderAllowList(leader);if(!allowed)return null;
+  const tn=normName(target.name);return allowed.some(kw=>tn.includes(kw));
+}
+const CHARACTER_ABILITIES={"lord of virulence": [{"n": "Master of Destruction", "d": "이끄는 유닛의 사격 무기는 부상 굴림을 전부 재굴림."}, {"n": "Blight Bombardment", "d": "사격 시작 시 30″ 내 적 1 지정 → 다음 커맨드까지 아군 DG가 그 적 공격 시 명중 1 재굴림, [BLAST]는 전부 재굴림."}], "lord of contagion": [{"n": "Vector of Disease", "d": "이끄는 유닛의 근접 공격은 명중 굴림 전부 재굴림."}, {"n": "Abundance of Sickness", "d": "전투 페이즈에 생명점 잃을 때마다 D6, 4+면 가장 가까운 적에 1 필멸."}], "typhus": [{"n": "Destroyer Hive", "d": "이끄는 유닛이 근접 피격 시 적 명중 −1."}, {"n": "Eater Plague(사이킥)", "d": "사격 시 18″ 적 1, D6: 2–5 D6필멸 / 6 D3+3필멸 / 1이면 자기 D3필멸."}], "biologus putrifier": [{"n": "Foul Infusion", "d": "이끄는 유닛 [Lethal Hits] + 명중 5+가 크리티컬."}, {"n": "Explosive Maladies", "d": "라운드당 1회, 속한 유닛이 Grenade 스트라타젬을 0CP로 사용."}], "foul blightspawn": [{"n": "Putrefying Stink", "d": "이끄는 유닛 전원 [선공권]."}], "plague surgeon": [{"n": "Tainted Narthecium", "d": "내 커맨드마다 속한 유닛의 파괴 모델 1 부활."}, {"n": "Diseased Healing", "d": "이동 종료 시 3″ 내 DG 인팬트리 캐릭터 1을 최대 3 생명점 회복."}], "tallyman": [{"n": "Malicious Calculations", "d": "이끄는 유닛 명중 굴림 +1."}, {"n": "Seven-fold Chant", "d": "내 커맨드에 2D6, 합 7+면 1CP 획득."}], "malignant plaguecaster": [{"n": "Gift of Contagion(사이킥)", "d": "사격 시 18″ 적 1, D6 2+면 그 적 근접 부상 −1(다음 사격 전까지) / 1이면 자기 D3필멸."}, {"n": "Pestilent Fallout", "d": "플라그 윈드로 적 보병 상처 시 그 적 이동·전진·돌격 −2″."}], "noxious blightbringer": [{"n": "Sickening Vitality", "d": "이끄는 유닛 전진·돌격 굴림 재굴림."}, {"n": "The Bell Tolls(오라)", "d": "감염 범위 내 적 배틀쇼크·리더십 테스트 −2."}], "lord of poxes": [{"n": "Gift of Poxes", "d": "감염 오라 범위 +3″."}, {"n": "Shroud of Disease", "d": "이끄는 유닛은 18″ 초과 거리에서 사격 대상이 될 수 없음."}], "death guard icon bearer": [{"n": "Unclean Icon", "d": "이끄는 유닛 각 모델 OC +1."}, {"n": "Seed the Disease", "d": "게임당 1회, 이동 종료 시 이 유닛 감염 범위를 12″로 취급."}], "icon bearer": [{"n": "Unclean Icon", "d": "이끄는 유닛 각 모델 OC +1."}, {"n": "Seed the Disease", "d": "게임당 1회, 이동 종료 시 감염 범위 12″ 취급."}], "death guard chaos lord": [{"n": "Chaos Lord", "d": "이끄는 유닛 명중 굴림 1 재굴림."}, {"n": "Desiccation Conduit(오라)", "d": "내 턴 종료 시 감염 범위 내 적마다 4+면 D3필멸."}], "death guard chaos lord in terminator armour": [{"n": "Chaos Lord", "d": "이끄는 유닛 명중 굴림 1 재굴림."}, {"n": "Desiccation Conduit(오라)", "d": "내 턴 종료 시 감염 범위 내 적마다 4+면 D3필멸."}], "death guard sorcerer in terminator armour": [{"n": "Putrescent Vitality(사이킥)", "d": "전투 시작 시 D6, 2+면 속한 유닛이 받는 피해 −1(그 페이즈) / 1이면 D3필멸."}, {"n": "Pestilent Familiar", "d": "게임당 1회, 사이킥 무기 목표 후 그 무기 힘·피해 +2."}], "mortarion": [{"n": "Host of Plagues", "d": "매 라운드 오라 1택: Miasma(아군 6″ 커버) / Diseased Influence(부상1 재굴림) / Toxic Presence(감염 +3″)."}, {"n": "Lord of the Death Guard(오라)", "d": "6″ 내 아군 DG는 모든 수정(세이브 제외) 무시. 본인 FNP 5+ · Deadly Demise D6."}], "daemon prince of nurgle": [{"n": "Grandfather's Blessing(사이킥 오라)", "d": "감염 범위 내 아군 DG 인팬트리 FNP 6+."}, {"n": "Warp Horror(날개)", "d": "돌격 후 교전 적에 배틀쇼크 강제."}, {"n": "Devastating Assault(날개)", "d": "돌격한 턴 Hellforged 무기 [Devastating Wounds]."}], "overlord": [{"n": "My Will Be Done", "d": "라운드당 1회, 속한 유닛에 스트라타젬 사용 시 CP 0. 게임당 1회 커맨드에 Reanimation으로 파괴 모델 D6 부활."}], "overlord with translocation shroud": [{"n": "Translocation Shroud", "d": "전진 시 굴림 없이 +6″, 이동·전진·후퇴 중 지형·적 통과."}, {"n": "My Will Be Done", "d": "스트라타젬 0CP + 게임당 1회 D6 재생."}], "royal warden": [{"n": "Adaptive Retreat", "d": "이끄는 유닛은 후퇴 후에도 사격·돌격 가능."}, {"n": "Battle-Shock Exhortation", "d": "게임당 1회, 커맨드에 12″ 아군 1의 배틀쇼크를 그 턴 무시."}], "technomancer": [{"n": "Eldritch Repair", "d": "이끄는 유닛 FNP 5+, 이동 종료 시 6″ 아군 1 D3 생명점 회복."}, {"n": "Necrodermis Shield", "d": "본인 4+ 불굴."}], "chronomancer": [{"n": "Temporal Manipulation", "d": "이끄는 유닛 대상 적 명중 −1(사격·근접 모두)."}, {"n": "Chrono-Skit", "d": "사격 후 5″ 이동(그 턴 돌격 불가). 본인 4+ 불굴."}], "plasmancer": [{"n": "Arcane Barrage", "d": "이끄는 유닛 사격 무기 명중 5+가 크리티컬."}, {"n": "Plasmic Catalyst", "d": "사격 시 18″ 적 1에 4D6, 4+마다 1 필멸."}], "psychomancer": [{"n": "Terror Apex(6″ 오라)", "d": "반파 적은 내 커맨드마다 배틀쇼크 테스트."}, {"n": "Mortal Transfixion", "d": "사격 시 18″ 적 1에 −1 배틀쇼크 강제."}], "geomancer": [{"n": "Tectonic Reverberations", "d": "사격 시작 시 18″ 적 1, 다음 자기 턴까지 이동·돌격 −2″."}, {"n": "Spatial Anchors", "d": "점령 목표 12″ 내 적 보강 배치 금지."}], "imotekh the stormlord": [{"n": "Stormlord Dominion", "d": "커맨드마다 +1CP, 속한 유닛 스트라타젬 0CP."}, {"n": "Living Lightning", "d": "게임당 1회, 사격 시 12″ 모든 적에 D6: 2–5 D3 / 6 D3+3 필멸."}], "orikan the diviner": [{"n": "Astromancer's Ward", "d": "이끄는 유닛 4+ 불굴."}, {"n": "The Stars Are Right", "d": "게임당 1회 커맨드, 그 턴 본인 근접 힘·공격 3배 + 모든 부상 크리티컬."}], "lokhust lord": [{"n": "Lord of Destruction", "d": "이끄는 Lokhust(헤비) 사격 명중 5+가 추가 명중 생성(=지속명중1·크리5+)."}, {"n": "Reassembly Orb", "d": "게임당 1회, 속한 유닛 Reanimation 시 파괴 모델 D6 추가 부활."}], "skorpekh lord": [{"n": "Master of Slaughter", "d": "이끄는 Skorpekh 근접 무기 [Lethal Hits]."}], "trazyn the infinite": [{"n": "Surrogate Hosts", "d": "다른 네크론 인팬트리 캐릭터 파괴 시 D6 3+면 트레이즌이 그 자리로 대체."}, {"n": "Ancient Collector", "d": "점령 목표는 스티키(이동해도 유지)."}], "illuminor szeras": [{"n": "Master Biotransference(6″ 오라)", "d": "합류 불가. 워리어·이모탈 사격 AP +1, 그들이 받는 공격 AP −1."}, {"n": "Living Phylactery", "d": "4+ 불굴 · FNP 4+, 첫 파괴 시 3 생명점 부활."}], "catacomb command barge": [{"n": "Lord of the Dynasty(6″ 오라)", "d": "합류 불가. 아군 OC +1, 게임당 1회 Reanimation 시 D6 부활."}, {"n": "Royal Platform", "d": "강인도 초과 힘 공격의 피해 −1."}], "hexmark destroyer": [{"n": "Lone Operative", "d": "12″ 밖 적에게 표적 불가."}, {"n": "Multi-Threat Eliminator", "d": "사격마다 3″ 아군 피격 시 즉시 그 적에 사격. 게임당 1회 Overwatch 0CP·명중 2+."}], "the silent king": [{"n": "Triumvirate of the Triarch", "d": "합류 불가. 매 턴 오라 1택(6″): 명중·부상 1 재굴림 / 전진·돌격 재굴림+근접 S+1 / 이동 +2″."}], "nemesor zahndrekh": [{"n": "Unparalleled Strategist", "d": "커맨드마다 24″ 아군 1·적 1 지정 → 아군이 그 적 대상 명중·부상 +1."}, {"n": "Counter-Tactics", "d": "라운드당 1회, 상대 스트라타젬 직후 D6 4+면 그 CP +1 또는 내 CP 1 회복."}], "vargard obyron": [{"n": "Ghostwalk Mantle", "d": "게임당 1회, 잔드레크와 6″ 내로 순간이동."}, {"n": "Bodyguard of Zahndrekh", "d": "잔드레크 생존 시 그를 돌격하는 적에 [Fights First] 강제, 본인 근접 크리 시 추가 공격."}], "ctan shard": [{"n": "Necrodermis", "d": "페이즈당 최대 3 피해만 받음, 4+ 불굴."}, {"n": "Cosmic Powers", "d": "각 크탄(나이트브링거·디시버·보이드 드래곤) 고유 능력으로 필멸·디버프."}], "techpriest dominus": [{"n": "Benediction of Mars", "d": "이끄는 유닛 FNP 5+ (Electro-Priest 포함 시 4+)."}, {"n": "Machine Scourge", "d": "전투 시 교전 적 차량 1에 D6 4+면 D6필멸 + 그 턴 WS −1."}], "techpriest enginseer": [{"n": "Sacred Mechanics", "d": "3″ 내 AdMech 차량 있으면 Lone Operative."}, {"n": "Field Repairs", "d": "이동 종료 시 아군 차량 1 D3 회복+FNP 5+. 12″ 아군 차량 파괴 시 본인 근접 공격 2배."}], "techpriest manipulus": [{"n": "Galvanic Amplification", "d": "이끄는 유닛 사격 무기 [Lethal Hits]."}, {"n": "Omnissian Aegis", "d": "페이즈당 1회 이 유닛 4+ 불굴."}], "skitarii marshal": [{"n": "Tactical Dictates", "d": "이끄는 유닛 명중 굴림 재굴림."}, {"n": "Inspiring Command", "d": "게임당 1회, 6″ Skitarii 1이 그 턴 배틀쇼크 무시 + 전진·돌격 재굴림."}], "cybernetica datasmith": [{"n": "Programme Override", "d": "시작 시 속한 Kastelan 유닛 강인도 +1. 커맨드마다 모드 전환: 근접=모든 로봇 공격 +2 / 사격=사격 무기 공격 +2."}], "technoarcheologist": [{"n": "Archaeotech Survey", "d": "이끄는 유닛 OC +1."}, {"n": "Zone Denial", "d": "이 유닛 12″ 내 적 보강 배치 금지."}], "belisarius cawl": [{"n": "Canticles of the Omnissiah(6″ 오라)", "d": "커맨드마다 1택: 지정 적 대상 명중·부상 재굴림 / OC+1·배틀쇼크 자동통과 / [Stealth]."}, {"n": "Prime Lazarus", "d": "Lone Operative(3″), 이동 종료 시 아군 1 D3 회복."}], "sydonian skatros": [{"n": "Lone Operative", "d": "12″ 밖 적에게 표적 불가."}, {"n": "Transuranic Sniper", "d": "스나이퍼 2프로필(보병 Anti-Inf 3+·Dev / 괴수·차량 Anti 4+·Dev), 명중 후 부상 재굴림."}], "high marshal helbrecht": [{"n": "Crusade of Wrath", "d": "이끄는 유닛 근접 무기 힘 +1 + 근접 명중 5+가 [Critical Hit]."}, {"n": "High Marshal", "d": "전투 시작 시 교전 적 1에 D6: 2–3 D3 / 4–5 3 / 6 D3+3 필멸."}], "the emperors champion": [{"n": "Skilful Parry", "d": "페이즈당 1회, 본인 부상 시 그 피해 0."}, {"n": "Sigismund's Heir", "d": "이끄는 유닛이 적 캐릭터 상대 시 부상 +1."}], "chaplain grimaldus": [{"n": "Litanies of the Devout", "d": "커맨드마다 찬송 1택 → 이끄는 유닛 근접 명중 재굴림 또는 부상 +1."}, {"n": "Temple Relics", "d": "Cenobyte 생존 시 성유물 2개: FNP 5+·OC+1 / 필멸 FNP 4+·사이킥 방어."}], "marshal": [{"n": "Rites of Battle", "d": "이끄는 유닛 명중 굴림 재굴림."}, {"n": "Master of Sanctity", "d": "커맨드 1회, 6″ BT 1에 추가 서약 1개 또는 근접 6이 크리티컬."}], "castellan": [{"n": "Tactical Precision", "d": "이끄는 유닛 모든 무기 [Lethal Hits]."}, {"n": "Target Priority", "d": "이끄는 유닛 후퇴 후에도 사격·돌격 가능."}], "chaplain": [{"n": "Litany of Hate", "d": "커맨드마다 찬송 → 이끄는 유닛 근접 명중 재굴림."}, {"n": "Spiritual Guidance", "d": "페이즈당 1회 이끄는 유닛 부상 재굴림 또는 4+ 불굴."}], "apothecary biologis": [{"n": "Combat Restoratives", "d": "이동 종료 시 이끄는 유닛 모델 1 부활 또는 D3 회복."}, {"n": "Biological Augury", "d": "게임당 1회 적 1을 표적 지정 → 이끄는 유닛이 그 표적 대상 부상 재굴림."}], "judiciar": [{"n": "Executioner's Gaze", "d": "이끄는 유닛과 교전 적은 [Fights Last]."}, {"n": "Temporal Sentence", "d": "표시한 적 파괴 시 추가 D3 필멸."}], "lieutenant": [{"n": "Tactical Precision", "d": "이끄는 유닛 부상 굴림 1 재굴림."}, {"n": "Company Blade", "d": "본인·유닛 근접 6이 뜨면 AP +1."}], "ancient": [{"n": "Astartes Banner", "d": "이끄는 유닛 OC +1."}, {"n": "Martyr's Legacy", "d": "유닛 모델 파괴 시 4+면 제거 전 1회 공격. 고대 파괴 시 6″ 아군 명중·부상 +1."}]};
+function charAbil(name){const n=normName(name);if(CHARACTER_ABILITIES[n])return CHARACTER_ABILITIES[n];for(const k in CHARACTER_ABILITIES){if(n.includes(k)&&k.length>=6)return CHARACTER_ABILITIES[k];}return null;}
+function charAbilHTML(name){const a=charAbil(name);if(!a||!a.length)return '';return `<div class="lu-abil"><div class="lu-abil-h">\uD83D\uDCDC ${esc(name)} \uACE0\uC720 \uB2A5\uB825</div>`+a.map(x=>`<div class="lu-abil-i"><b>${esc(x.n)}</b> \u2014 ${esc(x.d)}</div>`).join('')+`</div>`;}
 function lookupLeaderBuffs(name){
   const n=normName(name);if(LEADER_BUFFS_DB[n])return LEADER_BUFFS_DB[n];
   for(const k in LEADER_BUFFS_DB){if(n.includes(k)&&k.length>=6)return LEADER_BUFFS_DB[k];}
@@ -1735,10 +1910,23 @@ function mergeBuffs(d,s){for(const k in s){const v=s[k];
   else if(v)d[k]=v;}}
 function unitBuffs(u){if(!u)return null;if(u.attachedLeaders&&u.attachedLeaders.length&&u.leaderBuffs)return u.leaderBuffs;if(u.leaderOf){const b=findUnit(u.leaderOf);if(b)return b.leaderBuffs;}return null;}
 function strikesFirst(id){if(isCharger(id))return true;const b=unitBuffs(findUnit(id));return !!(b&&b.fightsFirst);}
+function enhListForUnit(u){if(!u)return{name:'',list:[]};const pi=playerOf(u.id);if(pi<0)return{name:'',list:[]};const p=GS.players[pi];const fac=ENH_DB[p.factionKey];if(!fac)return{name:'',list:[]};const det=(RULES_DB[p.factionKey].detachments[p.detach||0]||{}).name||'';return{name:det,list:fac[det]||[]};}
+function enhOf(u){if(!u||u.enhIdx==null)return null;const o=enhListForUnit(u);return o.list[u.enhIdx]||null;}
+function enhBuffOf(u){const e=enhOf(u);return (e&&e.buff)?e.buff:{};}
+function setEnhancement(charId,val){const L=findUnit(charId);if(!L)return;L.enhIdx=(val===''||val==null)?null:parseInt(val);
+  if(L.leaderOf){const bg=findUnit(L.leaderOf);if(bg)autoLeaderBuffs(bg);}
+  const e=enhOf(L);logEntry('phase',`✨ ${L.name} 인핸스먼트: ${e?e.n:'없음'}`);if(e)toast(`✨ ${e.n}`,'vp');
+  renderRosters();renderCombatToggles();if(LU)renderLeaderUI(LU.unitId);sqRefresh();}
+function enhUIHTML(u){if(!isCharacter(u))return '';const o=enhListForUnit(u);if(!o.list.length)return '';const cur=(u.enhIdx!=null)?u.enhIdx:'';
+  let h=`<div class="lu-sec">✨ 인핸스먼트 — ${esc(o.name)}</div><div class="lu-row"><select style="flex:1" onchange="setEnhancement('${u.id}',this.value)"><option value="">— 없음 —</option>`;
+  h+=o.list.map((e,i)=>`<option value="${i}" ${cur===i?'selected':''}>${esc(e.n)}${e.pts?` (${e.pts}pt)`:''}${e.buff?' ⚙':''}</option>`).join('')+`</select></div>`;
+  const e=enhOf(u);
+  if(e)h+=`<div class="lu-abil"><div class="lu-abil-i"><b>${esc(e.n)}</b>${e.r?` <span class="enh-r">${esc(e.r)} 전용</span>`:''} — ${esc(e.d)}${e.buff?`<div class="enh-auto">⚙ 자동 버프 반영: ${esc(buffSummary(e.buff))}</div>`:''}</div></div>`;
+  return h;}
 function autoLeaderBuffs(bg){
-  // 합류한 모든 리더에 대해: 검증 테이블이 있으면 그 값, 없으면 텍스트 추정 → 병합
+  // 합류한 모든 리더에 대해: 검증 테이블 값(없으면 텍스트 추정) + 인핸스먼트 버프 → 병합
   const lb={};
-  (bg.attachedLeaders||[]).forEach(id=>{const L=findUnit(id);if(!L)return;const c=lookupLeaderBuffs(L.name)||textDetectBuffs(L);mergeBuffs(lb,c);});
+  (bg.attachedLeaders||[]).forEach(id=>{const L=findUnit(id);if(!L)return;const c=lookupLeaderBuffs(L.name)||textDetectBuffs(L);mergeBuffs(lb,c);mergeBuffs(lb,enhBuffOf(L));});
   bg.leaderBuffs=lb;
 }
 function detachLeader(leaderId){const L=findUnit(leaderId);if(!L)return;if(L.leaderOf){const bg=findUnit(L.leaderOf);if(bg&&bg.attachedLeaders)bg.attachedLeaders=bg.attachedLeaders.filter(x=>x!==leaderId);}L.leaderOf=null;logEntry('phase',`🔓 ${L.name} 합류 해제`);renderRosters();renderCombatToggles();if(LU)renderLeaderUI(LU.unitId);sqRefresh();}
@@ -1753,16 +1941,21 @@ function renderLeaderUI(unitId){
   if(isCharacter(u)){
     h+=`<div class="lu-sec">합류 (이 캐릭터)</div>`;
     if(u.leaderOf){const bg=findUnit(u.leaderOf);h+=`<div class="lu-row"><span>▸ <b>${esc(bg?bg.name:'?')}</b> 분대에 합류 중</span><button class="mini" onclick="detachLeader('${u.id}')">🔓 합류 해제</button></div>`;}
-    else{const cand=aliveSame.filter(x=>x.id!==u.id&&!isCharacter(x));
-      if(cand.length)h+=`<div class="lu-row"><select id="lu-target">${cand.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select><button class="mini" onclick="attachLeader('${u.id}',document.getElementById('lu-target').value)">🔗 합류</button></div>`;
-      else h+=`<div class="hint">합류할 비(非)캐릭터 분대가 없습니다.</div>`;}
+    else{const cand=aliveSame.filter(x=>x.id!==u.id&&!isCharacter(x)&&canLeadTarget(u,x)!==false);
+      const restricted=leaderAllowList(u)!==null;
+      if(cand.length)h+=`<div class="lu-row"><select id="lu-target">${cand.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select><button class="mini" onclick="attachLeader('${u.id}',document.getElementById('lu-target').value)">🔗 합류</button></div>${restricted?'<div class="hint">🔒 이 리더는 데이터시트 Bodyguard 분대에만 합류할 수 있습니다(검증된 10판 규칙).</div>':''}`;
+      else h+=`<div class="hint">합류 가능한 분대가 없습니다.${restricted?' 이 리더의 Bodyguard 분대(데이터시트 명시)가 군대에 있어야 합류할 수 있습니다.':''}</div>`;}
   }else{
     h+=`<div class="lu-sec">합류한 리더</div>`;
     const ls=(u.attachedLeaders||[]).map(findUnit).filter(Boolean);
     h+=ls.length?ls.map(L=>`<div class="lu-row"><span>👤 <b>${esc(L.name)}</b></span><button class="mini" onclick="detachLeader('${L.id}')">🔓 해제</button></div>`).join(''):`<div class="hint">합류한 리더 없음.</div>`;
-    const cand=aliveSame.filter(x=>x.id!==u.id&&isCharacter(x)&&!x.leaderOf);
+    const cand=aliveSame.filter(x=>x.id!==u.id&&isCharacter(x)&&!x.leaderOf&&canLeadTarget(x,u)!==false);
     if(cand.length)h+=`<div class="lu-row"><select id="lu-leader">${cand.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select><button class="mini" onclick="attachLeader(document.getElementById('lu-leader').value,'${u.id}')">🔗 리더 합류</button></div>`;
+    else h+=`<div class="hint">이 분대에 합류할 수 있는 리더가 없습니다(리더의 Bodyguard 목록 기준).</div>`;
   }
+  if(isCharacter(u))h+=charAbilHTML(u.name);
+  if(isCharacter(u))h+=enhUIHTML(u);
+  else{const _ls=(u.attachedLeaders||[]).map(findUnit).filter(Boolean);h+=_ls.map(L=>charAbilHTML(L.name)).join('');}
   const bgU=isCharacter(u)?(u.leaderOf?findUnit(u.leaderOf):null):u;
   if(bgU){const lb=bgU.leaderBuffs||{};
     h+=`<div class="lu-sec">리더 버프 — <b>${esc(bgU.name)}</b> 분대 공격에 적용 (전투창에 자동 토글)</div>
@@ -1899,6 +2092,7 @@ function renderCombatStrats(){
       return `<div class="cstrat"><div class="cstrat-top"><span class="cstrat-n">${esc(s.n)} <span class="cstrat-cp">${s.cp}CP</span> ${fx}</span><span class="cstrat-buy"><button onclick="${call(0)}" ${p1.cp<s.cp?'disabled':''}>${esc(p1.name)}</button><button onclick="${call(1)}" ${p2.cp<s.cp?'disabled':''}>${esc(p2.name)}</button></span></div><div class="cstrat-d">${esc(s.d)}</div></div>`;
     }).join('')+`</div>`;
   }
+  h+=factionStratsHTML(ph,p1,p2);
   if(ACTIVE_STRATS.length){
     h+=`<div class="astrat-box"><div class="astrat-h">✅ 이 계산에 적용 중: <b>${ACTIVE_STRATS.map(s=>esc(s.name)).join(', ')}</b></div><button class="mini undo" onclick="undoLastStrat()">↶ 방금 스트라타젬 취소 (CP 환급)</button></div>`;
   }
@@ -1906,6 +2100,19 @@ function renderCombatStrats(){
     h+=`<div class="astrat-box gren"><div class="astrat-h">💣 수류탄(Grenade) — 6D6 굴려 <b>4+</b> 나온 개수만큼 대상에 <b>필멸 상처</b></div><div class="gren-ctrl"><label>4+ 개수</label><input type="number" id="gren-hits" min="0" max="6" value="0"><button class="btn primary" onclick="applyGrenade()">대상에 필멸 적용</button><button class="mini" onclick="cancelGrenade()">취소(환급)</button></div></div>`;
   }
   box.innerHTML=h;
+}
+function detStratList(pi){const p=GS.players[pi];if(!p)return{name:'',list:[]};const fac=FACTION_STRATS[p.factionKey];if(!fac)return{name:'',list:[]};const det=(RULES_DB[p.factionKey].detachments[p.detach||0]||{}).name||'';return{name:det,list:fac[det]||[]};}
+function factionStratsHTML(ph,p1,p2){let h='';[0,1].forEach(pi=>{const p=GS.players[pi];const {name:det,list}=detStratList(pi);const ds=list.map((s,i)=>({s,i})).filter(o=>o.s.ph.includes(ph));if(!ds.length)return;
+  h+=`<div class="cstrat-box det"><div class="cstrat-h det">⚡ ${esc(p.name)} · <b>${esc(det)}</b> 디테치 스트라타젬</div>`;
+  h+=ds.map(({s,i})=>{const fxt=s.fx?'<span class="cstrat-fx">계산 자동반영</span>':'<span class="cstrat-fx info">정보·CP만</span>';const sd=s.side==='def'?' <span class="cstrat-side">방어</span>':'';
+    return `<div class="cstrat"><div class="cstrat-top"><span class="cstrat-n">${esc(s.n)} <span class="cstrat-cp">${s.cp}CP</span> ${fxt}${sd}</span><span class="cstrat-buy"><button onclick="applyDetStrat(${pi},${i})" ${p.cp<s.cp?'disabled':''}>적용</button></span></div><div class="cstrat-d">${esc(s.d)}</div></div>`;
+  }).join('')+`</div>`;
+});return h;}
+function applyDetStrat(pi,idx){const p=GS.players[pi];if(!p)return;const {list}=detStratList(pi);const s=list[idx];if(!s)return;
+  if(p.cp<s.cp){toast('CP 부족','kill');return;}
+  pushUndo();p.cp-=s.cp;ACTIVE_STRATS.push({name:s.n,cp:s.cp,pi,kind:'fx',fx:s.fx||null,side:s.side||'atk'});
+  logEntry('score',`${p.name} 스트라타젬: ${s.n} (−${s.cp}CP)${s.fx?' · 계산 반영':''}`);toast(`${s.n} (−${s.cp}CP)`,'vp');
+  renderStatus();renderTurnPanel();renderCombatToggles();renderCombatStrats();
 }
 function combatStratApply(pi,cp,name,kind){
   if(GS.players[pi].cp<cp){toast('CP 부족','kill');return;}
@@ -2003,7 +2210,11 @@ function buildFactionToggles(){
   const opt=(p,fk)=>RULES_DB[fk].armyRule.choices?RULES_DB[fk].armyRule.choices.options[p.choice||0].name:'';
   if(a==='Adeptus Mechanicus'&&RULES_DB[a].armyRule.choices){const imp=opt(ap,a);if(imp.includes('Protector'))list.push({id:'admP',label:'정지(Protector)',hint:'정지 시 사격 명중 +1 (HEAVY) — 이번 라운드 임페라티브 자동 적용',auto:true,default:true,apply:c=>{if(!c.melee)c.hitMod+=1;}});if(imp.includes('Conqueror'))list.push({id:'admC',label:'적 배치구역 대상(Conqueror)',hint:'AP +1 — 이번 라운드 임페라티브 자동 적용',auto:true,default:true,apply:c=>{c.AP+=1;}});}
   if(a==='Necrons'&&ap.detach>=0&&RULES_DB.Necrons.detachments[ap.detach].name.includes('Awakened'))list.push({id:'necA',label:'캐릭터 인솔(Awakened)',hint:'명중 +1',apply:c=>{c.hitMod+=1;}});
-  if(a==='Black Templars'&&RULES_DB[a].armyRule.choices){const vow=opt(ap,a);if(vow.includes('Accept Any Challenge'))list.push({id:'btAcc',label:'Accept(근접 S≤T)',hint:'근접 S ≤ 대상 T면 부상 +1 (자동 판정)',auto:true,default:true,apply:c=>{if(c.melee&&c.S<=c.targetT)c.woundMod+=1;}});}
+  if(a==='Black Templars'&&RULES_DB[a].armyRule.choices){const vow=opt(ap,a);
+    if(vow.includes('Accept Any Challenge'))list.push({id:'btAcc',label:'서약 Accept(지속명중 1)',hint:'근접 무기 Sustained Hits 1 — 크리티컬 명중당 +1 명중',auto:true,default:true,apply:c=>{if(c.melee)c.sustained=Math.max(c.sustained||0,1);}});
+    if(vow.includes('Suffer Not'))list.push({id:'btSuf',label:'서약 Suffer Not(치명타)',hint:'근접 무기 Lethal Hits — 크리티컬 명중=자동 부상',auto:true,default:true,apply:c=>{if(c.melee)c.lethal=true;}});
+    if(vow.includes('Abhor the Witch'))list.push({id:'btAbh',label:'서약 Abhor(對사이커)',hint:'대상이 PSYKER일 때만 근접 Anti-Psyker 4+ (수동 — 사이커 상대 시 켜기)',apply:c=>{if(c.melee){c.antiKw='psyker';c.antiVal=Math.min(c.antiVal||6,4);}}});
+  }
   const atkU=GS.players[+$('atk-player').value].units.find(x=>x.id===$('atk-unit').value);
   let bgU=null;
   if(atkU){if(atkU.attachedLeaders&&atkU.attachedLeaders.length&&atkU.leaderBuffs)bgU=atkU;else if(atkU.leaderOf){const b=findUnit(atkU.leaderOf);if(b&&b.leaderBuffs)bgU=b;}}
@@ -2027,6 +2238,7 @@ function renderCombatToggles(){
   const w=curWeapon(),du=curDefUnit();
   const affRow=$('aff-row');if(affRow)affRow.style.display=afflictedAvailable()?'':'none';
   if(!afflictedAvailable()&&$('def-afflicted'))$('def-afflicted').checked=false;
+  const invOn=$('inv-on')&&$('inv-on').checked;const ivw=$('inv-val-wrap');if(ivw)ivw.style.display=invOn?'':'none';
   const psyRow=$('psy-row');if(psyRow)psyRow.style.display=isPsyker(curAtkUnit())?'':'none';
   const prevF=FTOG||{},prevM=MTOG||{};
   const sig=(curAtkUnit()?curAtkUnit().id:'')+'|'+(du?du.id:'');
@@ -2074,15 +2286,42 @@ function buildCtx(){
     if(dg&&RULES_DB['Death Guard'].armyRule.choices){const pl=RULES_DB['Death Guard'].armyRule.choices.options[dg.choice||0].name;if(pl.includes('Rattlejoint'))ctx.saveAdd+=1;}
     ctx.afflicted=true;
   }
-  const invO=parseInt($('inv-override')?$('inv-override').value:'');
+  const invO=($('inv-on')&&$('inv-on').checked)?parseInt($('inv-override')?$('inv-override').value:''):NaN;
   if(Number.isFinite(invO)&&invO>=2&&invO<=6){ctx.targetInv=ctx.targetInv>0?Math.min(ctx.targetInv,invO):invO;ctx.invOverride=invO;}
   if(!w.melee&&defHasStealth(du)){ctx.hitMod-=1;ctx.stealth=true;}
   if(w.melee){const db=unitBuffs(du);if(db&&db.defHitMelee){ctx.hitMod-=1;ctx.defHitMelee=true;}}
   if(ab.twinlinked&&ctx.rrWound==='none')ctx.rrWound='full';
   // 활성 스트라타젬 효과 반영 (전투창에서 적용한 것)
+  const _atkPI=+($('atk-player')?$('atk-player').value:0),_defPI=+($('def-player')?$('def-player').value:1);
   (typeof ACTIVE_STRATS!=='undefined'?ACTIVE_STRATS:[]).forEach(s=>{
     if(s.kind==='smoke'){ctx.cover=true;if(!w.melee){ctx.hitMod-=1;ctx.stealth=true;}ctx.stratSmoke=true;}
     else if(s.kind==='ground'){ctx.cover=true;ctx.targetInv=ctx.targetInv>0?Math.min(ctx.targetInv,6):6;ctx.invOverride=Math.min(ctx.invOverride||6,6);ctx.stratGround=true;}
+    else if(s.kind==='fx'&&s.fx){const F=s.fx;
+      const off=(s.pi===_atkPI)&&(s.side==='atk'||s.side==='any');
+      const def=(s.pi===_defPI)&&(s.side==='def'||s.side==='any');
+      if(off){
+        if(F.sus)ctx.sustained=Math.max(ctx.sustained||0,F.sus);
+        if(F.leth)ctx.lethal=true;
+        if(F.dev)ctx.devastating=true;
+        if(F.crit)ctx.critHit=Math.min(ctx.critHit,F.crit);
+        if(F.hrr){if(F.hrr==='full')ctx.rrHit='full';else if(ctx.rrHit==='none')ctx.rrHit='ones';}
+        if(F.wrr){if(F.wrr==='full')ctx.rrWound='full';else if(ctx.rrWound==='none')ctx.rrWound='ones';}
+        if(F.hp)ctx.hitMod+=F.hp;if(F.wp)ctx.woundMod+=F.wp;
+        if(F.sp)ctx.S+=F.sp;if(F.ap)ctx.AP+=F.ap;
+        if(F.ic){ctx.cover=false;ctx.ignoresCover=true;}
+        ctx.stratFx=true;
+      }
+      if(def){
+        if(F.dcover)ctx.cover=true;
+        if(F.dinv){ctx.targetInv=ctx.targetInv>0?Math.min(ctx.targetInv,F.dinv):F.dinv;ctx.invOverride=Math.min(ctx.invOverride||9,F.dinv);}
+        if(F.dfnp)ctx.fnp=ctx.fnp>0?Math.min(ctx.fnp,F.dfnp):F.dfnp;
+        if(F.ddmg)ctx.dmgBonus-=F.ddmg;
+        if(F.dtough)ctx.targetT+=F.dtough;
+        if(F.dhit)ctx.hitMod-=F.dhit;if(F.dwound)ctx.woundMod-=F.dwound;
+        if(F.aoc)ctx.AP=Math.max(0,ctx.AP-F.aoc);
+        ctx.stratFx=true;
+      }
+    }
   });
   ctx.hitMod=clamp(ctx.hitMod,-1,1);ctx.woundMod=clamp(ctx.woundMod,-1,1);
   return ctx;
