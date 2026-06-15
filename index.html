@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0a0c;--bg2:#111116;--bg3:#16161e;--bg4:#1c1c26;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--gold:#c9a84c;--gold2:#e8c870;--gold-dim:rgba(201,168,76,0.15);--red2:#ff5555;--red-dim:rgba(204,51,51,0.12);--green2:#3dba78;--amber2:#f5a030;--blue2:#4a8ccc;--pink2:#cc5a8c;--text:#e8e0d0;--text2:#a09888;--text3:#605850}
+body[data-theme="light"]{--bg:#eee9df;--bg2:#fbf8f1;--bg3:#e8e1d5;--bg4:#ddd4c6;--border:rgba(39,34,28,0.12);--border2:rgba(39,34,28,0.22);--gold:#8a681d;--gold2:#6f5010;--gold-dim:rgba(138,104,29,0.13);--red2:#b52d2d;--red-dim:rgba(181,45,45,0.1);--green2:#237447;--amber2:#a76410;--blue2:#2c6497;--pink2:#9d4770;--text:#2b2723;--text2:#5e564e;--text3:#81766c}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh;overflow-x:hidden}
 .noise{position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.7}
@@ -15,6 +16,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 
 /* HEADER */
 .header{display:flex;align-items:center;gap:14px;padding:24px 0 18px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.header-main{min-width:0}.header-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}.swap-toggle{display:flex;align-items:center;gap:6px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);padding:6px 9px;border-radius:999px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.07em;transition:all .15s;white-space:nowrap}.swap-toggle:hover{border-color:var(--gold);color:var(--gold2)}.swap-toggle[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-dim);color:var(--gold2)}.swap-icon{font-family:'Share Tech Mono',monospace;font-size:14px;line-height:1}.swap-label{min-width:62px;text-align:left}@media(max-width:620px){.swap-label{display:none}.swap-toggle{padding:6px 8px}}.theme-toggle{display:flex;align-items:center;gap:7px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);padding:5px 8px;border-radius:999px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;transition:all .15s}.theme-toggle:hover{border-color:var(--gold);color:var(--gold2)}.theme-track{width:28px;height:15px;border-radius:999px;background:var(--bg4);border:1px solid var(--border2);position:relative;display:inline-block}.theme-knob{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--gold2);top:2px;left:3px;transition:transform .18s ease}.theme-toggle[aria-checked="true"] .theme-knob{transform:translateX(12px)}.theme-icon{font-size:13px;line-height:1}.theme-label{min-width:31px;text-align:left}@media(max-width:520px){.theme-label{display:none}.theme-toggle{padding:5px 7px}.header{gap:9px}h1{font-size:20px}}
 .emblem{width:50px;height:50px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
 .emblem::before{content:'';position:absolute;inset:5px;border:1px solid rgba(201,168,76,.25);border-radius:50%}
 h1{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;letter-spacing:.1em;color:var(--gold2);text-transform:uppercase;line-height:1}
@@ -55,6 +57,7 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
 .tbtn{padding:3px 8px;border-radius:2px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:all .15s;text-transform:uppercase}
 .tbtn:hover{border-color:var(--gold);color:var(--gold)}
 .tbtn.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold2)}
+.rule-tooltip{position:fixed;z-index:500;max-width:min(340px,calc(100vw - 24px));padding:8px 10px;border-radius:4px;border:1px solid var(--border2);background:var(--bg4);color:var(--text);box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:12px;line-height:1.35;letter-spacing:.02em;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s ease,transform .12s ease}.rule-tooltip.show{opacity:1;transform:translateY(0)}.rule-tooltip strong{display:block;color:var(--gold2);font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:.07em;margin-bottom:2px}
 
 /* FLOW */
 .box{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px 14px;margin-bottom:14px}
@@ -65,6 +68,14 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
 .fv{font-size:19px;font-weight:700;font-family:'Share Tech Mono',monospace}
 .fp{font-size:11px;margin-top:1px;font-family:'Share Tech Mono',monospace}
 .farr{color:var(--text3);font-size:14px;flex-shrink:0}
+
+/* FLOW INSIDE ATTACK PANEL */
+.panel-flow-box{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:10px 10px;margin:7px 0 10px}
+.panel-flow-box .btitle{margin-bottom:7px}
+.panel-flow-box .flow{gap:4px}
+.panel-flow-box .fstep{min-width:68px;background:var(--bg2);padding:6px 5px}
+.panel-flow-box .farr{font-size:12px}
+@media(max-width:900px){.panel-flow-box .farr{display:none}.panel-flow-box .flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}}
 
 /* RESULTS */
 .rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:9px}
@@ -94,6 +105,7 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
 .mrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 
 .hint{font-size:11px;color:var(--text3);margin-top:5px;letter-spacing:.03em}
+.import-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.import-status{font-size:10px;color:var(--text3);margin-top:5px;font-family:'Share Tech Mono',monospace;word-break:break-all}.import-status.ok{color:var(--green2)}.import-status.err{color:var(--red2)}
 .footer{text-align:center;padding-top:18px;font-size:11px;color:var(--text3);letter-spacing:.05em;border-top:1px solid var(--border);margin-top:20px}
 
 /* SPINNER */
@@ -102,10 +114,62 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
 .spinner{width:26px;height:26px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-txt{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2)}
+
+/* READABILITY & BALANCED PANEL LAYOUT */
+.wrap{max-width:1080px}
+body{font-size:16px}
+.panel{padding:16px 18px;display:flex;flex-direction:column}
+h1{font-size:27px}
+.sub{font-size:14px}
+.ptitle{font-size:14px;margin-bottom:11px}
+label.lbl{font-size:12px;margin-bottom:4px;margin-top:9px}
+select,input[type=number]{font-size:15px;height:36px;padding:6px 9px}
+.statbar{padding:9px 11px;min-height:46px;gap:4px 14px;margin:9px 0}
+.si{min-width:31px}
+.sk{font-size:10px}
+.sv{font-size:17px}
+.skws{font-size:11px}
+.wbadges{min-height:18px;gap:4px;margin:4px 0 7px}
+.wb{font-size:11px;padding:2px 6px}
+.divider{margin:11px 0}
+.slbl{font-size:13px;margin-bottom:6px}
+.toggles{gap:5px;margin-top:6px}
+.tbtn{font-size:12px;padding:4px 9px}
+.rule-tooltip{font-size:13px;line-height:1.45;padding:9px 11px}
+.rule-tooltip strong{font-size:13px}
+.btitle{font-size:13px}
+.fn{font-size:11px}.fv{font-size:21px}.fp{font-size:12px}.farr{font-size:16px}
+.rl{font-size:11px}.rv{font-size:28px}.rs{font-size:11px}
+.modal-title{font-size:18px}.weapon-editor .wname{font-size:14px}
+.mbtn{font-size:13px;padding:6px 12px}
+.import-row{margin-top:auto;padding-top:8px;gap:7px}
+.import-row .mbtn{font-size:12px!important}
+.import-status{font-size:11px;margin-top:6px;min-height:14px}
+.hint{font-size:12px}.footer{font-size:12px}.spin-txt{font-size:12px}
+.def-profile-box{height:36px;display:flex;align-items:center;padding:6px 9px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;color:var(--text2);font-size:13px;letter-spacing:.02em}
+.def-profile-note{min-height:18px;display:flex;align-items:center;margin:4px 0 7px;color:var(--blue2);font-size:11px;letter-spacing:.02em}
+.def-rules{display:flex;flex-wrap:wrap;gap:5px;min-height:36px;padding:7px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;align-content:flex-start}
+.def-rule-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:2px;border:1px solid rgba(74,140,204,.38);background:rgba(74,140,204,.10);color:var(--blue2);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:.035em;cursor:help;transition:all .15s;text-align:left}
+.def-rule-btn:hover,.def-rule-btn:focus{border-color:var(--blue2);background:rgba(74,140,204,.18);outline:none}
+.def-rule-auto{padding:1px 4px;border-radius:8px;background:rgba(61,186,120,.14);border:1px solid rgba(61,186,120,.3);color:var(--green2);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0}
+.def-rules-empty{color:var(--text3);font-size:12px;align-self:center}
+.def-rule-note{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.35}
+@media(max-width:520px){h1{font-size:22px}.panel{padding:14px 15px}.wrap{padding-left:10px;padding-right:10px}}
+
+
+/* PROFILE → FLOW → MANUAL ADJUSTMENT LAYOUT */
+.comparison-top{margin-bottom:14px}
+.comparison-top .panel{min-height:0}
+.flow-wide-box{margin-bottom:14px}
+.adjust-panels{align-items:stretch}
+.atk-adjust,.def-adjust{min-height:100%}
+@media(max-width:600px){.comparison-top,.adjust-panels{grid-template-columns:1fr}.flow-wide-box .farr{display:none}.flow-wide-box .flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}}
+
 </style>
 </head>
-<body>
+<body data-theme="light">
 <div class="noise"></div>
+<div class="rule-tooltip" id="rule-tooltip" aria-hidden="true"></div>
 <div class="wrap">
   <div class="header">
     <div class="emblem">
@@ -118,14 +182,25 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
         <line x1="24" y1="7.5" x2="2" y2="18.5" stroke="#c9a84c" stroke-width=".4" opacity=".25"/>
       </svg>
     </div>
-    <div>
+    <div class="header-main">
       <h1>WH40K Dice Calculator</h1>
       <p class="sub">10th Edition · 44 Factions · TTS Companion</p>
     </div>
+    <div class="header-actions">
+      <button class="swap-toggle" id="spectator-swap" type="button" aria-pressed="false" onclick="swapSpectatorSides()" title="관전자용: 공격측과 방어측 군대를 서로 교환합니다.">
+        <span class="swap-icon">⇄</span>
+        <span class="swap-label" id="swap-label">SWAP SIDES</span>
+      </button>
+      <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" onclick="toggleTheme()" title="라이트 / 다크 모드 전환">
+        <span class="theme-icon" id="theme-icon">☾</span>
+        <span class="theme-label" id="theme-label">DARK</span>
+        <span class="theme-track"><span class="theme-knob"></span></span>
+      </button>
+    </div>
   </div>
 
-  <div class="panels">
-    <!-- ATTACK -->
+  <div class="panels comparison-top">
+    <!-- ATTACK PROFILE -->
     <div class="panel atk" style="position:relative">
       <div class="spin-wrap" id="atk-spin"><div class="spinner"></div><div class="spin-txt">Loading...</div></div>
       <div class="ptitle">⚔ 공격 유닛</div>
@@ -135,9 +210,34 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
       <select id="atk-u" onchange="onAtkUnit()"></select>
       <label class="lbl">무기</label>
       <select id="atk-w" onchange="onAtkWeapon()"></select>
-      <div class="statbar" id="atk-bar"><span style="font-size:11px;color:var(--text3)">유닛을 선택하세요</span></div>
+      <div class="statbar" id="atk-bar"><span style="font-size:12px;color:var(--text3)">유닛을 선택하세요</span></div>
       <div class="wbadges" id="atk-kw"></div>
-      <div class="divider"></div>
+    </div>
+
+    <!-- DEFENSE PROFILE -->
+    <div class="panel def" style="position:relative">
+      <div class="ptitle">🛡 방어 유닛</div>
+      <label class="lbl">팩션</label>
+      <select id="def-f" onchange="onDefFaction()"></select>
+      <label class="lbl">유닛</label>
+      <select id="def-u" onchange="onDefUnit()"></select>
+      <label class="lbl">방어 프로필</label>
+      <div class="def-profile-box">선택한 유닛의 방어 능력치를 자동으로 적용합니다.</div>
+      <div class="statbar" id="def-bar"><span style="font-size:12px;color:var(--text3)">유닛을 선택하세요</span></div>
+      <div class="def-profile-note">방어 측은 무기 선택 없이 방어 수치만 사용합니다.</div>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="box flow-wide-box">
+    <div class="btitle">▸ 단계별 필요 주사위</div>
+    <div class="flow" id="flow"><span style="font-size:12px;color:var(--text3);font-family:'Share Tech Mono',monospace">유닛 선택 후 계산됩니다</span></div>
+  </div>
+
+  <div class="panels adjust-panels">
+    <!-- ATTACK ADJUSTMENTS -->
+    <div class="panel atk-adjust">
+      <div class="ptitle">⚔ 공격 수동 조정</div>
       <div class="slbl">수동 조정</div>
       <div class="r2">
         <div><label class="lbl">공격 횟수 (A)</label><input type="number" id="A" value="2" min="1" max="50" oninput="calc()"></div>
@@ -158,27 +258,27 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
       <div class="divider"></div>
       <div class="slbl">특수 규칙</div>
       <div class="toggles">
-        <button class="tbtn" id="btn-rh" onclick="tog('rh')">명중 재굴림</button>
-        <button class="tbtn" id="btn-rw" onclick="tog('rw')">부상 재굴림</button>
-        <button class="tbtn" id="btn-lh" onclick="tog('lh')">Lethal Hits</button>
-        <button class="tbtn" id="btn-dw" onclick="tog('dw')">Dev. Wounds</button>
-        <button class="tbtn" id="btn-tor" onclick="tog('tor')">Torrent</button>
-        <button class="tbtn" id="btn-sh" onclick="tog('sh')">Sustained Hits</button>
-        <button class="tbtn" id="btn-twin" onclick="tog('twin')">Twin-linked</button>
+        <button class="tbtn" id="btn-rh" data-tip-title="명중 재굴림" data-tip="실패한 명중 굴림을 다시 굴립니다. 현재 계산기는 실패한 모든 명중 굴림을 1회 재굴림하는 것으로 처리합니다." onclick="tog('rh')">명중 재굴림</button>
+        <button class="tbtn" id="btn-rw" data-tip-title="부상 재굴림" data-tip="실패한 부상 굴림을 다시 굴립니다. 현재 계산기는 실패한 모든 부상 굴림을 1회 재굴림하는 것으로 처리합니다." onclick="tog('rw')">부상 재굴림</button>
+        <button class="tbtn" id="btn-lh" data-tip-title="Lethal Hits" data-tip="치명적 명중: 수정되지 않은 명중 굴림 6은 자동으로 부상에 성공합니다. 해당 공격에는 부상 굴림을 하지 않습니다." onclick="tog('lh')">Lethal Hits</button>
+        <button class="tbtn" id="btn-dw" data-tip-title="Devastating Wounds" data-tip="파괴적 부상: 수정되지 않은 부상 굴림 6으로 발생한 부상은 일반 방어 굴림을 허용하지 않습니다. FNP는 적용됩니다." onclick="tog('dw')">Dev. Wounds</button>
+        <button class="tbtn" id="btn-tor" data-tip-title="Torrent" data-tip="분사 무기: 명중 굴림 없이 자동으로 명중합니다. 명중 재굴림은 적용되지 않습니다." onclick="tog('tor')">Torrent</button>
+        <button class="tbtn" id="btn-sh" data-tip-title="Sustained Hits" data-tip="지속 명중: 수정되지 않은 명중 굴림 6마다 추가 명중이 발생합니다. 현재 계산기는 Sustained Hits 1 기준으로 계산합니다." onclick="tog('sh')">Sustained Hits</button>
+        <button class="tbtn" id="btn-twin" data-tip-title="Twin-linked" data-tip="연결 무기: 부상 굴림을 다시 굴릴 수 있습니다. 계산에서는 실패한 부상 굴림 전체를 1회 재굴림으로 처리합니다." onclick="tog('twin')">Twin-linked</button>
       </div>
       <div class="divider"></div>
-      <button class="mbtn" onclick="openEdit('atk')" style="font-size:11px">✎ 유닛 추가 / 수정</button>
+      <input type="file" id="atk-json" accept=".json,application/json" style="display:none" onchange="importArmy('atk',this.files[0]);this.value=''">
+      <div class="import-row">
+        <button class="mbtn primary" onclick="document.getElementById('atk-json').click()" style="font-size:11px">⬆ 내 군대 JSON</button>
+        <button class="mbtn" onclick="downloadArmy('atk')" style="font-size:11px">⬇ JSON 저장</button>
+        <button class="mbtn" onclick="openEdit('atk')" style="font-size:11px">✎ 유닛 추가 / 수정</button>
+      </div>
+      <div class="import-status" id="atk-json-status">기본 DB 또는 내 군대 JSON을 불러오세요.</div>
     </div>
 
-    <!-- DEFENSE -->
-    <div class="panel def" style="position:relative">
-      <div class="ptitle">🛡 방어 유닛</div>
-      <label class="lbl">팩션</label>
-      <select id="def-f" onchange="onDefFaction()"></select>
-      <label class="lbl">유닛</label>
-      <select id="def-u" onchange="onDefUnit()"></select>
-      <div class="statbar" id="def-bar"><span style="font-size:11px;color:var(--text3)">유닛을 선택하세요</span></div>
-      <div class="divider"></div>
+    <!-- DEFENSE ADJUSTMENTS -->
+    <div class="panel def-adjust">
+      <div class="ptitle">🛡 방어 수동 조정</div>
       <div class="slbl">수동 조정</div>
       <div class="r2">
         <div><label class="lbl">강인함 (T)</label><input type="number" id="T" value="4" min="1" max="16" oninput="calc()"></div>
@@ -202,14 +302,18 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
       <div><label class="lbl">모델 수</label><input type="number" id="MDL" value="5" min="1" max="30" oninput="calc()"></div>
       <p class="hint" style="margin-top:6px">* AP 초과 시 무적 방어도만 적용</p>
       <div class="divider"></div>
-      <button class="mbtn" onclick="openEdit('def')" style="font-size:11px">✎ 유닛 추가 / 수정</button>
+      <div class="slbl">방어 특수 규칙</div>
+      <div class="def-rules" id="def-rules"><span class="def-rules-empty">선택한 유닛의 방어 관련 능력이 여기에 표시됩니다.</span></div>
+      <p class="def-rule-note">* 조건부 능력은 자동 계산되지 않습니다. 능력 설명을 확인한 뒤 수동 조정 값을 적용하세요.</p>
+      <div class="divider"></div>
+      <input type="file" id="def-json" accept=".json,application/json" style="display:none" onchange="importArmy('def',this.files[0]);this.value=''">
+      <div class="import-row">
+        <button class="mbtn primary" onclick="document.getElementById('def-json').click()" style="font-size:11px">⬆ 상대 JSON</button>
+        <button class="mbtn" onclick="downloadArmy('def')" style="font-size:11px">⬇ JSON 저장</button>
+        <button class="mbtn" onclick="openEdit('def')" style="font-size:11px">✎ 유닛 추가 / 수정</button>
+      </div>
+      <div class="import-status" id="def-json-status">기본 DB 또는 상대 군대 JSON을 불러오세요.</div>
     </div>
-  </div>
-
-  <!-- FLOW -->
-  <div class="box">
-    <div class="btitle">▸ 단계별 필요 주사위</div>
-    <div class="flow" id="flow"><span style="font-size:12px;color:var(--text3);font-family:'Share Tech Mono',monospace">유닛 선택 후 계산됩니다</span></div>
   </div>
 
   <!-- RESULTS -->
@@ -237,30 +341,289 @@ input[type=number]{text-align:center;font-family:'Share Tech Mono',monospace}
 
 <script>
 let DB = {};
-let data = {};
-
-async function loadData() {
-  const res = await fetch('wh40k_data.json');
-  DB = await res.json();
-  data = JSON.parse(JSON.stringify(DB));
-  initSelects();
-}
+const sideDB = { atk: {}, def: {} };
+const sideData = { atk: {}, def: {} };
 
 const rules={rh:false,rw:false,lh:false,dw:false,tor:false,sh:false,twin:false};
 let editTarget=null; // 'atk' | 'def'
 
-// ── INIT ──
-function initSelects(){
-  const FACTIONS=Object.keys(data);
-  const af=document.getElementById('atk-f');
-  const df=document.getElementById('def-f');
-  FACTIONS.forEach((f,i)=>{
-    af.innerHTML+=`<option value="${i}">${f}</option>`;
-    df.innerHTML+=`<option value="${i}">${f}</option>`;
+function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+function getSideData(side){ return sideData[side]; }
+function setStatus(side,msg,type=''){
+  const el=document.getElementById(side+'-json-status');
+  if(!el)return;
+  el.textContent=msg;
+  el.className='import-status'+(type?' '+type:'');
+}
+
+function starterDB(){
+  return {'JSON 업로드 필요':{'샘플 유닛':{T:4,Sv:4,W:2,Inv:0,FNP:0,models:5,weapons:[{name:'샘플 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]}]}}};
+}
+
+async function loadData() {
+  try{
+    const res = await fetch('wh40k_data.json');
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    DB = await res.json();
+    sideDB.atk=clone(DB); sideDB.def=clone(DB);
+    sideData.atk=clone(DB); sideData.def=clone(DB);
+    initSelects();
+    setStatus('atk','기본 wh40k_data.json 로드 완료','ok');
+    setStatus('def','기본 wh40k_data.json 로드 완료','ok');
+  }catch(err){
+    DB=starterDB();
+    sideDB.atk=clone(DB); sideDB.def=clone(DB);
+    sideData.atk=clone(DB); sideData.def=clone(DB);
+    initSelects();
+    setStatus('atk','기본 DB 없음: 내 군대 JSON을 업로드하세요.','err');
+    setStatus('def','기본 DB 없음: 상대 JSON을 업로드하세요.','err');
+  }
+}
+
+function toNumber(v, fallback=0){
+  if(typeof v==='string') v=v.replace(/[^0-9.-]/g,'');
+  const n=Number(v);
+  return Number.isFinite(n)?n:fallback;
+}
+function diceAverage(v, fallback=0){
+  if(typeof v==='number') return Number.isFinite(v)?v:fallback;
+  if(v==null) return fallback;
+  const s=String(v).trim().toUpperCase().replace(/\s+/g,'');
+  if(/^[-+]?\d+(?:\.\d+)?$/.test(s)) return Number(s);
+  const m=s.match(/^(\d*)D(\d+)([+-]\d+(?:\.\d+)?)?$/);
+  if(!m) return toNumber(s,fallback);
+  const count=m[1]?Number(m[1]):1;
+  const sides=Number(m[2]);
+  const mod=m[3]?Number(m[3]):0;
+  return count*((sides+1)/2)+mod;
+}
+function normalizeWeapon(w, index=0){
+  const rawA=w.A??w.attacks??w.Attacks;
+  const rawD=w.D??w.damage??w.Damage;
+  return {
+    name:String(w.name??w.Name??w.weapon??('무기 '+(index+1))),
+    A:Math.max(1,diceAverage(rawA,1)),
+    skill:Math.max(2,Math.min(6,toNumber(w.skill??w.BS??w.WS??w.bs??w.ws??w.bsws,3))),
+    S:Math.max(1,toNumber(w.S??w.strength??w.Strength,4)),
+    AP:Math.max(0,Math.abs(toNumber(w.AP??w.ap,0))),
+    D:Math.max(1,diceAverage(rawD,1)),
+    rawA:String(rawA??'1'),
+    rawD:String(rawD??'1'),
+    range:String(w.range??w.Range??''),
+    keywords:Array.isArray(w.keywords)?w.keywords.map(String):(typeof w.keywords==='string'?w.keywords.split(',').map(s=>s.trim()).filter(Boolean):[])
+  };
+}
+function normalizeAbilities(source){
+  if(!source) return [];
+  const list=Array.isArray(source)?source:Object.entries(source).map(([name,value])=>
+    typeof value==='string'?{name,desc:value}:{...(value||{}),name:value?.name??name}
+  );
+  const seen=new Set();
+  return list.map(item=>{
+    if(typeof item==='string') return {name:item,desc:''};
+    return {name:String(item?.name??item?.Name??'특수 능력'),desc:String(item?.desc??item?.description??item?.Description??'')};
+  }).filter(item=>{
+    const key=item.name.trim().toLowerCase();
+    if(!key||seen.has(key)) return false;
+    seen.add(key); return true;
   });
-  // defaults: atk=CSM(6), def=ULTRAMARINES(11)
-  af.value=6; df.value=11;
-  onAtkFaction(); onDefFaction();
+}
+function normalizeUnit(u, fallbackName='유닛'){
+  if(!u || typeof u!=='object') throw new Error(fallbackName+' 유닛 형식이 올바르지 않습니다.');
+  const weaponSource=u.weapons??u.Weapons??[];
+  const weapons=Array.isArray(weaponSource)?weaponSource.map(normalizeWeapon):Object.entries(weaponSource).map(([name,w],i)=>normalizeWeapon({...w,name:w.name??name},i));
+  return {
+    T:Math.max(1,toNumber(u.T??u.toughness??u.Toughness,4)),
+    Sv:Math.max(2,Math.min(7,toNumber(u.Sv??u.save??u.Save,4))),
+    W:Math.max(1,toNumber(u.W??u.wounds??u.Wounds,1)),
+    Inv:Math.max(0,toNumber(u.Inv??u.invulnerable??u.Invulnerable,0)),
+    FNP:Math.max(0,toNumber(u.FNP??u.fnp,0)),
+    models:Math.max(1,toNumber(u.models??u.modelCount??u.count,1)),
+    weapons,
+    abilities:normalizeAbilities(u.abilities??u.Abilities??[]),
+    ttsUuid:String(u.ttsUuid??'')
+  };
+}
+function looksLikeUnit(v){
+  return v&&typeof v==='object'&&('T' in v||'toughness' in v||'Toughness' in v||'weapons' in v||'Weapons' in v);
+}
+
+function stripTtsTags(text){
+  return String(text??'').replace(/\[[0-9a-fA-F]{6}\]/g,'').replace(/\[-\]/g,'');
+}
+function ttsUuid(state){
+  return (state.Tags||[]).find(t=>String(t).startsWith('uuid:'))?.slice(5) || '';
+}
+function ttsLuaValue(script,key){
+  const m=String(script??'').match(new RegExp('(?:^|\\n)\\s*'+key+'\\s*=\\s*"([^"]*)"', 'm'));
+  return m?m[1]:'';
+}
+function cleanTtsNickname(name){
+  return stripTtsTags(name).replace(/^\s*\d+\s*\/\s*\d+\s*/,'').trim() || 'TTS 유닛';
+}
+function parseTtsDescription(description){
+  const lines=stripTtsTags(description).split(/\r?\n/).map(s=>s.trim());
+  let T=4,Sv=4,W=1;
+  for(let i=0;i<lines.length-1;i++){
+    if(/\bT\b/.test(lines[i])&&/\bSv\b/i.test(lines[i])&&/\bW\b/.test(lines[i])){
+      const tokens=lines.slice(i+1).find(Boolean)?.split(/\s+/) || [];
+      // Standard 10e Description: M, T, Sv, W, Ld, OC
+      if(tokens.length>=4){
+        T=toNumber(tokens[1],4);
+        Sv=toNumber(tokens[2],4);
+        W=toNumber(tokens[3],1);
+      }
+      break;
+    }
+  }
+  const weapons=[];
+  const abilities=[];
+  let section='';
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i];
+    if(/^Ranged weapons$/i.test(line)||/^Melee weapons$/i.test(line)){ section='weapon'; continue; }
+    if(/^Abilities$/i.test(line)){ section='ability'; continue; }
+    if(!line) continue;
+    if(section==='weapon'){
+      const next=lines.slice(i+1).find(Boolean) || '';
+      if(/\bA\s*:/.test(next)&&/\b(?:BS|WS)\s*:/.test(next)&&/\bS\s*:/.test(next)&&/\bAP\s*:/.test(next)&&/\bD\s*:/.test(next)){
+        const statLine=next;
+        const get=(label)=>statLine.match(new RegExp('(?:^|\\s)'+label+'\\s*:\\s*([^\\s\\[]+)','i'))?.[1];
+        const keywordMatch=statLine.match(/\[([^\]]+)\]\s*$/);
+        weapons.push(normalizeWeapon({
+          name:line,
+          A:get('A'),
+          bsws:get('(?:BS|WS)'),
+          S:get('S'),
+          AP:get('AP'),
+          D:get('D'),
+          keywords:keywordMatch?keywordMatch[1].split(',').map(s=>s.trim()).filter(Boolean):[]
+        },weapons.length));
+        i=lines.indexOf(next,i+1);
+      }
+    }else if(section==='ability'){
+      abilities.push(line);
+    }
+  }
+  return {T,Sv,W,weapons,abilities};
+}
+function parseTtsLuaAbilities(script){
+  const text=String(script??'');
+  const section=text.match(/(?:^|\n)\s*abilities\s*=\s*\{([\s\S]*?)\n\s*\},?\s*\n\s*models\s*=/m)?.[1] || '';
+  if(!section) return [];
+  const abilities=[];
+  const entry=/\{\s*name\s*=\s*(?:\[\[([\s\S]*?)\]\]|"([^"]*)")\s*,\s*desc\s*=\s*(?:\[=\[([\s\S]*?)\]=\]|\[\[([\s\S]*?)\]\]|"([^"]*)")\s*\}/gm;
+  let match;
+  while((match=entry.exec(section))!==null){
+    abilities.push({name:(match[1]??match[2]??'').trim(),desc:(match[3]??match[4]??match[5]??'').trim()});
+  }
+  return normalizeAbilities(abilities);
+}
+function normalizeTtsSave(raw){
+  if(!Array.isArray(raw?.ObjectStates)) return null;
+  const groups={};
+  raw.ObjectStates.forEach(state=>{
+    const uuid=ttsUuid(state);
+    if(!uuid) return;
+    (groups[uuid]??=[]).push(state);
+  });
+  const factions={};
+  const seen={};
+  Object.entries(groups).forEach(([uuid,states])=>{
+    const leader=states.find(s=>(s.Tags||[]).includes('leaderModel')) ||
+      [...states].sort((a,b)=>String(b.LuaScript||'').length-String(a.LuaScript||'').length)[0];
+    const parsed=parseTtsDescription(leader.Description||'');
+    const script=leader.LuaScript||'';
+    const faction=ttsLuaValue(script,'factionKeywords') || 'TTS IMPORT';
+    let unitName=ttsLuaValue(script,'unitName') || cleanTtsNickname(leader.Nickname);
+    const baseKey=faction+'::'+unitName;
+    seen[baseKey]=(seen[baseKey]||0)+1;
+    if(seen[baseKey]>1) unitName+=' #'+seen[baseKey];
+    const invMatch=script.match(/This model has a\s+(\d)\+\s+invulnerable save/i);
+    const fnpMatch=script.match(/This model has\s+Feel No Pain\s+(\d)\+/i);
+    const luaAbilities=parseTtsLuaAbilities(script);
+    (factions[faction]??={})[unitName]={
+      T:parsed.T, Sv:parsed.Sv, W:parsed.W,
+      Inv:invMatch?Number(invMatch[1]):0,
+      FNP:fnpMatch?Number(fnpMatch[1]):0,
+      models:states.length,
+      weapons:parsed.weapons,
+      abilities:luaAbilities.length?luaAbilities:normalizeAbilities(parsed.abilities),
+      ttsUuid:uuid
+    };
+  });
+  if(!Object.keys(factions).length) throw new Error('TTS 저장 파일에서 uuid 태그가 있는 유닛을 찾지 못했습니다.');
+  return factions;
+}
+
+function normalizeArmyJson(raw){
+  if(!raw||typeof raw!=='object') throw new Error('JSON 최상위 구조가 객체가 아닙니다.');
+  const ttsArmy=normalizeTtsSave(raw);
+  if(ttsArmy) return ttsArmy;
+  if(raw.factions&&typeof raw.factions==='object') raw=raw.factions;
+  if(raw.army&&typeof raw.army==='object') raw=raw.army;
+  if(Array.isArray(raw.units)){
+    const faction=String(raw.faction??raw.armyName??raw.name??'IMPORTED ARMY');
+    const units={};
+    raw.units.forEach((u,i)=>{ const name=String(u.name??u.Nickname??('유닛 '+(i+1))); units[name]=normalizeUnit(u,name); });
+    return {[faction]:units};
+  }
+  if(raw.units&&typeof raw.units==='object'&&!Array.isArray(raw.units)){
+    const faction=String(raw.faction??raw.armyName??raw.name??'IMPORTED ARMY');
+    const units={};
+    Object.entries(raw.units).forEach(([name,u])=>units[name]=normalizeUnit(u,name));
+    return {[faction]:units};
+  }
+  if(Object.values(raw).every(looksLikeUnit)){
+    const units={};
+    Object.entries(raw).forEach(([name,u])=>units[name]=normalizeUnit(u,name));
+    return {'IMPORTED ARMY':units};
+  }
+  const factions={};
+  for(const [faction,unitsRaw] of Object.entries(raw)){
+    if(!unitsRaw||typeof unitsRaw!=='object'||Array.isArray(unitsRaw)) continue;
+    const units={};
+    for(const [name,u] of Object.entries(unitsRaw)) if(looksLikeUnit(u)) units[name]=normalizeUnit(u,name);
+    if(Object.keys(units).length) factions[faction]=units;
+  }
+  if(Object.keys(factions).length) return factions;
+  throw new Error('계산기용 군대 JSON 구조를 찾지 못했습니다. TTS 원본 저장 파일이면 Description 변환 규칙이 추가로 필요합니다.');
+}
+async function importArmy(side,file){
+  if(!file)return;
+  try{
+    const raw=JSON.parse(await file.text());
+    const normalized=normalizeArmyJson(raw);
+    sideDB[side]=clone(normalized);
+    sideData[side]=clone(normalized);
+    refreshSide(side);
+    const factionCount=Object.keys(normalized).length;
+    const unitCount=Object.values(normalized).reduce((n,units)=>n+Object.keys(units).length,0);
+    setStatus(side,`${file.name} · ${factionCount}개 팩션 · ${unitCount}개 유닛 로드 완료`,'ok');
+  }catch(err){
+    console.error(err);
+    setStatus(side,`${file.name} 로드 실패: ${err.message}`,'err');
+    alert('JSON을 불러오지 못했습니다.\n'+err.message);
+  }
+}
+function downloadArmy(side){
+  const payload={format:'WH40K_CALCULATOR_ARMY_V1',side,factions:clone(sideData[side])};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=(side==='atk'?'my_army':'opponent_army')+'.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── INIT ──
+function initSelects(){ refreshSide('atk'); refreshSide('def'); }
+function refreshSide(side){
+  const sel=document.getElementById(side+'-f');
+  const factions=Object.keys(getSideData(side));
+  sel.innerHTML='';
+  factions.forEach((f,i)=>sel.innerHTML+=`<option value="${i}">${f}</option>`);
+  sel.value='0';
+  if(side==='atk') onAtkFaction(); else onDefFaction();
 }
 
 loadData();
@@ -268,33 +631,35 @@ loadData();
 // ── SELECTORS ──
 function getFaction(side){
   const id=side==='atk'?'atk-f':'def-f';
-  return Object.keys(data)[+document.getElementById(id).value];
+  return Object.keys(getSideData(side))[+document.getElementById(id).value];
 }
 function getUnit(side){
   const id=side==='atk'?'atk-u':'def-u';
   const f=getFaction(side);
-  return Object.keys(data[f])[+document.getElementById(id).value];
+  return Object.keys(getSideData(side)[f]||{})[+document.getElementById(id).value];
 }
 
 function onAtkFaction(){
   const f=getFaction('atk');
   const sel=document.getElementById('atk-u');
   sel.innerHTML='';
-  Object.keys(data[f]).forEach((u,i)=>sel.innerHTML+=`<option value="${i}">${u}</option>`);
+  Object.keys(sideData.atk[f]||{}).forEach((u,i)=>sel.innerHTML+=`<option value="${i}">${u}</option>`);
   onAtkUnit();
 }
 function onAtkUnit(){
   const f=getFaction('atk'),u=getUnit('atk');
-  const unit=data[f][u];
+  const unit=sideData.atk[f]?.[u];
   const sel=document.getElementById('atk-w');
   sel.innerHTML='';
+  if(!unit)return;
+  if(!unit.weapons.length) unit.weapons.push({name:'무기 정보 없음',A:1,skill:3,S:4,AP:0,D:1,keywords:[]});
   unit.weapons.forEach((w,i)=>sel.innerHTML+=`<option value="${i}">${w.name}</option>`);
   onAtkWeapon();
 }
 function onAtkWeapon(){
   const f=getFaction('atk'),u=getUnit('atk');
   const wi=+document.getElementById('atk-w').value;
-  const w=data[f][u].weapons[wi];
+  const w=sideData.atk[f]?.[u]?.weapons?.[wi];
   if(!w)return;
   document.getElementById('A').value=w.A;
   document.getElementById('SK').value=Math.max(2,Math.min(6,w.skill));
@@ -308,44 +673,156 @@ function onAtkWeapon(){
   rules.sh=kws.some(k=>k.includes('sustained'));
   rules.twin=kws.some(k=>k.includes('twin'));
   updateToggleBtns();
-  const bar=document.getElementById('atk-bar');
-  bar.innerHTML=`
+  document.getElementById('atk-bar').innerHTML=`
     <div class="si"><span class="sk">A</span><span class="sv">${w.A}</span></div>
     <div class="si"><span class="sk">BS/WS</span><span class="sv">${w.skill}+</span></div>
     <div class="si"><span class="sk">S</span><span class="sv">${w.S}</span></div>
     <div class="si"><span class="sk">AP</span><span class="sv">${w.AP?'-'+w.AP:'0'}</span></div>
-    <div class="si"><span class="sk">D</span><span class="sv">${w.D}</span></div>
-  `;
-  const kw=document.getElementById('atk-kw');
-  kw.innerHTML=(w.keywords||[]).map(k=>`<span class="wb">${k}</span>`).join('');
+    <div class="si"><span class="sk">D</span><span class="sv">${w.D}</span></div>`;
+  document.getElementById('atk-kw').innerHTML=(w.keywords||[]).map(k=>`<span class="wb">${k}</span>`).join('');
   calc();
 }
+function isDefensiveAbility(ability){
+  const text=((ability?.name||'')+' '+(ability?.desc||'')).toLowerCase();
+  const patterns=[
+    /invulnerable save/, /feel no pain/, /reanimation/, /regain(?:s|ed)? .*wound/,
+    /wounds? (?:are )?regenerated/, /returned? to (?:this|that|the) unit/,
+    /attack is allocated to (?:this model|a model in this unit)/,
+    /attacks? (?:is|are) allocated to (?:this model|a model in this unit)/,
+    /subtract 1 from (?:that|the) attack[’']?s damage characteristic/,
+    /halve (?:that|the|an?) attack[’']?s damage characteristic/,
+    /reduce (?:that|the|an?) attack[’']?s damage characteristic/,
+    /subtract 1 from the hit roll.*targets? this unit/,
+    /subtract 1 from the wound roll.*targets? this unit/,
+    /stealth/, /mortal wounds?/, /save roll/
+  ];
+  return patterns.some(pattern=>pattern.test(text));
+}
+function defenseAutoLabel(ability,unit){
+  const text=((ability?.name||'')+' '+(ability?.desc||'')).toLowerCase();
+  if(unit.Inv>0&&/this model has a?\s*\d\+\s+invulnerable save/.test(text)) return `Inv ${unit.Inv}++ 반영`;
+  if(unit.FNP>0&&/this model has\s+feel no pain\s+\d\+/.test(text)) return `FNP ${unit.FNP}+++ 반영`;
+  return '';
+}
 
+// 방어 규칙 한글 번역 사전: 검증된 규칙은 한글로 표시하고, 미등록 규칙은 영어 원문을 유지합니다.
+const DEFENSE_RULE_KO={
+  'reanimation protocols':{
+    title:'재생 프로토콜',
+    desc:'군대 진영이 네크론이라면 지휘 단계 종료 시, 전장에 있는 이 능력 보유 유닛은 재생 프로토콜을 활성화하여 D3만큼 상처를 회복합니다. 상처가 감소한 모델이 있으면 해당 모델의 잃은 상처를 회복합니다. 모든 생존 모델이 최대 상처이지만 유닛이 시작 전력보다 적다면, 파괴된 모델 하나를 상처 1 상태로 복귀시킵니다.'
+  },
+  'their number is legion':{
+    title:'그 수는 군단이다',
+    desc:'이 유닛의 재생 프로토콜이 활성화될 때마다 회복되는 상처 수를 결정하는 주사위를 다시 굴릴 수 있습니다.'
+  },
+  'implacable resilience':{
+    title:'불굴의 회복력',
+    desc:'공격이 이 모델에 배정될 때마다 해당 공격의 피해 특성에서 1을 뺍니다.'
+  },
+  'invulnerable save':{
+    title:'무적 방어',
+    desc:'이 모델은 무적 방어를 보유합니다. 계산기에는 해당 Inv 수치가 자동으로 반영됩니다.'
+  },
+  'rites of reanimation':{
+    title:'재생 의식',
+    desc:'이 모델이 유닛을 지휘하는 동안, 해당 유닛의 모델은 고통 무시 5+ 능력을 보유합니다. 지휘 대상 유닛에 적용할 때 방어 측 FNP를 5+++로 조정하세요.'
+  },
+  'technomancer':{
+    title:'테크노맨서',
+    desc:'이동 단계 종료 시, 장착자 6인치 이내의 아군 네크론 모델 하나를 선택합니다. 해당 모델은 잃은 상처를 최대 D3만큼 회복합니다. 각 모델은 턴마다 이 능력의 대상으로 한 번만 선택될 수 있습니다.'
+  },
+  'feel no pain':{
+    title:'고통 무시',
+    desc:'피해를 입을 때 지정된 수치 이상이 나오면 해당 피해를 무시합니다.'
+  },
+  'stealth':{
+    title:'은폐',
+    desc:'원거리 공격이 이 유닛을 대상으로 할 때 명중 굴림에 불리한 보정이 적용됩니다. 상황에 따라 공격 측 수치를 수동으로 조정하세요.'
+  }
+};
+function translateDefenseAbility(ability){
+  const originalName=String(ability?.name||'특수 능력').trim();
+  const originalDesc=String(ability?.desc||'').trim();
+  const key=originalName.toLowerCase();
+  const exact=DEFENSE_RULE_KO[key];
+  if(exact){
+    return {
+      title:`${exact.title} (${originalName})`,
+      desc:exact.desc,
+      translated:true
+    };
+  }
+  const joined=(originalName+' '+originalDesc).toLowerCase();
+  const inv=joined.match(/(?:has|with) a?\s*(\d)\+\s+invulnerable save/);
+  if(inv){
+    return {title:`무적 방어 ${inv[1]}++ (${originalName})`,desc:`이 모델은 ${inv[1]}+ 무적 방어를 보유합니다. 계산기에는 Inv ${inv[1]}++가 자동으로 반영됩니다.`,translated:true};
+  }
+  const fnp=joined.match(/feel no pain\s*(\d)\+/);
+  if(fnp){
+    return {title:`고통 무시 ${fnp[1]}+++ (${originalName})`,desc:`이 능력의 적용 대상은 고통 무시 ${fnp[1]}+를 보유합니다. 피해를 입을 때 ${fnp[1]} 이상이 나오면 해당 피해를 무시합니다. 조건부 효과라면 FNP를 수동으로 조정하세요.`,translated:true};
+  }
+  return {
+    title:originalName,
+    desc:originalDesc||'상세 설명이 저장 파일에 포함되어 있지 않습니다.',
+    translated:false
+  };
+}
+function renderDefensiveRules(unit){
+  const box=document.getElementById('def-rules');
+  if(!box)return;
+  box.innerHTML='';
+  const abilities=normalizeAbilities(unit?.abilities??[]).filter(isDefensiveAbility);
+  if(!abilities.length){
+    const empty=document.createElement('span');
+    empty.className='def-rules-empty';
+    empty.textContent='표시할 방어 관련 특수 능력이 없습니다.';
+    box.appendChild(empty);
+    return;
+  }
+  abilities.forEach(ability=>{
+    const btn=document.createElement('button');
+    const translated=translateDefenseAbility(ability);
+    btn.type='button';
+    btn.className='def-rule-btn';
+    btn.dataset.tipTitle=translated.title;
+    btn.dataset.tip=translated.desc;
+    btn.append(document.createTextNode(translated.title));
+    const auto=defenseAutoLabel(ability,unit);
+    if(auto){
+      const badge=document.createElement('span');
+      badge.className='def-rule-auto';
+      badge.textContent=auto;
+      btn.appendChild(badge);
+    }
+    box.appendChild(btn);
+  });
+  bindRuleTooltips(box.querySelectorAll('[data-tip]'));
+}
 function onDefFaction(){
   const f=getFaction('def');
   const sel=document.getElementById('def-u');
   sel.innerHTML='';
-  Object.keys(data[f]).forEach((u,i)=>sel.innerHTML+=`<option value="${i}">${u}</option>`);
+  Object.keys(sideData.def[f]||{}).forEach((u,i)=>sel.innerHTML+=`<option value="${i}">${u}</option>`);
   onDefUnit();
 }
 function onDefUnit(){
   const f=getFaction('def'),u=getUnit('def');
-  const unit=data[f][u];
+  const unit=sideData.def[f]?.[u];
+  if(!unit)return;
   document.getElementById('T').value=unit.T;
   document.getElementById('SV').value=unit.Sv;
   document.getElementById('INV').value=unit.Inv;
   document.getElementById('FNP').value=unit.FNP;
   document.getElementById('W').value=unit.W;
   document.getElementById('MDL').value=unit.models;
-  const bar=document.getElementById('def-bar');
-  bar.innerHTML=`
+  document.getElementById('def-bar').innerHTML=`
     <div class="si"><span class="sk">T</span><span class="sv">${unit.T}</span></div>
     <div class="si"><span class="sk">Sv</span><span class="sv">${unit.Sv===7?'—':unit.Sv+'+'}</span></div>
     <div class="si"><span class="sk">Inv</span><span class="sv">${unit.Inv?unit.Inv+'++':'—'}</span></div>
     <div class="si"><span class="sk">FNP</span><span class="sv">${unit.FNP?unit.FNP+'+++':'—'}</span></div>
     <div class="si"><span class="sk">W</span><span class="sv">${unit.W}</span></div>
-    <div class="si"><span class="sk">모델</span><span class="sv">${unit.models}</span></div>
-  `;
+    <div class="si"><span class="sk">모델</span><span class="sv">${unit.models}</span></div>`;
+  renderDefensiveRules(unit);
   calc();
 }
 
@@ -353,21 +830,15 @@ function onDefUnit(){
 function tog(k){
   if(k==='lh'&&!rules.lh)rules.dw=false;
   if(k==='dw'&&!rules.dw)rules.lh=false;
-  rules[k]=!rules[k];
-  updateToggleBtns();
-  calc();
+  rules[k]=!rules[k]; updateToggleBtns(); calc();
 }
 function updateToggleBtns(){
-  ['rh','rw','lh','dw','tor','sh','twin'].forEach(r=>{
-    const b=document.getElementById('btn-'+r);
-    if(b)b.className='tbtn'+(rules[r]?' on':'');
-  });
+  ['rh','rw','lh','dw','tor','sh','twin'].forEach(r=>{ const b=document.getElementById('btn-'+r); if(b)b.className='tbtn'+(rules[r]?' on':''); });
 }
 
 // ── MATH ──
 function p6(n){if(n<=1)return 1;if(n>6)return 0;return(7-n)/6;}
 function wn(s,t){if(s>=t*2)return 2;if(s>t)return 3;if(s===t)return 4;if(s*2<=t)return 6;return 5;}
-
 function calc(){
   const A=Math.max(1,+document.getElementById('A').value||1);
   const sk=Math.max(2,Math.min(6,+document.getElementById('SK').value||3));
@@ -380,182 +851,209 @@ function calc(){
   const fnp=+document.getElementById('FNP').value||0;
   const W=Math.max(1,+document.getElementById('W').value||1);
   const mdl=Math.max(1,+document.getElementById('MDL').value||1);
-
   const hitN=rules.tor?1:sk;
   let pH=rules.tor?1:p6(hitN);
   if(rules.rh&&!rules.tor)pH=pH+(1-pH)*pH;
   if(rules.twin)pH=Math.min(1,pH+(1-pH)*pH);
-
   const wnN=wn(S,T);
   let pW=p6(wnN);
   if(rules.rw)pW=pW+(1-pW)*pW;
-
   let avgH=A*pH;
   if(rules.sh)avgH=avgH*(1+1/6);
-
   let lethal=0,normalW=0;
   if(rules.lh||rules.dw){
     lethal=avgH/6;
     const nwp=Math.max(0,pW-1/6);
     normalW=avgH*(rules.rw?nwp+(1-nwp)*nwp:nwp);
-  }else{
-    normalW=avgH*(rules.rw?pW+(1-pW)*pW:pW);
-  }
+  }else normalW=avgH*(rules.rw?pW+(1-pW)*pW:pW);
   const avgW=normalW+lethal;
-
   const svAdj=Math.min(7,svR+AP);
   let effSv=svR===7?7:svAdj;
   if(inv>0&&inv<effSv)effSv=inv;
   const pFail=effSv>6?1:(1-p6(effSv));
-
-  let avgU;
-  if(rules.dw)avgU=normalW*pFail+lethal;
-  else avgU=avgW*pFail;
-
+  const avgU=rules.dw?normalW*pFail+lethal:avgW*pFail;
   const pFNP=fnp>0?p6(fnp):0;
   const avgDmg=avgU*D*(1-pFNP);
   const killed=Math.min(mdl,avgDmg/W);
   const svD=effSv>6?'없음':effSv+'+';
-
-  // flow
   const steps=[];
   if(rules.tor)steps.push({name:'명중',need:'자동',prob:'100%',col:'var(--green2)'});
-  else{
-    const rr=rules.rh?' ↺':'';const tw=rules.twin?' ×2':'';
-    steps.push({name:'명중',need:hitN+'+'+rr+tw,prob:(pH*100).toFixed(0)+'%',col:'var(--green2)'});
-  }
-  const rr2=rules.rw?' ↺':'';
-  const ex=rules.lh?' ★L':rules.dw?' ★D':'';
-  steps.push({name:'부상',need:wnN+'+'+rr2+ex,prob:(pW*100).toFixed(0)+'%',col:'var(--amber2)'});
+  else steps.push({name:'명중',need:hitN+'+'+(rules.rh?' ↺':'')+(rules.twin?' ×2':''),prob:(pH*100).toFixed(0)+'%',col:'var(--green2)'});
+  steps.push({name:'부상',need:wnN+'+'+(rules.rw?' ↺':'')+(rules.lh?' ★L':rules.dw?' ★D':''),prob:(pW*100).toFixed(0)+'%',col:'var(--amber2)'});
   steps.push({name:'방어실패',need:svD,prob:(pFail*100).toFixed(0)+'%',col:'var(--red2)'});
   if(fnp>0)steps.push({name:'FNP실패',need:fnp+'+++',prob:((1-pFNP)*100).toFixed(0)+'%',col:'var(--pink2)'});
-
-  document.getElementById('flow').innerHTML=steps.map((s,i)=>
-    (i?'<div class="farr">▶</div>':'')+
-    `<div class="fstep"><div class="fn" style="color:${s.col}">${s.name}</div><div class="fv" style="color:${s.col}">${s.need}</div><div class="fp" style="color:${s.col}">${s.prob}</div></div>`
-  ).join('');
-
+  document.getElementById('flow').innerHTML=steps.map((s,i)=>(i?'<div class="farr">▶</div>':'')+`<div class="fstep"><div class="fn" style="color:${s.col}">${s.name}</div><div class="fv" style="color:${s.col}">${s.need}</div><div class="fp" style="color:${s.col}">${s.prob}</div></div>`).join('');
   document.getElementById('res').innerHTML=`
     <div class="rc cg"><div class="rl">평균 명중</div><div class="rv cg">${avgH.toFixed(1)}</div><div class="rs">${A}회 공격</div></div>
     <div class="rc ca"><div class="rl">평균 부상</div><div class="rv ca">${avgW.toFixed(2)}</div><div class="rs">방어 전</div></div>
     <div class="rc cr"><div class="rl">평균 피해</div><div class="rv cr">${avgDmg.toFixed(2)}</div><div class="rs">총 HP ${W*mdl}</div></div>
-    <div class="rc cb"><div class="rl">기대 제거</div><div class="rv cb">${killed.toFixed(2)}</div><div class="rs">/ ${mdl} 모델</div></div>
-  `;
+    <div class="rc cb"><div class="rl">기대 제거</div><div class="rv cb">${killed.toFixed(2)}</div><div class="rs">/ ${mdl} 모델</div></div>`;
 }
 
 // ── EDIT MODAL ──
-function openEdit(side){
-  editTarget=side;
-  const f=getFaction(side);
-  document.getElementById('modal-title').textContent=(side==='atk'?'⚔ 공격':'🛡 방어')+' 유닛 편집 — '+f;
-  renderModalBody(f,side);
-  document.getElementById('modal').classList.add('open');
-}
+function openEdit(side){ editTarget=side; const f=getFaction(side); document.getElementById('modal-title').textContent=(side==='atk'?'⚔ 공격':'🛡 방어')+' 유닛 편집 — '+f; renderModalBody(f,side); document.getElementById('modal').classList.add('open'); }
 function closeEdit(){document.getElementById('modal').classList.remove('open');}
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeEdit();});
-
 function renderModalBody(faction,side){
-  const units=data[faction];
-  let html='';
+  const units=sideData[side][faction]; let html='';
   Object.entries(units).forEach(([uname,unit])=>{
     if(side==='atk'){
-      html+=`<div class="weapon-editor" id="we-${CSS.escape(uname)}">
-        <div class="wname">📋 ${uname}</div>`;
-      unit.weapons.forEach((w,wi)=>{
-        html+=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:2px;padding:7px 9px;margin-bottom:5px">
-          <div style="font-size:11px;color:var(--gold);margin-bottom:5px;font-family:'Rajdhani',sans-serif">🗡 ${w.name}</div>
-          <div class="r3" style="gap:5px;margin-bottom:4px">
-            <div><label class="lbl">A</label><input type="number" value="${w.A}" min="1" max="50" oninput="editWeapon('${faction}','${uname}',${wi},'A',this.value)"></div>
-            <div><label class="lbl">BS/WS</label><select onchange="editWeapon('${faction}','${uname}',${wi},'skill',this.value)">
-              ${[2,3,4,5,6].map(v=>`<option value="${v}" ${w.skill==v?'selected':''}>${v}+</option>`).join('')}
-            </select></div>
-            <div><label class="lbl">S</label><input type="number" value="${w.S}" min="1" max="30" oninput="editWeapon('${faction}','${uname}',${wi},'S',this.value)"></div>
-          </div>
-          <div class="r3" style="gap:5px">
-            <div><label class="lbl">AP</label><select onchange="editWeapon('${faction}','${uname}',${wi},'AP',this.value)">
-              ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}" ${w.AP==v?'selected':''}>-${v}</option>`).join('')}
-            </select></div>
-            <div><label class="lbl">D</label><input type="number" value="${w.D}" min="1" max="20" oninput="editWeapon('${faction}','${uname}',${wi},'D',this.value)"></div>
-            <div style="display:flex;align-items:flex-end"><button class="mbtn danger" style="width:100%;justify-content:center" onclick="deleteWeapon('${faction}','${uname}',${wi})">삭제</button></div>
-          </div>
-          <div style="margin-top:5px"><label class="lbl">Keywords (쉼표 구분)</label>
-          <input type="text" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;color:var(--text);font-family:monospace;font-size:11px;padding:4px 7px;height:28px" value="${(w.keywords||[]).join(', ')}" oninput="editWeaponKw('${faction}','${uname}',${wi},this.value)">
-          </div>
-        </div>`;
-      });
-      html+=`<button class="mbtn" style="margin-top:4px" onclick="addWeapon('${faction}','${uname}')">+ 무기 추가</button>
-      </div>`;
-    } else {
-      html+=`<div class="weapon-editor">
-        <div class="wname">📋 ${uname}</div>
-        <div class="r3" style="gap:5px;margin-bottom:5px">
-          <div><label class="lbl">T</label><input type="number" value="${unit.T}" min="1" max="16" oninput="editDef('${faction}','${uname}','T',this.value)"></div>
-          <div><label class="lbl">Sv</label><select onchange="editDef('${faction}','${uname}','Sv',this.value)">
-            ${[2,3,4,5,6,7].map(v=>`<option value="${v}" ${unit.Sv==v?'selected':''}>${v===7?'없음':v+'+'}</option>`).join('')}
-          </select></div>
-          <div><label class="lbl">W</label><input type="number" value="${unit.W}" min="1" max="30" oninput="editDef('${faction}','${uname}','W',this.value)"></div>
-        </div>
-        <div class="r3" style="gap:5px">
-          <div><label class="lbl">Inv</label><select onchange="editDef('${faction}','${uname}','Inv',this.value)">
-            ${[0,3,4,5,6].map(v=>`<option value="${v}" ${unit.Inv==v?'selected':''}>${v?v+'++':'없음'}</option>`).join('')}
-          </select></div>
-          <div><label class="lbl">FNP</label><select onchange="editDef('${faction}','${uname}','FNP',this.value)">
-            ${[0,4,5,6].map(v=>`<option value="${v}" ${unit.FNP==v?'selected':''}>${v?v+'+++':'없음'}</option>`).join('')}
-          </select></div>
-          <div><label class="lbl">모델수</label><input type="number" value="${unit.models}" min="1" max="30" oninput="editDef('${faction}','${uname}','models',this.value)"></div>
-        </div>
-      </div>`;
+      html+=`<div class="weapon-editor"><div class="wname">📋 ${uname}</div>`;
+      unit.weapons.forEach((w,wi)=>{ html+=`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:2px;padding:7px 9px;margin-bottom:5px"><div style="font-size:11px;color:var(--gold);margin-bottom:5px">🗡 ${w.name}</div><div class="r3" style="gap:5px;margin-bottom:4px"><div><label class="lbl">A</label><input type="number" value="${w.A}" oninput="editWeapon('${faction}','${uname}',${wi},'A',this.value)"></div><div><label class="lbl">BS/WS</label><select onchange="editWeapon('${faction}','${uname}',${wi},'skill',this.value)">${[2,3,4,5,6].map(v=>`<option value="${v}" ${w.skill==v?'selected':''}>${v}+</option>`).join('')}</select></div><div><label class="lbl">S</label><input type="number" value="${w.S}" oninput="editWeapon('${faction}','${uname}',${wi},'S',this.value)"></div></div><div class="r3" style="gap:5px"><div><label class="lbl">AP</label><select onchange="editWeapon('${faction}','${uname}',${wi},'AP',this.value)">${[0,1,2,3,4,5,6].map(v=>`<option value="${v}" ${w.AP==v?'selected':''}>-${v}</option>`).join('')}</select></div><div><label class="lbl">D</label><input type="number" value="${w.D}" oninput="editWeapon('${faction}','${uname}',${wi},'D',this.value)"></div><div style="display:flex;align-items:flex-end"><button class="mbtn danger" onclick="deleteWeapon('${faction}','${uname}',${wi})">삭제</button></div></div><div style="margin-top:5px"><label class="lbl">Keywords</label><input type="text" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);height:28px" value="${(w.keywords||[]).join(', ')}" oninput="editWeaponKw('${faction}','${uname}',${wi},this.value)"></div></div>`; });
+      html+=`<button class="mbtn" onclick="addWeapon('${faction}','${uname}')">+ 무기 추가</button></div>`;
+    }else{
+      html+=`<div class="weapon-editor"><div class="wname">📋 ${uname}</div><div class="r3" style="gap:5px;margin-bottom:5px"><div><label class="lbl">T</label><input type="number" value="${unit.T}" oninput="editDef('${faction}','${uname}','T',this.value)"></div><div><label class="lbl">Sv</label><select onchange="editDef('${faction}','${uname}','Sv',this.value)">${[2,3,4,5,6,7].map(v=>`<option value="${v}" ${unit.Sv==v?'selected':''}>${v===7?'없음':v+'+'}</option>`).join('')}</select></div><div><label class="lbl">W</label><input type="number" value="${unit.W}" oninput="editDef('${faction}','${uname}','W',this.value)"></div></div><div class="r3" style="gap:5px"><div><label class="lbl">Inv</label><select onchange="editDef('${faction}','${uname}','Inv',this.value)">${[0,3,4,5,6].map(v=>`<option value="${v}" ${unit.Inv==v?'selected':''}>${v?v+'++':'없음'}</option>`).join('')}</select></div><div><label class="lbl">FNP</label><select onchange="editDef('${faction}','${uname}','FNP',this.value)">${[0,4,5,6].map(v=>`<option value="${v}" ${unit.FNP==v?'selected':''}>${v?v+'+++':'없음'}</option>`).join('')}</select></div><div><label class="lbl">모델수</label><input type="number" value="${unit.models}" oninput="editDef('${faction}','${uname}','models',this.value)"></div></div></div>`;
     }
   });
-
-  html+=`<div class="mrow">
-    <button class="mbtn primary" onclick="addUnit('${faction}','${side}')">+ 새 유닛 추가</button>
-    <button class="mbtn" onclick="resetFaction('${faction}','${side}')">↺ 초기화</button>
-  </div>`;
+  html+=`<div class="mrow"><button class="mbtn primary" onclick="addUnit('${faction}','${side}')">+ 새 유닛 추가</button><button class="mbtn" onclick="resetFaction('${faction}','${side}')">↺ 초기화</button></div>`;
   document.getElementById('modal-body').innerHTML=html;
 }
+function editWeapon(f,u,wi,key,val){ sideData.atk[f][u].weapons[wi][key]=isNaN(+val)?val:+val; if(getFaction('atk')===f&&getUnit('atk')===u)onAtkWeapon(); }
+function editWeaponKw(f,u,wi,val){ sideData.atk[f][u].weapons[wi].keywords=val.split(',').map(s=>s.trim()).filter(Boolean); if(getFaction('atk')===f&&getUnit('atk')===u)onAtkWeapon(); }
+function editDef(f,u,key,val){ sideData.def[f][u][key]=+val; if(getFaction('def')===f&&getUnit('def')===u)onDefUnit(); }
+function deleteWeapon(f,u,wi){ if(sideData.atk[f][u].weapons.length<=1){alert('무기는 최소 1개 이상 필요합니다.');return;} sideData.atk[f][u].weapons.splice(wi,1); renderModalBody(f,'atk'); if(getFaction('atk')===f&&getUnit('atk')===u)onAtkUnit(); }
+function addWeapon(f,u){ sideData.atk[f][u].weapons.push({name:'새 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]}); renderModalBody(f,'atk'); }
+function addUnit(f,side){ const name=prompt('새 유닛 이름:'); if(!name||!name.trim())return; const n=name.trim(); if(sideData[side][f][n]){alert('이미 존재하는 이름입니다.');return;} sideData[side][f][n]={T:4,Sv:4,W:2,Inv:0,FNP:0,models:5,weapons:side==='atk'?[{name:'새 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]}]:[]}; renderModalBody(f,side); if(side==='atk')onAtkFaction();else onDefFaction(); }
+function resetFaction(f,side){ if(!confirm(`"${f}" 팩션의 모든 수정을 초기화할까요?`))return; sideData[side][f]=clone(sideDB[side][f]); renderModalBody(f,side); if(side==='atk')onAtkFaction();else onDefFaction(); }
 
-function editWeapon(f,u,wi,key,val){
-  data[f][u].weapons[wi][key]=isNaN(+val)?val:+val;
-  if(getFaction('atk')===f&&getUnit('atk')===u)onAtkWeapon();
+
+// ── SPECTATOR SIDE SWAP ──
+const armySelectionMemory=new WeakMap();
+let spectatorSidesSwapped=false;
+
+function getSelectedOptionText(id){
+  const select=document.getElementById(id);
+  return select?.options?.[select.selectedIndex]?.textContent||'';
 }
-function editWeaponKw(f,u,wi,val){
-  data[f][u].weapons[wi].keywords=val.split(',').map(s=>s.trim()).filter(Boolean);
-  if(getFaction('atk')===f&&getUnit('atk')===u)onAtkWeapon();
+function selectOptionText(id,text){
+  const select=document.getElementById(id);
+  if(!select||!text)return false;
+  const index=[...select.options].findIndex(option=>option.textContent===text);
+  if(index<0)return false;
+  select.selectedIndex=index;
+  return true;
 }
-function editDef(f,u,key,val){
-  data[f][u][key]=+val;
-  if(getFaction('def')===f&&getUnit('def')===u)onDefUnit();
-}
-function deleteWeapon(f,u,wi){
-  if(data[f][u].weapons.length<=1){alert('무기는 최소 1개 이상 필요합니다.');return;}
-  data[f][u].weapons.splice(wi,1);
-  renderModalBody(f,editTarget);
-  if(getFaction('atk')===f&&getUnit('atk')===u)onAtkUnit();
-}
-function addWeapon(f,u){
-  data[f][u].weapons.push({name:'새 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]});
-  renderModalBody(f,editTarget);
-}
-function addUnit(f,side){
-  const name=prompt('새 유닛 이름:');
-  if(!name||!name.trim())return;
-  const n=name.trim();
-  if(data[f][n]){alert('이미 존재하는 이름입니다.');return;}
+function rememberArmySelection(side){
+  const army=sideData[side];
+  if(!army||typeof army!=='object')return;
+  const previous=armySelectionMemory.get(army)||{};
+  const next={...previous,faction:getFaction(side)||'',unit:getUnit(side)||''};
   if(side==='atk'){
-    data[f][n]={T:4,Sv:4,W:2,Inv:0,FNP:0,models:5,weapons:[{name:'새 무기',A:2,skill:3,S:4,AP:0,D:1,keywords:[]}]};
-  } else {
-    data[f][n]={T:4,Sv:4,W:2,Inv:0,FNP:0,models:5,weapons:[]};
+    const weaponSelect=document.getElementById('atk-w');
+    next.weaponIndex=weaponSelect?.selectedIndex??0;
+    next.weapon=getSelectedOptionText('atk-w');
   }
-  renderModalBody(f,side);
-  if(side==='atk')onAtkFaction();else onDefFaction();
+  armySelectionMemory.set(army,next);
 }
-function resetFaction(f,side){
-  if(!confirm(`"${f}" 팩션의 모든 수정을 초기화할까요?`))return;
-  data[f]=JSON.parse(JSON.stringify(DB[f]));
-  renderModalBody(f,side);
-  if(side==='atk')onAtkFaction();else onDefFaction();
+function restoreArmySelection(side){
+  const army=sideData[side];
+  const saved=armySelectionMemory.get(army)||{};
+  const factionSelect=document.getElementById(side+'-f');
+  if(saved.faction)selectOptionText(side+'-f',saved.faction);
+  if(side==='atk')onAtkFaction(); else onDefFaction();
+  if(saved.unit)selectOptionText(side+'-u',saved.unit);
+  if(side==='atk'){
+    onAtkUnit();
+    const weaponSelect=document.getElementById('atk-w');
+    if(saved.weapon)selectOptionText('atk-w',saved.weapon);
+    else if(Number.isInteger(saved.weaponIndex)&&weaponSelect?.options?.length) weaponSelect.selectedIndex=Math.min(saved.weaponIndex,weaponSelect.options.length-1);
+    onAtkWeapon();
+  }else onDefUnit();
 }
+function swapStatusBlocks(){
+  const atk=document.getElementById('atk-json-status');
+  const def=document.getElementById('def-json-status');
+  if(!atk||!def)return;
+  const atkState={text:atk.textContent,className:atk.className};
+  atk.textContent=def.textContent; atk.className=def.className;
+  def.textContent=atkState.text; def.className=atkState.className;
+}
+function updateSpectatorSwapButton(){
+  const button=document.getElementById('spectator-swap');
+  const label=document.getElementById('swap-label');
+  if(button)button.setAttribute('aria-pressed',String(spectatorSidesSwapped));
+  if(label)label.textContent=spectatorSidesSwapped?'SIDES SWAPPED':'SWAP SIDES';
+}
+function swapSpectatorSides(){
+  rememberArmySelection('atk');
+  rememberArmySelection('def');
+  [sideData.atk,sideData.def]=[sideData.def,sideData.atk];
+  [sideDB.atk,sideDB.def]=[sideDB.def,sideDB.atk];
+  swapStatusBlocks();
+  refreshSide('atk');
+  refreshSide('def');
+  restoreArmySelection('atk');
+  restoreArmySelection('def');
+  spectatorSidesSwapped=!spectatorSidesSwapped;
+  updateSpectatorSwapButton();
+  calc();
+}
+
+// ── THEME ──
+function applyTheme(theme){
+  const chosen=theme==='light'?'light':'dark';
+  document.body.dataset.theme=chosen;
+  const toggle=document.getElementById('theme-toggle');
+  const isLight=chosen==='light';
+  if(toggle)toggle.setAttribute('aria-checked',String(isLight));
+  const icon=document.getElementById('theme-icon');
+  const label=document.getElementById('theme-label');
+  if(icon)icon.textContent=isLight?'☀':'☾';
+  if(label)label.textContent=isLight?'LIGHT':'DARK';
+  try{localStorage.setItem('wh40k-theme',chosen);}catch(e){}
+}
+function toggleTheme(){ applyTheme(document.body.dataset.theme==='light'?'dark':'light'); }
+function initTheme(){
+  let saved='light';
+  try{saved=localStorage.getItem('wh40k-theme')||'light';}catch(e){}
+  applyTheme(saved);
+}
+
+// ── RULE TOOLTIPS ──
+function bindRuleTooltips(elements=document.querySelectorAll('[data-tip]')){
+  const tooltip=document.getElementById('rule-tooltip');
+  if(!tooltip)return;
+  const move=(event)=>{
+    const gap=14;
+    const rect=tooltip.getBoundingClientRect();
+    let left=event.clientX+gap;
+    let top=event.clientY+gap;
+    if(left+rect.width>window.innerWidth-10)left=event.clientX-rect.width-gap;
+    if(top+rect.height>window.innerHeight-10)top=event.clientY-rect.height-gap;
+    tooltip.style.left=Math.max(10,left)+'px';
+    tooltip.style.top=Math.max(10,top)+'px';
+  };
+  const show=(btn)=>{
+    tooltip.replaceChildren();
+    const strong=document.createElement('strong');
+    strong.textContent=btn.dataset.tipTitle||btn.textContent;
+    tooltip.append(strong,document.createTextNode(btn.dataset.tip||''));
+    tooltip.classList.add('show');
+    tooltip.setAttribute('aria-hidden','false');
+  };
+  const hide=()=>{
+    tooltip.classList.remove('show');
+    tooltip.setAttribute('aria-hidden','true');
+  };
+  elements.forEach(btn=>{
+    if(btn.dataset.tipBound==='1')return;
+    btn.dataset.tipBound='1';
+    btn.addEventListener('mouseenter',event=>{show(btn);move(event);});
+    btn.addEventListener('mousemove',move);
+    btn.addEventListener('mouseleave',hide);
+    btn.addEventListener('focus',()=>{
+      show(btn);
+      const rect=btn.getBoundingClientRect();
+      tooltip.style.left=Math.max(10,Math.min(rect.left,window.innerWidth-tooltip.offsetWidth-10))+'px';
+      tooltip.style.top=Math.max(10,Math.min(rect.bottom+8,window.innerHeight-tooltip.offsetHeight-10))+'px';
+    });
+    btn.addEventListener('blur',hide);
+  });
+}
+function initRuleTooltips(){ bindRuleTooltips(); }
+initTheme();
+initRuleTooltips();
+
 </script>
 </body>
 </html>
