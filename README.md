@@ -1,4 +1,4 @@
-# WH40K Dice Calculator
+# WH40K Combat Calculator
 
 Warhammer 40,000 보드게임 전투 계산을 보조하기 위한 웹 기반 주사위 기대값 계산기입니다.
 
